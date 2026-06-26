@@ -20726,7 +20726,7 @@ canvas.waiting-ball{cursor:pointer}
 #overlay button:hover{background:#444}
 #msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:15px;color:#c00;font-weight:700;pointer-events:none;opacity:0;transition:opacity .15s;z-index:4;text-shadow:0 0 8px #fff}
 #msg.show{opacity:1}
-#scare{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;cursor:none;pointer-events:auto}
+#scare{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;cursor:default;pointer-events:auto}
 #scare.active{display:flex}
 #scare img{width:100%;height:100%;object-fit:cover;animation:scarePop .08s ease-out}
 @keyframes scarePop{from{transform:scale(1.08)}to{transform:scale(1)}}
@@ -20824,21 +20824,53 @@ var scareImg = document.getElementById('scareImg');
 var W = 800, H = 600, samples = [], levelIdx = 0, active = false;
 var ball = {x:0,y:0}, mouse = {x:0,y:0}, dead = false, scared = false, ballArmed = false;
 var scareMonoTimer = null;
+var gameExited = false;
 
 function showRootMonologue(lines, onClose, opts){
   try{
-    var root = getRootWin();
-    if(root.showMonologue){
-      root.showMonologue(lines, onClose, opts);
-      return;
+    var w = window;
+    for(var i = 0; i < 6; i++){
+      try{
+        if(w.triggerWhisperCurveMonologue){
+          w.triggerWhisperCurveMonologue(onClose);
+          return;
+        }
+        if(w._showMonologueImpl){
+          w._showMonologueImpl(lines, onClose);
+          return;
+        }
+      }catch(e){}
+      if(!w.parent || w.parent === w) break;
+      w = w.parent;
     }
   }catch(e){}
-  if(onClose) onClose();
+  try{
+    window.top.postMessage({ type: 'whispercurve-monologue' }, '*');
+  }catch(e2){}
+}
+
+function exitGameState(){
+  gameExited = true;
+  active = false;
+  scared = true;
+  ballArmed = false;
+  dead = false;
+  document.body.style.cursor = 'default';
+  document.documentElement.style.cursor = 'default';
+  cv.style.cursor = 'default';
+  cv.classList.remove('waiting-ball');
+  if(hudHint) hudHint.textContent = '已退出游戏';
 }
 
 function updateCursorState(){
-  var hidePlay = ballArmed && active && !dead && !scared;
-  var waitBall = active && !ballArmed && !dead && !scared;
+  if(gameExited || scared){
+    document.body.style.cursor = 'default';
+    document.documentElement.style.cursor = 'default';
+    cv.style.cursor = 'default';
+    return;
+  }
+  var hidePlay = ballArmed && active && !dead;
+  var waitBall = active && !ballArmed && !dead;
   document.body.style.cursor = hidePlay ? 'none' : 'default';
   cv.style.cursor = hidePlay ? 'none' : (waitBall ? 'pointer' : 'default');
 }
@@ -20974,6 +21006,7 @@ function startLevel(idx){
   levelIdx = idx;
   dead = false;
   scared = false;
+  gameExited = false;
   if(scareMonoTimer){ clearTimeout(scareMonoTimer); scareMonoTimer = null; }
   scareEl.classList.remove('active');
   levelLabel.textContent = LEVELS[levelIdx].label;
@@ -21011,10 +21044,7 @@ function preloadFace(){
 
 function triggerScare(){
   if(scared) return;
-  scared = true;
-  active = false;
-  ballArmed = false;
-  updateCursorState();
+  exitGameState();
   updateHudHint();
   if(!scareImg.src) scareImg.src = assetUrl(FACE_FALLBACK);
   scareEl.classList.add('active');
@@ -21059,7 +21089,7 @@ function pointerPos(e){
 }
 
 function tryArmBall(e){
-  if(!active || ballArmed || dead || scared || scareMonoTimer) return;
+  if(!active || ballArmed || dead || scared || gameExited || scareMonoTimer) return;
   var p = pointerPos(e);
   if(Math.hypot(p.x - ball.x, p.y - ball.y) <= BALL_R + 12){
     ballArmed = true;
@@ -21526,6 +21556,14 @@ requestAnimationFrame(tick);
                 window._showMonologueImpl(lines, onClose);
             }, opts);
         };
+
+        window.triggerWhisperCurveMonologue = function (onClose) {
+            window._showMonologueImpl(['该死，看来只是一个恶作剧。'], onClose);
+        };
+        window.addEventListener('message', function (ev) {
+            if (!ev.data || ev.data.type !== 'whispercurve-monologue') return;
+            window.triggerWhisperCurveMonologue(null);
+        });
 
         var _guideLoop = null;
         var _guideTargetEl = null;
