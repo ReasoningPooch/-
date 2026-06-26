@@ -402,6 +402,29 @@
             pointer-events: none; font-family: "SF Mono", "Menlo", "PingFang SC", monospace;
             white-space: nowrap; letter-spacing: 0.08em;
         }
+        .guide-hint-text.guide-hint-wrap {
+            white-space: normal;
+            max-width: 340px;
+            line-height: 1.65;
+        }
+        .guide-ack-btn {
+            position: fixed;
+            z-index: 100014;
+            padding: 9px 24px;
+            font-size: 12px;
+            font-family: "SF Mono", "Menlo", "PingFang SC", monospace;
+            letter-spacing: 0.08em;
+            color: #dff7f0;
+            background: rgba(0, 120, 100, 0.88);
+            border: 1px solid rgba(0, 210, 190, 0.55);
+            border-radius: 3px;
+            cursor: pointer;
+            pointer-events: auto;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+        .guide-ack-btn:hover {
+            background: rgba(0, 140, 115, 0.95);
+        }
         .desktop-item.tutorial-focus {
             position: relative !important;
             z-index: 99995 !important;
@@ -3466,6 +3489,40 @@ const StarBrowser = () => {
       }
     } catch (e) {}
   };
+
+  const navigateRef = useRef(handleNavigate);
+  navigateRef.current = handleNavigate;
+  useEffect(function () {
+    function clearParentPending() {
+      try {
+        if (window.parent) window.parent.__STARBROWSER_PENDING_URL = null;
+      } catch (e) {}
+    }
+    function applyExternalNavigate(url) {
+      if (!url) return;
+      navigateRef.current(url);
+      clearParentPending();
+      try {
+        window.parent.postMessage({ type: 'starbrowser-navigated', url: url }, '*');
+      } catch (e) {}
+    }
+    function onStarBrowserNavigate(ev) {
+      if (!ev.data || ev.data.type !== 'starbrowser-navigate' || !ev.data.url) return;
+      applyExternalNavigate(ev.data.url);
+    }
+    window.addEventListener('message', onStarBrowserNavigate);
+    try {
+      if (window.parent && window.parent.__STARBROWSER_PENDING_URL) {
+        applyExternalNavigate(window.parent.__STARBROWSER_PENDING_URL);
+      }
+    } catch (e) {}
+    try {
+      window.parent.postMessage({ type: 'starbrowser-ready' }, '*');
+    } catch (e) {}
+    return function () {
+      window.removeEventListener('message', onStarBrowserNavigate);
+    };
+  }, []);
 
   // Nav back stack
   const handleGoBack = () => {
@@ -10890,6 +10947,19 @@ requestAnimationFrame(function() {
     margin-bottom: 12px;
     text-indent: 0;
   }
+  .title-bar .quick-access .qa-btn-save {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+    filter: drop-shadow(0 0 5px rgba(255, 220, 120, 0.95)) drop-shadow(0 0 10px rgba(255, 190, 70, 0.55));
+  }
+  .title-bar .quick-access .qa-btn-save:hover {
+    background: rgba(255, 255, 255, 0.18);
+    filter: drop-shadow(0 0 7px rgba(255, 230, 140, 1)) drop-shadow(0 0 14px rgba(255, 200, 80, 0.7));
+  }
   .doc-clue-title {
     font-size: 28px;
     font-weight: bold;
@@ -11175,14 +11245,7 @@ requestAnimationFrame(function() {
 <!-- 标题栏 -->
 <div class="title-bar">
   <div class="quick-access">
-    <div class="qa-btn" title="保存">💾</div>
-    <div class="qa-btn" title="撤销">↩</div>
-    <div class="qa-btn" title="恢复">↪</div>
-    <div class="qa-btn" title="新建">📄</div>
-    <div class="qa-btn" title="打开">📂</div>
-    <div class="qa-btn" title="邮件">✉</div>
-    <div class="qa-btn" title="快速打印">🖨</div>
-    <div class="qa-btn" title="打印预览">👁</div>
+    <div class="qa-btn qa-btn-save" id="word-save-btn" title="保存并进入最终环节">💾</div>
   </div>
   <div class="doc-title">文档1 - nava 文档编辑器</div>
   <div class="search-box">
@@ -11766,7 +11829,7 @@ const menuData = {
   file: [
     { icon: '📄', label: '新建(N)', shortcut: 'Ctrl+N', action: () => { document.getElementById('paper').innerHTML = '<p><br></p>'; updateWordCount(); showToast('已新建空白文档'); }},
     { icon: '📂', label: '打开(O)...', shortcut: 'Ctrl+O', action: () => showDialog('打开', '<div style="padding:10px 0;"><div style="color:#888;font-size:11px;margin-bottom:8px;">NovaOS (C:) &gt; 文档</div><div style="border:1px solid #ddd;border-radius:4px;padding:8px;max-height:180px;overflow-y:auto;text-align:left;"><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#555;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📄 文档1.nova</div><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#555;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📄 报告.nova</div><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#888;font-style:italic;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📂 暂无更多文件</div></div></div>', [{label:'打开',primary:true,action:()=>showToast('文件已打开')},{label:'取消'}]) },
-    { icon: '💾', label: '保存(S)', shortcut: 'Ctrl+S', action: () => showToast('文档已保存 ✓') },
+    { icon: '💾', label: '保存(S)', shortcut: 'Ctrl+S', action: wordSaveClueDocument },
     { icon: '💾', label: '另存为(A)...', shortcut: 'F12', action: () => showDialog('另存为', '<div style="text-align:center;padding:10px 0;">💾<br><br>文件名：<input type="text" value="文档1" style="padding:4px 8px;border:1px solid #ccc;border-radius:3px;font-size:12px;width:200px;"><br><br>保存类型：Nova 文档 (*.nova)</div>', [{label:'保存',primary:true,action:()=>showToast('文档已另存为')},{label:'取消'}]) },
     { sep: true },
     { icon: '🖨', label: '打印(P)...', shortcut: 'Ctrl+P', action: () => showDialog('打印', '<div style="text-align:center;padding:10px 0;">🖨️<br><br>打印机：Nova Print to PDF<br><br>页面范围：全部 (1 页)<br><br>份数：<input type="number" value="1" min="1" style="width:50px;padding:2px 4px;border:1px solid #ccc;font-size:12px;"></div>', [{label:'打印',primary:true,action:()=>showToast('正在准备打印...')},{label:'取消'}]) },
@@ -11977,20 +12040,26 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.popup-panel.show').forEach(p => p.classList.remove('show'));
 });
 
-// ===== 快速访问栏 =====
-document.querySelectorAll('.qa-btn').forEach((btn, idx) => {
-  const actions = [
-    () => showToast('文档已保存 ✓'),
-    () => { document.execCommand('undo'); showToast('已撤销'); },
-    () => { document.execCommand('redo'); showToast('已恢复'); },
-    () => { document.getElementById('paper').innerHTML = '<p><br></p>'; updateWordCount(); showToast('已新建文档'); },
-    () => showDialog('打开', '<div style="padding:10px 0;"><div style="color:#888;font-size:11px;margin-bottom:8px;">NovaOS (C:) &gt; 文档</div><div style="border:1px solid #ddd;border-radius:4px;padding:8px;max-height:180px;overflow-y:auto;text-align:left;"><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#555;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📄 文档1.nova</div><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#555;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📄 报告.nova</div><div style="padding:6px 8px;cursor:pointer;border-radius:3px;font-size:12px;color:#888;font-style:italic;" onmouseover="this.style.background="#f0f0f0"" onmouseout="this.style.background="transparent"">📂 暂无更多文件</div></div></div>', [{label:'打开',primary:true,action:()=>showToast('文件已打开')},{label:'取消'}]),
-    () => showToast('邮件功能'),
-    () => showToast('正在准备打印...'),
-    () => showToast('打印预览模式'),
-  ];
-  btn.addEventListener('click', () => { if(actions[idx]) actions[idx](); });
-});
+// ===== 快速访问栏：保存（最终环节入口） =====
+function wordSaveClueDocument() {
+  showDialog('保存', '确认保存？', [
+    {
+      label: '确认',
+      primary: true,
+      action: function () {
+        showToast('文档已保存 ✓');
+        try {
+          if (window.parent && window.parent.onWordSaveForFinalPhase) {
+            window.parent.onWordSaveForFinalPhase();
+          }
+        } catch (e) {}
+      }
+    },
+    { label: '取消' }
+  ]);
+}
+var wordSaveBtn = document.getElementById('word-save-btn');
+if (wordSaveBtn) wordSaveBtn.addEventListener('click', wordSaveClueDocument);
 
 // ===== Ribbon Tab 切换 =====
 document.querySelectorAll('.ribbon-tab').forEach(tab => {
@@ -12148,7 +12217,7 @@ document.addEventListener('keydown', (e) => {
       case 'b': e.preventDefault(); toggleFormat('bold'); break;
       case 'i': e.preventDefault(); toggleFormat('italic'); break;
       case 'u': e.preventDefault(); toggleFormat('underline'); break;
-      case 's': e.preventDefault(); showToast('文档已保存 ✓'); break;
+      case 's': e.preventDefault(); wordSaveClueDocument(); break;
       case 'f': e.preventDefault(); menuData.edit[6].action(); break;
       case 'h': e.preventDefault(); menuData.edit[7].action(); break;
       case 'k': e.preventDefault(); menuData.insert[6].action(); break;
@@ -18388,7 +18457,6 @@ setInterval(tick, 1500);
             background: rgba(59, 130, 246, 0.4);
         }
 
-        /* Custom speech bubble tail style */
         .bubble-other::before {
             content: "";
             position: absolute;
@@ -18407,6 +18475,16 @@ setInterval(tick, 1500);
             border-width: 6px 0 6px 6px;
             border-style: solid;
             border-color: transparent transparent transparent #2563eb;
+        }
+
+        .chat-link {
+            color: #7dd3fc;
+            text-decoration: underline;
+            cursor: pointer;
+            word-break: break-all;
+        }
+        .chat-link:hover {
+            color: #bae6fd;
         }
     </style>
 </head>
@@ -18799,6 +18877,43 @@ setInterval(tick, 1500);
         }
 
         // Dynamically populates right chat content container
+        function escapeChatHtml(text) {
+            return String(text || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function formatChatMessageHtml(text) {
+            var safe = escapeChatHtml(text);
+            return safe.replace(/((?:https?:\/\/)?(?:www\.)?[a-z0-9][-a-z0-9.]*\.[a-z]{2,}(?:\/[^\s<]*)?)/gi, function (match) {
+                var url = match.replace(/^https?:\/\//i, '');
+                return '<a href="#" class="chat-link" data-url="' + escapeChatHtml(url) + '">' + match + '</a>';
+            });
+        }
+
+        function openChatLinkInBrowser(url) {
+            if (!url) return;
+            try {
+                if (window.parent && window.parent.openStarBrowserUrl) {
+                    window.parent.openStarBrowserUrl(url);
+                    return;
+                }
+            } catch (e) {}
+        }
+
+        function bindChatLinks(container) {
+            if (!container) return;
+            container.querySelectorAll('.chat-link').forEach(function (link) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openChatLinkInBrowser(link.getAttribute('data-url'));
+                });
+            });
+        }
+
         function renderActiveChat() {
             const scrollContainer = document.getElementById('chat-messages-scroll');
             const emptyOverlay = document.getElementById('chat-empty-view');
@@ -18864,7 +18979,7 @@ setInterval(tick, 1500);
                     messageRow.className = 'flex items-start justify-end mb-4';
                     messageRow.innerHTML = `
                         <div class="mr-3 bg-blue-600 border border-blue-500/20 p-2.5 rounded-xl text-xs text-white leading-relaxed max-w-[70%] break-words relative bubble-me shadow">
-                            ${msg.text}
+                            ${formatChatMessageHtml(msg.text)}
                         </div>
                         <div class="w-8 h-8 bg-gradient-to-tr from-blue-700 to-sky-500 rounded-lg flex items-center justify-center text-white font-bold text-[10px] shadow">
                             想你
@@ -18878,12 +18993,14 @@ setInterval(tick, 1500);
                             ${contact.avatar}
                         </div>
                         <div class="ml-3 bg-[#1e293b]/90 border border-slate-800 p-2.5 rounded-xl text-xs text-slate-300 leading-relaxed max-w-[70%] break-words relative bubble-other shadow">
-                            ${msg.text}
+                            ${formatChatMessageHtml(msg.text)}
                         </div>
                     `;
                 }
                 scrollContainer.appendChild(messageRow);
             });
+
+            bindChatLinks(scrollContainer);
 
             // Keep viewport scrolled to bottom
             scrollContainer.scrollTop = scrollContainer.scrollHeight;
@@ -20757,8 +20874,8 @@ canvas.waiting-ball{cursor:pointer}
 <script>
 (function(){
 var BALL_R = 5;
-var FACE_PRIMARY = '微信图片_20260627001755_25_11小.jpeg';
-var FACE_FALLBACK = '1.png';
+var FACE_PRIMARY = '3.jpeg';
+var FACE_FALLBACK = '3.jpeg';
 var SCREAM_FILE = null;
 
 function getRootWin(){
@@ -21160,8 +21277,8 @@ requestAnimationFrame(tick);
         const SOCIAL_HTML = document.getElementById('embedded-social-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.STARSECRET_HTML = document.getElementById('embedded-starsecret-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.WHISPERCURVE_HTML = document.getElementById('embedded-whispercurve-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
-        window.WHISPERCURVE_FACE_PRIMARY = '微信图片_20260627001755_25_11小.jpeg';
-        window.WHISPERCURVE_FACE_FALLBACK = '1.png';
+        window.WHISPERCURVE_FACE_PRIMARY = '3.jpeg';
+        window.WHISPERCURVE_FACE_FALLBACK = '3.jpeg';
         window.WHISPERCURVE_SCREAM = null;
         window.playWhisperCurveScream = function() {
             if (!window.WHISPERCURVE_SCREAM) return;
@@ -21182,6 +21299,7 @@ requestAnimationFrame(tick);
         window.__THEME_COLOR = null;
         window.__GRADUATION_SCARE_SHOWN = false;
         window.__WHISPERCURVE_MAX_GUIDE_DONE = false;
+        window.__WHISPERCURVE_ENTER_SCHEDULED = false;
 
         // 监听设置界面的亮度和主题色变化
         setInterval(function() {
@@ -21826,7 +21944,9 @@ requestAnimationFrame(tick);
             _guideTargetEl = target;
             _guideIframe = iframe;
 
-            target.classList.add('tutorial-focus');
+            if (!opts.noTargetFocus) {
+                target.classList.add('tutorial-focus');
+            }
             if (!iframe && target.classList.contains('desktop-item')) {
                 target.style.position = 'relative';
                 target.style.zIndex = '99995';
@@ -21848,7 +21968,15 @@ requestAnimationFrame(tick);
             var ring = document.createElement('div');
             ring.className = 'guide-spotlight-ring';
             ring.style.pointerEvents = 'none';
+            if (opts.hideRing) ring.style.display = 'none';
             overlay.appendChild(ring);
+            var targetBlocker = null;
+            if (opts.blockTargetClick) {
+                targetBlocker = document.createElement('div');
+                targetBlocker.className = 'guide-target-blocker';
+                targetBlocker.style.cssText = 'position:fixed;z-index:100012;pointer-events:auto;background:transparent;cursor:default;';
+                overlay.appendChild(targetBlocker);
+            }
             var holeProxy = null;
             var holeHandler = opts.onHoleActivate || (opts.onActivate ? function (e) { opts.onActivate(e); } : null);
             var holeEvent = opts.holeEvent || opts.eventType || null;
@@ -21867,9 +21995,28 @@ requestAnimationFrame(tick);
                 overlay.appendChild(holeProxy);
             }
             var hintEl = opts.hint ? document.createElement('div') : null;
-            if (hintEl) { hintEl.className = 'guide-hint-text'; hintEl.textContent = opts.hint; overlay.appendChild(hintEl); }
+            if (hintEl) {
+                hintEl.className = 'guide-hint-text' + (opts.hintWrap ? ' guide-hint-wrap' : '');
+                hintEl.textContent = opts.hint;
+                overlay.appendChild(hintEl);
+            }
             var subEl = opts.subHint ? document.createElement('div') : null;
             if (subEl) { subEl.className = 'guide-hint-sub'; subEl.textContent = opts.subHint; overlay.appendChild(subEl); }
+            var ackBtn = null;
+            if (opts.ackText) {
+                ackBtn = document.createElement('button');
+                ackBtn.type = 'button';
+                ackBtn.className = 'guide-ack-btn';
+                ackBtn.textContent = opts.ackText;
+                ackBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var fn = opts.onAck;
+                    clearGuideOverlay();
+                    if (fn) fn();
+                });
+                overlay.appendChild(ackBtn);
+            }
             document.body.appendChild(overlay);
 
             var guideBounds = null;
@@ -21930,18 +22077,38 @@ requestAnimationFrame(tick);
                     holeProxy.style.width = hr.w + 'px';
                     holeProxy.style.height = hr.h + 'px';
                 }
+                if (targetBlocker) {
+                    targetBlocker.style.left = hr.x + 'px';
+                    targetBlocker.style.top = hr.y + 'px';
+                    targetBlocker.style.width = hr.w + 'px';
+                    targetBlocker.style.height = hr.h + 'px';
+                }
                 if (hintEl) {
                     var hintLeft = hr.x;
                     var hintTop = hr.y + hr.h + 8;
                     if (hintTop + 36 > window.innerHeight) hintTop = Math.max(8, hr.y - 36);
                     hintEl.style.left = hintLeft + 'px';
                     hintEl.style.top = hintTop + 'px';
+                    if (subEl) {
+                        subEl.style.whiteSpace = 'normal';
+                        subEl.style.maxWidth = '320px';
+                        subEl.style.left = hintLeft + 'px';
+                        subEl.style.top = (hintTop + (hintEl.offsetHeight || 40) + 6) + 'px';
+                    }
+                    if (ackBtn) {
+                        var ackTop = hintTop + (hintEl.offsetHeight || 40) + 6;
+                        if (subEl) ackTop += (subEl.offsetHeight || 18) + 8;
+                        ackBtn.style.left = hintLeft + 'px';
+                        ackBtn.style.top = ackTop + 'px';
+                    }
+                } else if (subEl) {
+                    subEl.style.left = (hr.x + hr.w + 6) + 'px';
+                    subEl.style.top = (hr.y + hr.h * 0.25) + 'px';
                 }
-                if (subEl) { subEl.style.left = (hr.x + hr.w + 6) + 'px'; subEl.style.top = (hr.y + hr.h * 0.25) + 'px'; }
             }
             layoutPanels();
             (function loop() { layoutPanels(); _guideLoop = requestAnimationFrame(loop); })();
-            beginGuideInputLock(!!opts.allowTyping);
+            if (!opts.noInputLock && !opts.ackText) beginGuideInputLock(!!opts.allowTyping);
         }
 
         function findDesktopItemByAppId(appId) {
@@ -22121,6 +22288,67 @@ requestAnimationFrame(tick);
             return win.element.querySelector('#app-iframe-edge');
         }
 
+        function ensureEdgeBrowserFront() {
+            var win = state.openWindows['edge'];
+            if (!win) return;
+            if (win.minimized) toggleMinimize('edge');
+            bringToFront('edge');
+        }
+
+        window.flushStarBrowserPendingUrl = function () {
+            var pending = window.__STARBROWSER_PENDING_URL;
+            if (!pending) return;
+            var iframe = getBrowserIframe();
+            if (!iframe || !iframe.contentWindow) return;
+            try {
+                iframe.contentWindow.postMessage({ type: 'starbrowser-navigate', url: pending }, '*');
+            } catch (e) {}
+        };
+
+        window.openStarBrowserUrl = function (url) {
+            var normalized = String(url || '').trim().replace(/^https?:\/\//, '');
+            if (!normalized) return;
+            var edgeApp = apps.find(function (a) { return a.id === 'edge'; });
+            if (!edgeApp) return;
+            window.__STARBROWSER_PENDING_URL = normalized;
+            if (!state.openWindows['edge']) {
+                openApp(edgeApp);
+            } else {
+                ensureEdgeBrowserFront();
+            }
+            window.flushStarBrowserPendingUrl();
+            var tries = 0;
+            var poll = setInterval(function () {
+                if (!window.__STARBROWSER_PENDING_URL) {
+                    clearInterval(poll);
+                    return;
+                }
+                tries++;
+                window.flushStarBrowserPendingUrl();
+                if (tries > 60) {
+                    clearInterval(poll);
+                    window.__STARBROWSER_PENDING_URL = null;
+                }
+            }, 200);
+        };
+
+        window.addEventListener('message', function (ev) {
+            if (!ev.data) return;
+            if (ev.data.type === 'starbrowser-ready') {
+                window.flushStarBrowserPendingUrl();
+                return;
+            }
+            if (ev.data.type === 'starbrowser-navigated') {
+                window.__STARBROWSER_PENDING_URL = null;
+                var navUrl = String(ev.data.url || '');
+                if (navUrl.indexOf('whispercurve.net') !== -1 && window.onWhisperCurvePageEntered) {
+                    setTimeout(function () {
+                        try { window.onWhisperCurvePageEntered(); } catch (err) {}
+                    }, 400);
+                }
+            }
+        });
+
         function guideBrowserMaximize() {
             var win = state.openWindows['edge'];
             if (!win) return;
@@ -22167,22 +22395,36 @@ requestAnimationFrame(tick);
 
         window.onWhisperCurvePageEntered = function () {
             if (window.__WHISPERCURVE_MAX_GUIDE_DONE || window.__DEV_SKIP_GUIDE) return;
+            if (window.__WHISPERCURVE_ENTER_SCHEDULED) return;
+            window.__WHISPERCURVE_ENTER_SCHEDULED = true;
             var win = state.openWindows['edge'];
-            if (!win) return;
+            if (!win) {
+                window.__WHISPERCURVE_ENTER_SCHEDULED = false;
+                return;
+            }
             if (win.maximized) {
                 window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                window.__WHISPERCURVE_ENTER_SCHEDULED = false;
                 return;
             }
             setTimeout(function () {
-                if (window.__WHISPERCURVE_MAX_GUIDE_DONE || window.__DEV_SKIP_GUIDE) return;
+                if (window.__WHISPERCURVE_MAX_GUIDE_DONE || window.__DEV_SKIP_GUIDE) {
+                    window.__WHISPERCURVE_ENTER_SCHEDULED = false;
+                    return;
+                }
                 var w = state.openWindows['edge'];
-                if (!w) return;
+                if (!w) {
+                    window.__WHISPERCURVE_ENTER_SCHEDULED = false;
+                    return;
+                }
                 if (w.maximized) {
                     window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                    window.__WHISPERCURVE_ENTER_SCHEDULED = false;
                     return;
                 }
                 showMonologue(['好像有些看不清楚，还是放大一点吧。'], function () {
                     guideWhisperCurveMaximize();
+                    window.__WHISPERCURVE_ENTER_SCHEDULED = false;
                 }, { instant: true });
             }, 350);
         };
@@ -22567,15 +22809,68 @@ requestAnimationFrame(tick);
                 var text = (el.textContent || el.innerText || '');
                 if (isWordClueNoteComplete(text)) {
                     doc.removeEventListener('input', checkClueLine);
+                    unbindWordTutorialStructureGuard(doc);
                     clearGuideOverlay();
-                    window.__TUTORIAL_STEP = 'done';
-                    window.__TUTORIAL_DESKTOP_DONE = true;
                     window.__LAYER1_CLUE_DONE = true;
+                    showMonologue(['继续收集线索吧，当务之急是把同行者的身份确认了。'], function () {
+                        guideWordSaveButton();
+                    }, { instant: true });
                 }
             }
             doc.addEventListener('input', checkClueLine);
             setTimeout(function () { focusClueBodyLine(doc, paper, bodyLine); }, 80);
         }
+
+        function guideWordSaveButton() {
+            window.__TUTORIAL_STEP = 'guide_word_save';
+            window.__TUTORIAL_DESKTOP_DONE = true;
+
+            function tryShow() {
+                if (window.__TUTORIAL_STEP !== 'guide_word_save') return;
+                var win = state.openWindows['word'];
+                if (!win) {
+                    setTimeout(tryShow, 250);
+                    return;
+                }
+                if (win.minimized) toggleMinimize('word');
+                bringToFront('word');
+                var iframe = win.element.querySelector('#app-iframe-word');
+                var doc = iframe && iframe.contentDocument;
+                var saveBtn = doc && doc.getElementById('word-save-btn');
+                if (!saveBtn) {
+                    setTimeout(tryShow, 200);
+                    return;
+                }
+                showGuideOverlay({
+                    target: saveBtn,
+                    iframe: iframe,
+                    padding: 8,
+                    limitToWindow: true,
+                    hideRing: true,
+                    noTargetFocus: true,
+                    blockTargetClick: true,
+                    hintWrap: true,
+                    hint: '当你收集到足够线索并且进行充分的推理后，可以点击此处保存以进入最终环节',
+                    subHint: '请一定保证准备充分再点击，进入后无法退出',
+                    ackText: '我知道了',
+                    onAck: function () {
+                        window.__WORD_SAVE_GUIDE_ACKED = true;
+                    }
+                });
+            }
+            tryShow();
+        }
+
+        window.onWordSaveForFinalPhase = function () {
+            if (window.__TUTORIAL_STEP !== 'guide_word_save') return;
+            clearGuideOverlay();
+            // 最终环节入口：后续在此接入
+            if (typeof window.enterFinalPhase === 'function') {
+                window.enterFinalPhase();
+            } else {
+                showOsToast('最终环节即将开放，请继续收集线索');
+            }
+        };
 
         window.onTutorialBrowserOpenedForGuide = function () {
             if (window.__TUTORIAL_STEP !== 'guide_browser_loading' && window.__TUTORIAL_STEP !== 'guide_browser_icon') return;
@@ -23204,6 +23499,7 @@ requestAnimationFrame(tick);
 
         // 毕业照 jump scare 音效：在此替换为你自己的音频文件
         window.playGraduationScareSound = function() {};
+        var GRADUATION_SCARE_FLASH_MS = 80;
 
         function openGraduationPhotoViewer(viewerWinId) {
             var canvas = document.getElementById(viewerWinId + '-canvas');
@@ -23214,6 +23510,7 @@ requestAnimationFrame(tick);
             var horrorImg = null;
             var currentImg = null;
             var resizeObserver = null;
+            var closeScarePending = false;
 
             function clearScareTimers() {
                 scareTimers.forEach(function(t) { clearTimeout(t); });
@@ -23254,6 +23551,27 @@ requestAnimationFrame(tick);
                 }
             }
 
+            function onCloseAttempt(proceed) {
+                if (typeof proceed !== 'function') return;
+                if (window.__GRADUATION_SCARE_SHOWN || !horrorImg || closeScarePending) {
+                    proceed();
+                    return;
+                }
+                if (!canvas || !document.getElementById(viewerWinId + '-canvas')) {
+                    proceed();
+                    return;
+                }
+                closeScarePending = true;
+                clearScareTimers();
+                currentImg = horrorImg;
+                renderCurrent();
+                window.playGraduationScareSound();
+                window.__GRADUATION_SCARE_SHOWN = true;
+                scareTimers.push(setTimeout(function() {
+                    proceed();
+                }, GRADUATION_SCARE_FLASH_MS));
+            }
+
             showLoading();
 
             Promise.all([
@@ -23270,21 +23588,6 @@ requestAnimationFrame(tick);
                         hideLoading();
                         renderCurrent();
                         bindResizeObserver();
-
-                        if (window.__GRADUATION_SCARE_SHOWN) return;
-
-                        scareTimers.push(setTimeout(function() {
-                            if (!document.getElementById(viewerWinId + '-canvas')) return;
-                            currentImg = horrorImg;
-                            renderCurrent();
-                            window.playGraduationScareSound();
-                            scareTimers.push(setTimeout(function() {
-                                if (!document.getElementById(viewerWinId + '-canvas')) return;
-                                currentImg = normalImg;
-                                renderCurrent();
-                                window.__GRADUATION_SCARE_SHOWN = true;
-                            }, 200));
-                        }, 2000));
                     });
                 });
             }).catch(function() {
@@ -23302,7 +23605,10 @@ requestAnimationFrame(tick);
                 ctx.fillText('无法加载毕业照', canvas.width / 2, canvas.height / 2);
             });
 
-            return cleanupViewer;
+            return {
+                cleanup: cleanupViewer,
+                onClose: onCloseAttempt
+            };
         }
 
         function openImageViewerWindow(itemOrName) {
@@ -23357,14 +23663,22 @@ requestAnimationFrame(tick);
                 element: winEl, minimized: false, maximized: false, zIndex: state.highestZIndex,
                 prevRect: { left: startX, top: startY, width: winWidth, height: winHeight }
             };
-            bindWindowEvents({ id: viewerWinId, name: itemName, icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' }, winEl);
+            var gradCloseHandler = null;
+            var gradCleanup = null;
+            bindWindowEvents({
+                id: viewerWinId,
+                name: itemName,
+                icon: 'fa-image',
+                gradient: 'linear-gradient(135deg, #31B191, #60a5fa)',
+                beforeClose: isGraduationPhoto ? function(proceed) {
+                    if (typeof gradCleanup === 'function') gradCleanup();
+                    if (typeof gradCloseHandler === 'function') gradCloseHandler(proceed);
+                    else proceed();
+                } : undefined
+            }, winEl);
             addTaskbarIcon({ id: viewerWinId, name: itemName, icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' });
             winEl.addEventListener('mousedown', () => bringToFront(viewerWinId));
 
-            var clearScareTimers = null;
-            winEl.querySelector('.btn-close').addEventListener('click', function() {
-                if (typeof clearScareTimers === 'function') clearScareTimers();
-            }, { once: true });
             winEl.querySelector('.btn-maximize').addEventListener('click', function() {
                 setTimeout(function() {
                     var shell = document.getElementById(viewerWinId + '-shell');
@@ -23379,7 +23693,11 @@ requestAnimationFrame(tick);
                 const canvas = document.getElementById(viewerWinId + '-canvas');
                 if (!canvas) return;
                 if (isGraduationPhoto) {
-                    clearScareTimers = openGraduationPhotoViewer(viewerWinId) || null;
+                    var gradApi = openGraduationPhotoViewer(viewerWinId);
+                    if (gradApi) {
+                        gradCleanup = gradApi.cleanup;
+                        gradCloseHandler = gradApi.onClose;
+                    }
                 } else {
                     renderIdCardOnCanvas(canvas);
                 }
@@ -23956,6 +24274,11 @@ requestAnimationFrame(tick);
                         iframe.addEventListener('load', function onEdgeGuideLoad() {
                             iframe.removeEventListener('load', onEdgeGuideLoad);
                             if (window.onTutorialBrowserOpenedForGuide) window.onTutorialBrowserOpenedForGuide();
+                            if (window.flushStarBrowserPendingUrl) {
+                                [0, 120, 350, 700, 1200].forEach(function (ms) {
+                                    setTimeout(window.flushStarBrowserPendingUrl, ms);
+                                });
+                            }
                         }, { once: true });
                     }
                     else if (app.id === 'paint') iframe.srcdoc = PAINT_HTML;
@@ -24042,6 +24365,13 @@ requestAnimationFrame(tick);
             const btnMax = winEl.querySelector('.btn-maximize');
             const resizers = winEl.querySelectorAll('.resizer');
 
+            function closeWindowNow() {
+                winEl.remove();
+                delete state.openWindows[app.id];
+                var taskIcon = document.getElementById('taskbar-icon-' + app.id);
+                if (taskIcon) taskIcon.remove();
+            }
+
             btnClose.addEventListener('click', (e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -24050,9 +24380,11 @@ requestAnimationFrame(tick);
                     warnWordCloseBlocked();
                     return;
                 }
-                winEl.remove(); delete state.openWindows[app.id];
-                var taskIcon = document.getElementById(`taskbar-icon-${app.id}`);
-                if (taskIcon) taskIcon.remove();
+                if (typeof app.beforeClose === 'function') {
+                    app.beforeClose(closeWindowNow);
+                    return;
+                }
+                closeWindowNow();
             });
             btnMin.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; toggleMinimize(app.id); });
             btnMax.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; toggleMaximize(app.id); });
