@@ -6598,6 +6598,7 @@ requestAnimationFrame(function() {
                 name: '图片',
                 path: ['快速访问', '图片'],
                 items: [
+                    { name: '毕业照.jpg', type: 'image', date: '2025-05-08 18:30', size: '2.8 MB', _graduationPhoto: true },
                     { name: '沈安身份证.jpg', type: 'image', date: '2025-06-15 10:00', size: '2.3 MB', _corrupted: true, _restored: false }
                 ]
             },
@@ -8034,7 +8035,7 @@ requestAnimationFrame(function() {
         function openImageViewer(item) {
             try {
                 if (window.parent && typeof window.parent.openImageViewerWindow === 'function') {
-                    window.parent.openImageViewerWindow(item ? item.name : '图片查看器');
+                    window.parent.openImageViewerWindow(item || { name: '图片查看器' });
                     return;
                 }
             } catch(e) {}
@@ -20531,6 +20532,7 @@ renderContacts();renderFeed();
         window.__STARBROWSER_RECOVERED = { shenan: [], hidden: [] };
         window.__BRIGHTNESS = 80;
         window.__THEME_COLOR = null;
+        window.__GRADUATION_SCARE_SHOWN = false;
 
         // 监听设置界面的亮度和主题色变化
         setInterval(function() {
@@ -22305,10 +22307,143 @@ renderContacts();renderFeed();
 
 
         // ========== 图片查看器独立窗口 ==========
-        function openImageViewerWindow(itemName) {
+        function drawImageOnCanvas(canvas, img, maxW, maxH) {
+            if (!canvas || !img) return;
+            var boundsW = maxW || 528;
+            var boundsH = maxH || 356;
+            var scale = Math.min(boundsW / img.width, boundsH / img.height, 1);
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+
+        function loadImageAsset(src) {
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.onload = function() { resolve(img); };
+                img.onerror = function() { reject(new Error('failed to load ' + src)); };
+                img.src = src;
+            });
+        }
+
+        function renderIdCardOnCanvas(canvas) {
+            if (!canvas) return;
+            const size = 500;
+            canvas.width = size;
+            canvas.height = Math.round(size * 0.63);
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#f5f5f5';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 20px "Microsoft YaHei", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('中华人民共和国居民身份证', size / 2, 40);
+
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(30, 58, size - 60, canvas.height - 82);
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.strokeRect(30, 58, size - 60, canvas.height - 82);
+
+            ctx.textAlign = 'left';
+            const lineHeight = 30;
+            const startY = 88;
+            const labelX = 50;
+            const valueX = 130;
+
+            var fields = [
+                ['姓名', '沈安'],
+                ['性别', '男'],
+                ['民族', '汉'],
+                ['出生', '2007年7月5日'],
+                ['住址', '****************'],
+                ['公民身份号码', '****************']
+            ];
+
+            fields.forEach(function(f, i) {
+                var label = f[0], value = f[1];
+                var y = startY + i * lineHeight;
+                if (label) {
+                    ctx.fillStyle = '#888';
+                    ctx.font = '13px "Microsoft YaHei", sans-serif';
+                    ctx.fillText(label + '：', labelX, y);
+                }
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 14px "Microsoft YaHei", sans-serif';
+                ctx.fillText(value, label ? valueX : labelX, y);
+            });
+
+            ctx.fillStyle = '#e8e8e8';
+            ctx.fillRect(size - 155, 72, 100, 125);
+            ctx.strokeStyle = '#d0d0d0';
+            ctx.strokeRect(size - 155, 72, 100, 125);
+
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#888';
+            ctx.font = '12px "Microsoft YaHei", sans-serif';
+            ctx.fillText('签发机关：****************', 50, canvas.height - 42);
+            ctx.fillText('有效期限：2023.07.05 - 2033.07.05', 50, canvas.height - 24);
+        }
+
+        function openGraduationPhotoViewer(canvas, viewerWinId) {
+            var scareTimers = [];
+            function clearScareTimers() {
+                scareTimers.forEach(function(t) { clearTimeout(t); });
+                scareTimers = [];
+            }
+
+            Promise.all([loadImageAsset('2.png'), loadImageAsset('1.png')]).then(function(imgs) {
+                if (!canvas || !document.getElementById(viewerWinId + '-canvas')) return;
+                var normalImg = imgs[0];
+                var horrorImg = imgs[1];
+                var shell = canvas.closest('.app-skeleton');
+                var maxW = shell ? shell.clientWidth - 32 : 528;
+                var maxH = shell ? shell.clientHeight - 32 : 356;
+
+                drawImageOnCanvas(canvas, normalImg, maxW, maxH);
+
+                if (window.__GRADUATION_SCARE_SHOWN) return;
+
+                scareTimers.push(setTimeout(function() {
+                    if (!document.getElementById(viewerWinId + '-canvas')) return;
+                    drawImageOnCanvas(canvas, horrorImg, maxW, maxH);
+                    scareTimers.push(setTimeout(function() {
+                        if (!document.getElementById(viewerWinId + '-canvas')) return;
+                        drawImageOnCanvas(canvas, normalImg, maxW, maxH);
+                        window.__GRADUATION_SCARE_SHOWN = true;
+                    }, 500));
+                }, 1500));
+            }).catch(function() {
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 120;
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '14px "Microsoft YaHei", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('无法加载毕业照', canvas.width / 2, canvas.height / 2);
+            });
+
+            return clearScareTimers;
+        }
+
+        function openImageViewerWindow(itemOrName) {
+            const item = (itemOrName && typeof itemOrName === 'object') ? itemOrName : { name: itemOrName };
+            const itemName = item.name || '图片查看器';
+            const isGraduationPhoto = !!(item._graduationPhoto || (itemName && itemName.indexOf('毕业照') !== -1));
+
             const winEl = document.createElement('div');
             winEl.className = 'os-window pointer-events-auto active';
-            const winWidth = 560, winHeight = 420;
+            const winWidth = isGraduationPhoto ? 720 : 560;
+            const winHeight = isGraduationPhoto ? 520 : 420;
             const startX = Math.round((window.innerWidth - winWidth) / 2);
             const startY = Math.round((window.innerHeight - winHeight) / 2);
             winEl.style.width = winWidth + 'px';
@@ -22323,7 +22458,7 @@ renderContacts();renderFeed();
                 <div class="title-bar cursor-default">
                     <div class="flex items-center gap-2 pl-3 select-none pointer-events-none">
                         <i class="fas fa-image text-[13px]" style="background: linear-gradient(135deg, #31B191, #60a5fa); -webkit-background-clip: text; color: transparent;"></i>
-                        <span class="text-[12px] text-gray-700 font-medium">${itemName || '图片查看器'}</span>
+                        <span class="text-[12px] text-gray-700 font-medium">${itemName}</span>
                     </div>
                     <div class="flex-1 h-full drag-area"></div>
                     <div class="win-controls">
@@ -22342,79 +22477,23 @@ renderContacts();renderFeed();
                 element: winEl, minimized: false, maximized: false, zIndex: state.highestZIndex,
                 prevRect: { left: startX, top: startY, width: winWidth, height: winHeight }
             };
-            bindWindowEvents({ id: viewerWinId, name: itemName || '图片查看器', icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' }, winEl);
-            addTaskbarIcon({ id: viewerWinId, name: itemName || '图片查看器', icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' });
+            bindWindowEvents({ id: viewerWinId, name: itemName, icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' }, winEl);
+            addTaskbarIcon({ id: viewerWinId, name: itemName, icon: 'fa-image', gradient: 'linear-gradient(135deg, #31B191, #60a5fa)' });
             winEl.addEventListener('mousedown', () => bringToFront(viewerWinId));
 
-            // 绘制身份证
+            var clearScareTimers = null;
+            winEl.querySelector('.btn-close').addEventListener('click', function() {
+                if (typeof clearScareTimers === 'function') clearScareTimers();
+            }, { once: true });
+
             setTimeout(function() {
                 const canvas = document.getElementById(viewerWinId + '-canvas');
                 if (!canvas) return;
-                const size = 500;
-                canvas.width = size;
-                canvas.height = Math.round(size * 0.63);
-                const ctx = canvas.getContext('2d');
-
-                // 背景
-                ctx.fillStyle = '#f5f5f5';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = '#ddd';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-                // 标题
-                ctx.fillStyle = '#333';
-                ctx.font = 'bold 20px "Microsoft YaHei", sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('中华人民共和国居民身份证', size / 2, 40);
-
-                // 信息区域背景
-                ctx.fillStyle = '#fff';
-                ctx.fillRect(30, 58, size - 60, canvas.height - 82);
-                ctx.strokeStyle = '#e0e0e0';
-                ctx.strokeRect(30, 58, size - 60, canvas.height - 82);
-
-                // 信息文字
-                ctx.textAlign = 'left';
-                const lineHeight = 30;
-                const startY = 88;
-                const labelX = 50;
-                const valueX = 130;
-
-                var fields = [
-                    ['姓名', '沈安'],
-                    ['性别', '男'],
-                    ['民族', '汉'],
-                    ['出生', '2007年7月5日'],
-                    ['住址', '****************'],
-                    ['公民身份号码', '****************']
-                ];
-
-                fields.forEach(function(f, i) {
-                    var label = f[0], value = f[1];
-                    var y = startY + i * lineHeight;
-                    if (label) {
-                        ctx.fillStyle = '#888';
-                        ctx.font = '13px "Microsoft YaHei", sans-serif';
-                        ctx.fillText(label + '：', labelX, y);
-                    }
-                    ctx.fillStyle = '#333';
-                    ctx.font = 'bold 14px "Microsoft YaHei", sans-serif';
-                    ctx.fillText(value, label ? valueX : labelX, y);
-                });
-
-                // 无照片区域
-                ctx.fillStyle = '#e8e8e8';
-                ctx.fillRect(size - 155, 72, 100, 125);
-                ctx.strokeStyle = '#d0d0d0';
-                ctx.strokeRect(size - 155, 72, 100, 125);
-
-                // 签发机关和有效期限（打码）
-                ctx.textAlign = 'left';
-                ctx.fillStyle = '#888';
-                ctx.font = '12px "Microsoft YaHei", sans-serif';
-                ctx.fillText('签发机关：****************', 50, canvas.height - 42);
-                ctx.fillText('有效期限：2023.07.05 - 2033.07.05', 50, canvas.height - 24);
+                if (isGraduationPhoto) {
+                    clearScareTimers = openGraduationPhotoViewer(canvas, viewerWinId) || null;
+                } else {
+                    renderIdCardOnCanvas(canvas);
+                }
             }, 50);
         }
 
