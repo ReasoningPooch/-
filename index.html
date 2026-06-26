@@ -1585,7 +1585,7 @@ const SUSPENSE_SEARCH_RESULTS = {
   }],
   '曲线隧道': [{
     title: 'Curve Panic - 经典曲线小游戏',
-    snippet: '操控小球穿越越来越窄的隧道，测试你的定力。第三关据说几乎没人能活着通过……',
+    snippet: '操控小球穿越越来越窄的隧道，测试你的定力。第二关越到后面越窄，据说几乎没人能走到终点……',
     url: 'www.whispercurve.net'
   }]
 };
@@ -20710,12 +20710,14 @@ renderContacts();renderFeed();
 <title>Curve Panic</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;cursor:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;cursor:default}
 #wrap{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
 #hud{padding:10px 16px;background:#f5f5f5;border-bottom:1px solid #ddd;font-size:12px;color:#444;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;cursor:default}
 #hud strong{color:#111;font-size:13px}
+#hudHint{color:#888}
 #stage{flex:1;position:relative;min-height:0;background:#fff}
-canvas{display:block;width:100%;height:100%;touch-action:none}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:default}
+canvas.waiting-ball{cursor:pointer}
 #overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.94);z-index:5;text-align:center;padding:24px;cursor:default}
 #overlay.hidden{display:none}
 #overlay h1{font-size:22px;color:#222;margin-bottom:8px}
@@ -20724,7 +20726,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 #overlay button:hover{background:#444}
 #msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:15px;color:#c00;font-weight:700;pointer-events:none;opacity:0;transition:opacity .15s;z-index:4;text-shadow:0 0 8px #fff}
 #msg.show{opacity:1}
-#scare{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;cursor:default}
+#scare{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;cursor:none;pointer-events:auto}
 #scare.active{display:flex}
 #scare img{width:100%;height:100%;object-fit:cover;animation:scarePop .08s ease-out}
 @keyframes scarePop{from{transform:scale(1.08)}to{transform:scale(1)}}
@@ -20732,13 +20734,13 @@ canvas{display:block;width:100%;height:100%;touch-action:none}
 </head>
 <body>
 <div id="wrap">
-<div id="hud"><strong>Curve Panic</strong><span id="levelLabel">第 1 关 · 教学</span><span>不要碰到黑色边缘</span></div>
+<div id="hud"><strong>Curve Panic</strong><span id="levelLabel">第 1 关 · 教学</span><span id="hudHint">将鼠标移到红球上，点击开始</span></div>
 <div id="stage">
 <canvas id="cv"></canvas>
 <div id="msg"></div>
 <div id="overlay">
 <h1>Curve Panic</h1>
-<p>用鼠标控制红色小球，沿白色隧道前进。<br>碰到黑色边缘会重新开始当前关卡。<br><span style="color:#888;font-size:12px">第一关很简单，后面会越来越窄……</span></p>
+<p>沿白色隧道控制红球前进，不要碰到黑色边缘。<br>每关开始时红球在起点，<strong>用鼠标点击红球</strong>后才会跟随移动。<br><span style="color:#888;font-size:12px">第一关会提示操作；失败后需再次点击红球。</span></p>
 <button type="button" id="startBtn">开始游戏</button>
 </div>
 </div>
@@ -20795,29 +20797,16 @@ var LEVELS = [
     label: '第 1 关 · 教学',
     scare: false,
     waypoints: [
-      {x:0.12,y:0.82,r:0.055},{x:0.12,y:0.55,r:0.055},{x:0.35,y:0.55,r:0.055},
-      {x:0.35,y:0.28,r:0.055},{x:0.72,y:0.28,r:0.055},{x:0.88,y:0.28,r:0.05}
+      {x:0.18,y:0.75,r:0.08},{x:0.18,y:0.48,r:0.08},{x:0.62,y:0.48,r:0.075},{x:0.82,y:0.48,r:0.07}
     ]
   },
   {
-    label: '第 2 关',
-    scare: false,
-    waypoints: [
-      {x:0.1,y:0.88,r:0.038},{x:0.1,y:0.62,r:0.036},{x:0.28,y:0.62,r:0.034},
-      {x:0.28,y:0.42,r:0.032},{x:0.52,y:0.42,r:0.03},{x:0.52,y:0.22,r:0.028},
-      {x:0.74,y:0.22,r:0.026},{x:0.74,y:0.48,r:0.024},{x:0.9,y:0.48,r:0.022},{x:0.9,y:0.18,r:0.02}
-    ]
-  },
-  {
-    label: '第 3 关 · 终点在望',
+    label: '第 2 关 · 终点在望',
     scare: true,
-    scareAt: 0.84,
+    scareAt: 0.82,
     waypoints: [
-      {x:0.08,y:0.9,r:0.028},{x:0.08,y:0.72,r:0.026},{x:0.22,y:0.72,r:0.024},
-      {x:0.22,y:0.56,r:0.022},{x:0.38,y:0.56,r:0.02},{x:0.38,y:0.4,r:0.019},
-      {x:0.54,y:0.4,r:0.018},{x:0.54,y:0.56,r:0.017},{x:0.68,y:0.56,r:0.016},
-      {x:0.68,y:0.4,r:0.015},{x:0.82,y:0.4,r:0.014},{x:0.82,y:0.24,r:0.013},
-      {x:0.92,y:0.24,r:0.012},{x:0.92,y:0.12,r:0.011}
+      {x:0.14,y:0.78,r:0.068},{x:0.14,y:0.58,r:0.064},{x:0.38,y:0.58,r:0.058},
+      {x:0.38,y:0.42,r:0.042},{x:0.62,y:0.42,r:0.028},{x:0.78,y:0.42,r:0.018},{x:0.88,y:0.42,r:0.012}
     ]
   }
 ];
@@ -20828,11 +20817,31 @@ var stage = document.getElementById('stage');
 var overlay = document.getElementById('overlay');
 var msgEl = document.getElementById('msg');
 var levelLabel = document.getElementById('levelLabel');
+var hudHint = document.getElementById('hudHint');
 var scareEl = document.getElementById('scare');
 var scareImg = document.getElementById('scareImg');
 
 var W = 800, H = 600, samples = [], levelIdx = 0, active = false;
-var ball = {x:0,y:0}, mouse = {x:0,y:0, ok:false}, dead = false, scared = false;
+var ball = {x:0,y:0}, mouse = {x:0,y:0}, dead = false, scared = false, ballArmed = false;
+var scareMonoTimer = null;
+
+function showRootMonologue(lines, onClose, opts){
+  try{
+    var root = getRootWin();
+    if(root.showMonologue){
+      root.showMonologue(lines, onClose, opts);
+      return;
+    }
+  }catch(e){}
+  if(onClose) onClose();
+}
+
+function updateCursorState(){
+  var hidePlay = ballArmed && active && !dead && !scared;
+  var waitBall = active && !ballArmed && !dead && !scared;
+  document.body.style.cursor = hidePlay ? 'none' : 'default';
+  cv.style.cursor = hidePlay ? 'none' : (waitBall ? 'pointer' : 'default');
+}
 var faceReady = false;
 
 function resize(){
@@ -20898,8 +20907,29 @@ function drawTunnel(){
   ctx.stroke();
 }
 
+function updateHudHint(){
+  if(!hudHint) return;
+  if(!active || scared){
+    hudHint.textContent = '不要碰到黑色边缘';
+  } else if(!ballArmed){
+    hudHint.textContent = levelIdx === 0 ? '将鼠标移到红球上，点击开始' : '点击红球继续';
+  } else {
+    hudHint.textContent = '不要碰到黑色边缘';
+  }
+  cv.classList.toggle('waiting-ball', active && !ballArmed && !dead && !scared);
+  updateCursorState();
+}
+
 function drawBall(){
-  if(!mouse.ok) return;
+  if(!active || scared) return;
+  if(!ballArmed){
+    var pulse = 0.55 + 0.45 * Math.sin(Date.now() / 220);
+    ctx.strokeStyle = 'rgba(255,60,60,' + pulse + ')';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(ball.x, ball.y, BALL_R + 5 + pulse * 5, 0, Math.PI * 2);
+    ctx.stroke();
+  }
   ctx.fillStyle = '#e00';
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2);
@@ -20907,6 +20937,21 @@ function drawBall(){
   ctx.strokeStyle = '#900';
   ctx.lineWidth = 1;
   ctx.stroke();
+}
+
+function drawClickHint(){
+  if(!active || ballArmed || scared || !samples.length) return;
+  var text = levelIdx === 0 ? '点击红球开始' : '点击红球继续';
+  ctx.font = '13px "Microsoft YaHei","PingFang SC",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  var tx = ball.x;
+  var ty = ball.y - Math.max(28, samples[0].r * 0.85);
+  ctx.strokeStyle = 'rgba(0,0,0,0.75)';
+  ctx.lineWidth = 4;
+  ctx.strokeText(text, tx, ty);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(text, tx, ty);
 }
 
 function flashMsg(t){
@@ -20919,28 +20964,37 @@ function resetBall(){
   if(!samples.length) return;
   ball.x = samples[0].x;
   ball.y = samples[0].y;
-  mouse.ok = false;
+  mouse.x = ball.x;
+  mouse.y = ball.y;
+  ballArmed = false;
+  updateHudHint();
 }
 
 function startLevel(idx){
   levelIdx = idx;
   dead = false;
   scared = false;
+  if(scareMonoTimer){ clearTimeout(scareMonoTimer); scareMonoTimer = null; }
+  scareEl.classList.remove('active');
   levelLabel.textContent = LEVELS[levelIdx].label;
   rebuildSamples();
   resetBall();
   active = true;
+  updateHudHint();
 }
 
 function restartLevel(){
   dead = false;
   resetBall();
-  flashMsg('碰到边缘了！重新开始');
+  updateCursorState();
+  flashMsg('回到起点，点击红球继续');
 }
 
 function nextLevel(){
   if(levelIdx >= LEVELS.length - 1) return;
-  flashMsg('过关！');
+  ballArmed = false;
+  updateCursorState();
+  flashMsg('过关！点击红球开始下一关');
   setTimeout(function(){ startLevel(levelIdx + 1); }, 700);
 }
 
@@ -20959,33 +21013,41 @@ function triggerScare(){
   if(scared) return;
   scared = true;
   active = false;
+  ballArmed = false;
+  updateCursorState();
+  updateHudHint();
   if(!scareImg.src) scareImg.src = assetUrl(FACE_FALLBACK);
   scareEl.classList.add('active');
   window.playWhisperCurveScream();
-  try{
-    if(window.parent && window.parent !== window){
-      window.parent.focus && window.parent.focus();
-    }
-  }catch(e){}
+  if(scareMonoTimer) clearTimeout(scareMonoTimer);
+  scareMonoTimer = setTimeout(function(){
+    scareMonoTimer = null;
+    showRootMonologue(['该死，看来只是一个恶作剧。'], null, { instant: true });
+  }, 2500);
 }
 
 function tick(){
-  if(active && mouse.ok && !dead && !scared){
+  if(active && ballArmed && !dead && !scared){
     ball.x = mouse.x;
     ball.y = mouse.y;
     var c = closest(ball.x, ball.y);
     var lv = LEVELS[levelIdx];
     if(c.dist > c.sample.r - BALL_R - 1){
       dead = true;
+      ballArmed = false;
+      updateCursorState();
       setTimeout(restartLevel, 280);
-    } else if(lv.scare && c.progress >= (lv.scareAt || 0.84)){
+    } else if(lv.scare && c.progress >= (lv.scareAt || 0.82)){
       triggerScare();
     } else if(c.progress >= 0.97 && !lv.scare){
+      ballArmed = false;
+      updateCursorState();
       active = false;
       nextLevel();
     }
   }
   drawTunnel();
+  if(levelIdx === 0) drawClickHint();
   drawBall();
   requestAnimationFrame(tick);
 }
@@ -20996,15 +21058,28 @@ function pointerPos(e){
   return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
 }
 
-cv.addEventListener('mousemove', function(e){
+function tryArmBall(e){
+  if(!active || ballArmed || dead || scared || scareMonoTimer) return;
   var p = pointerPos(e);
-  mouse.x = p.x; mouse.y = p.y;
-  if(!mouse.ok && active && samples.length){
-    var c = closest(p.x, p.y);
-    if(c.dist <= c.sample.r) mouse.ok = true;
+  if(Math.hypot(p.x - ball.x, p.y - ball.y) <= BALL_R + 12){
+    ballArmed = true;
+    mouse.x = p.x;
+    mouse.y = p.y;
+    ball.x = p.x;
+    ball.y = p.y;
+    updateHudHint();
+    updateCursorState();
+    e.preventDefault();
   }
+}
+
+cv.addEventListener('mousedown', tryArmBall);
+cv.addEventListener('mousemove', function(e){
+  if(!ballArmed || scared) return;
+  var p = pointerPos(e);
+  mouse.x = p.x;
+  mouse.y = p.y;
 });
-cv.addEventListener('mouseleave', function(){ mouse.ok = false; });
 
 document.getElementById('startBtn').addEventListener('click', function(){
   overlay.classList.add('hidden');
@@ -21014,6 +21089,7 @@ document.getElementById('startBtn').addEventListener('click', function(){
 window.addEventListener('resize', resize);
 resize();
 preloadFace();
+updateCursorState();
 requestAnimationFrame(tick);
 })();
 <!--__SCRIPT_END__-->
