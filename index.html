@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="//cdn.bootcdn.net">
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
@@ -429,6 +432,33 @@
         }
         .os-toast.show { opacity: 1; transform: translateY(0); }
 
+        /* DEV：开发测试用，上线前删除 */
+        .dev-skip-guide-btn {
+            position: fixed !important;
+            top: 8px !important;
+            right: 8px !important;
+            z-index: 2147483646 !important;
+            padding: 8px 14px !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            font-family: "SF Mono", Menlo, "PingFang SC", sans-serif !important;
+            letter-spacing: 0.06em !important;
+            color: #fff !important;
+            background: #e85d04 !important;
+            border: 2px solid #ffb347 !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.65) !important;
+            opacity: 1 !important;
+            display: block !important;
+            visibility: visible !important;
+        }
+        .dev-skip-guide-btn:hover {
+            background: #ff7a1a !important;
+            border-color: #ffd699 !important;
+        }
+
         .desktop-item:hover {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -559,7 +589,58 @@
         .resizer-sw { bottom: -2px; left: -2px; width: 8px; height: 8px; cursor: sw-resize; z-index: 11; }
 
         /* 软件内部骨架 (提升真实感) */
-        .app-skeleton { display: flex; flex: 1; overflow: hidden; background: #fff; border-top: 1px solid #e0e0e0; }
+        .app-skeleton { display: flex; flex: 1; overflow: hidden; background: #fff; border-top: 1px solid #e0e0e0; min-height: 0; }
+        .grad-photo-shell {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            overflow: hidden;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .grad-photo-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
+            z-index: 2;
+        }
+        .grad-photo-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: rgba(255, 255, 255, 0.78);
+            border-radius: 50%;
+            animation: gradPhotoSpin 0.85s linear infinite;
+        }
+        .grad-photo-loading-text {
+            margin-top: 14px;
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 12px;
+            font-family: "Segoe UI", "PingFang SC", sans-serif;
+            letter-spacing: 0.08em;
+        }
+        .grad-photo-canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes gradPhotoSpin {
+            to { transform: rotate(360deg); }
+        }
         .app-sidebar { width: 200px; background: #f8f9fa; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 10px; }
         .app-main { flex: 1; background: #ffffff; display: flex; flex-direction: column; }
         .app-toolbar { height: 48px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; padding: 0 15px; gap: 15px; }
@@ -615,6 +696,32 @@
     </style>
 </head>
 <body>
+
+    <!-- DEV：开发测试用，上线前删除 -->
+    <button type="button" id="dev-skip-guide-btn" class="dev-skip-guide-btn" title="开发测试：跳过全部新手引导">DEV 跳过引导</button>
+    <script>
+    (function () {
+        function pinDevSkipBtn() {
+            var btn = document.getElementById('dev-skip-guide-btn');
+            if (!btn) {
+                btn = document.createElement('button');
+                btn.id = 'dev-skip-guide-btn';
+                btn.type = 'button';
+                btn.className = 'dev-skip-guide-btn';
+                btn.title = '开发测试：跳过全部新手引导';
+                btn.textContent = 'DEV 跳过引导';
+                document.body.appendChild(btn);
+            } else {
+                document.body.appendChild(btn);
+            }
+            btn.onclick = function () {
+                if (window.skipAllGuidesForDev) window.skipAllGuidesForDev();
+            };
+        }
+        pinDevSkipBtn();
+        document.addEventListener('DOMContentLoaded', pinDevSkipBtn);
+    })();
+    </script>
 
     <!-- 1. 开机画面 -->
     <div id="boot-screen" class="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center transition-opacity duration-700">
@@ -6344,6 +6451,58 @@ requestAnimationFrame(function() {
         }
         .puz-loading { display: none !important; }
 
+        .grad-photo-shell {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            min-height: 0;
+            overflow: hidden;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .grad-photo-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
+            z-index: 2;
+        }
+        .grad-photo-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: rgba(255, 255, 255, 0.78);
+            border-radius: 50%;
+            animation: gradPhotoSpin 0.85s linear infinite;
+        }
+        .grad-photo-loading-text {
+            margin-top: 14px;
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 12px;
+            font-family: "Segoe UI", "PingFang SC", sans-serif;
+            letter-spacing: 0.08em;
+        }
+        .grad-photo-canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        @keyframes gradPhotoSpin {
+            to { transform: rotate(360deg); }
+        }
+
         /* 图片查看器 */
         .img-viewer-overlay {
             position: fixed;
@@ -6891,6 +7050,15 @@ requestAnimationFrame(function() {
             }
         };
 
+        function ensureGraduationPhotoItem() {
+            if (!vfs.pictures || !vfs.pictures.items) return;
+            var items = vfs.pictures.items;
+            if (items.some(function(it) { return it.name && it.name.indexOf('毕业照') !== -1; })) return;
+            items.unshift({ name: '毕业照.jpg', type: 'image', date: '2025-05-08 18:30', size: '2.8 MB', _graduationPhoto: true });
+        }
+        window.ensureGraduationPhotoItem = ensureGraduationPhotoItem;
+        ensureGraduationPhotoItem();
+
         // 统一的高质量 Fluent SVG 图标包
         const iconLibrary = {
             folder: `
@@ -6982,6 +7150,7 @@ requestAnimationFrame(function() {
 
         // 初始化
         window.onload = function() {
+            ensureGraduationPhotoItem();
             // 检查是否已还原
             try {
                 if (window.parent && window.parent.__PHOTOS_RESTORED) {
@@ -20910,6 +21079,7 @@ renderContacts();renderFeed();
         };
 
         window.showMonologue = function (lines, onClose, opts) {
+            if (window.__DEV_SKIP_GUIDE) return;
             opts = opts || {};
             window.runMonologueDelay(function () {
                 window._showMonologueImpl(lines, onClose);
@@ -21158,6 +21328,7 @@ renderContacts();renderFeed();
         }
 
         function showGuideOverlay(opts) {
+            if (window.__DEV_SKIP_GUIDE) return;
             clearGuideOverlay();
             clearInputBlocker('tutorial-browser-load-blocker');
             var target = opts.target;
@@ -21885,13 +22056,71 @@ renderContacts();renderFeed();
         };
 
         function startDesktopTutorial() {
-            if (window.__TUTORIAL_DESKTOP_DONE) return;
+            if (window.__TUTORIAL_DESKTOP_DONE || window.__DEV_SKIP_GUIDE) return;
             window.__TUTORIAL_STEP = 'desktop_mono';
             showMonologue(['这桌面还挺干净，找起东西应该会容易一点。', '好记性不如烂笔头，就地取材，找一个方便我记录已经收集起来的线索的地方吧'], function () {
                 window.__TUTORIAL_STEP = 'guide_word_icon';
                 guideToWordIcon();
             });
         }
+
+        window.skipAllGuidesForDev = function () {
+            window.__DEV_SKIP_GUIDE = true;
+            window.__TUTORIAL_STEP = 'done';
+            window.__TUTORIAL_DESKTOP_DONE = true;
+            window.__TUTORIAL_NEWS_MONO_SHOWN = true;
+            window.__TUTORIAL_NEWS_READ_STARTED = true;
+            window.__LAYER1_CLUE_DONE = true;
+            window.__WORD_CLOSE_PROTECTED = false;
+            window.__TUTORIAL_WAIT_MINIMIZE = false;
+            window.__SPARK_INTRO_STARTED = true;
+            window.__SPARK_FIRST_WIN = true;
+            window.__CHAT_MONOLOGUE_SHOWN = true;
+
+            if (window._monoDelayTimer) {
+                clearTimeout(window._monoDelayTimer);
+                window._monoDelayTimer = null;
+            }
+
+            clearGuideOverlay();
+            endTutorialBrowserLoadLock();
+
+            ['monologue-box', 'chat-monologue-box'].forEach(function (id) {
+                var box = document.getElementById(id);
+                if (box) {
+                    if (box._monoSpaceCleanup) box._monoSpaceCleanup();
+                    box.remove();
+                }
+            });
+            clearInputBlocker('mono-pre-delay-blocker');
+            clearInputBlocker('os-input-blocker');
+            if (window.endMonologueInputLock) window.endMonologueInputLock(document);
+
+            var boot = document.getElementById('boot-screen');
+            if (boot) boot.remove();
+
+            [document].concat(Array.prototype.slice.call(document.querySelectorAll('iframe'))).forEach(function (frame) {
+                var doc;
+                try { doc = frame.contentDocument; } catch (e) { return; }
+                if (!doc) return;
+                var overlay = doc.getElementById('hack-loading-overlay');
+                if (overlay) {
+                    if (overlay._hkGlyphTimer) clearInterval(overlay._hkGlyphTimer);
+                    overlay.remove();
+                }
+            });
+
+            document.querySelectorAll('.tutorial-focus').forEach(function (el) {
+                el.classList.remove('tutorial-focus');
+                el.style.zIndex = '';
+                el.style.position = '';
+            });
+            document.querySelectorAll('.tutorial-focus-win').forEach(function (el) {
+                el.classList.remove('tutorial-focus-win');
+            });
+
+            if (window.showOsToast) window.showOsToast('开发模式：已跳过全部引导');
+        };
 
         window.onSparkUiAppeared = function (source, el, iframeEl) {
             if (window.__SPARK_INTRO_STARTED) return;
@@ -22150,6 +22379,11 @@ renderContacts();renderFeed();
         // --- 2. 初始化核心系统 ---
         // 直接执行（脚本在 body 末尾，DOM 已就绪）
         (function initSystem() {
+            (function pinDevSkipBtnLate() {
+                var btn = document.getElementById('dev-skip-guide-btn');
+                if (btn) document.body.appendChild(btn);
+            })();
+
             setTimeout(() => {
                 const bootScreen = document.getElementById('boot-screen');
                 bootScreen.style.opacity = '0';
@@ -22159,6 +22393,8 @@ renderContacts();renderFeed();
             setTimeout(function () {
                 if (!window.__TUTORIAL_DESKTOP_DONE) startDesktopTutorial();
             }, 3200);
+
+            setTimeout(preloadGraduationPhotoAssets, 4500);
 
             // 暴露图片文件夹items给iframe
             window.vfs_pictures_items = null;
@@ -22309,23 +22545,66 @@ renderContacts();renderFeed();
         // ========== 图片查看器独立窗口 ==========
         function drawImageOnCanvas(canvas, img, maxW, maxH) {
             if (!canvas || !img) return;
-            var boundsW = maxW || 528;
-            var boundsH = maxH || 356;
-            var scale = Math.min(boundsW / img.width, boundsH / img.height, 1);
-            canvas.width = Math.max(1, Math.round(img.width * scale));
-            canvas.height = Math.max(1, Math.round(img.height * scale));
+            var boundsW = Math.max(1, maxW || img.width);
+            var boundsH = Math.max(1, maxH || img.height);
+            var scale = Math.min(boundsW / img.width, boundsH / img.height);
+            var cssW = Math.max(1, Math.round(img.width * scale));
+            var cssH = Math.max(1, Math.round(img.height * scale));
+            var dpr = window.devicePixelRatio || 1;
+            canvas.width = Math.max(1, Math.round(cssW * dpr));
+            canvas.height = Math.max(1, Math.round(cssH * dpr));
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.style.maxWidth = '100%';
+            canvas.style.maxHeight = '100%';
             var ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, cssW, cssH);
+            ctx.drawImage(img, 0, 0, cssW, cssH);
+        }
+
+        function getGradPhotoShellBounds(shell) {
+            if (!shell) return { w: 528, h: 356 };
+            var rect = shell.getBoundingClientRect();
+            return {
+                w: Math.max(80, Math.floor(rect.width - 32)),
+                h: Math.max(80, Math.floor(rect.height - 32))
+            };
         }
 
         function loadImageAsset(src) {
             return new Promise(function(resolve, reject) {
                 var img = new Image();
-                img.onload = function() { resolve(img); };
+                img.onload = function() {
+                    if (img.decode) {
+                        img.decode().then(function() { resolve(img); }).catch(function() { resolve(img); });
+                    } else {
+                        resolve(img);
+                    }
+                };
                 img.onerror = function() { reject(new Error('failed to load ' + src)); };
                 img.src = src;
             });
+        }
+
+        function loadImageAssetCached(src) {
+            window.__graduationPhotoCache = window.__graduationPhotoCache || {};
+            if (window.__graduationPhotoCache[src]) {
+                return Promise.resolve(window.__graduationPhotoCache[src]);
+            }
+            return loadImageAsset(src).then(function(img) {
+                window.__graduationPhotoCache[src] = img;
+                return img;
+            });
+        }
+
+        function preloadGraduationPhotoAssets() {
+            if (window.__graduationAssetsPreloaded) return;
+            window.__graduationAssetsPreloaded = true;
+            Promise.all([
+                loadImageAssetCached('2.png'),
+                loadImageAssetCached('1.png')
+            ]).catch(function() {});
         }
 
         function renderIdCardOnCanvas(canvas) {
@@ -22391,40 +22670,99 @@ renderContacts();renderFeed();
             ctx.fillText('有效期限：2023.07.05 - 2033.07.05', 50, canvas.height - 24);
         }
 
-        function openGraduationPhotoViewer(canvas, viewerWinId) {
+        // 毕业照 jump scare 音效：在此替换为你自己的音频文件
+        window.playGraduationScareSound = function() {};
+
+        function openGraduationPhotoViewer(viewerWinId) {
+            var canvas = document.getElementById(viewerWinId + '-canvas');
+            var loadingEl = document.getElementById(viewerWinId + '-loading');
+            var shell = document.getElementById(viewerWinId + '-shell');
             var scareTimers = [];
+            var normalImg = null;
+            var horrorImg = null;
+            var currentImg = null;
+            var resizeObserver = null;
+
             function clearScareTimers() {
                 scareTimers.forEach(function(t) { clearTimeout(t); });
                 scareTimers = [];
             }
 
-            Promise.all([loadImageAsset('2.png'), loadImageAsset('1.png')]).then(function(imgs) {
+            function showLoading() {
+                if (loadingEl) loadingEl.style.display = 'flex';
+                if (canvas) canvas.style.display = 'none';
+            }
+
+            function hideLoading() {
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (canvas) canvas.style.display = 'block';
+            }
+
+            function renderCurrent() {
+                if (!canvas || !currentImg) return;
+                canvas._gradCurrentImg = currentImg;
+                var bounds = getGradPhotoShellBounds(shell || canvas.closest('.grad-photo-shell'));
+                drawImageOnCanvas(canvas, currentImg, bounds.w, bounds.h);
+            }
+
+            function bindResizeObserver() {
+                if (!shell || resizeObserver) return;
+                if (typeof ResizeObserver === 'undefined') return;
+                resizeObserver = new ResizeObserver(function() {
+                    renderCurrent();
+                });
+                resizeObserver.observe(shell);
+            }
+
+            function cleanupViewer() {
+                clearScareTimers();
+                if (resizeObserver) {
+                    resizeObserver.disconnect();
+                    resizeObserver = null;
+                }
+            }
+
+            showLoading();
+
+            Promise.all([
+                loadImageAssetCached('2.png'),
+                loadImageAssetCached('1.png')
+            ]).then(function(results) {
                 if (!canvas || !document.getElementById(viewerWinId + '-canvas')) return;
-                var normalImg = imgs[0];
-                var horrorImg = imgs[1];
-                var shell = canvas.closest('.app-skeleton');
-                var maxW = shell ? shell.clientWidth - 32 : 528;
-                var maxH = shell ? shell.clientHeight - 32 : 356;
+                normalImg = results[0];
+                horrorImg = results[1];
+                currentImg = normalImg;
 
-                drawImageOnCanvas(canvas, normalImg, maxW, maxH);
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        hideLoading();
+                        renderCurrent();
+                        bindResizeObserver();
 
-                if (window.__GRADUATION_SCARE_SHOWN) return;
+                        if (window.__GRADUATION_SCARE_SHOWN) return;
 
-                scareTimers.push(setTimeout(function() {
-                    if (!document.getElementById(viewerWinId + '-canvas')) return;
-                    drawImageOnCanvas(canvas, horrorImg, maxW, maxH);
-                    scareTimers.push(setTimeout(function() {
-                        if (!document.getElementById(viewerWinId + '-canvas')) return;
-                        drawImageOnCanvas(canvas, normalImg, maxW, maxH);
-                        window.__GRADUATION_SCARE_SHOWN = true;
-                    }, 500));
-                }, 1500));
+                        scareTimers.push(setTimeout(function() {
+                            if (!document.getElementById(viewerWinId + '-canvas')) return;
+                            currentImg = horrorImg;
+                            renderCurrent();
+                            window.playGraduationScareSound();
+                            scareTimers.push(setTimeout(function() {
+                                if (!document.getElementById(viewerWinId + '-canvas')) return;
+                                currentImg = normalImg;
+                                renderCurrent();
+                                window.__GRADUATION_SCARE_SHOWN = true;
+                            }, 200));
+                        }, 2000));
+                    });
+                });
             }).catch(function() {
                 if (!canvas) return;
+                hideLoading();
+                canvas.style.display = 'block';
                 var ctx = canvas.getContext('2d');
                 canvas.width = 400;
                 canvas.height = 120;
-                ctx.fillStyle = '#1a1a2e';
+                ctx.fillStyle = '#0a0a0a';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = '#94a3b8';
                 ctx.font = '14px "Microsoft YaHei", sans-serif';
@@ -22432,7 +22770,7 @@ renderContacts();renderFeed();
                 ctx.fillText('无法加载毕业照', canvas.width / 2, canvas.height / 2);
             });
 
-            return clearScareTimers;
+            return cleanupViewer;
         }
 
         function openImageViewerWindow(itemOrName) {
@@ -22467,9 +22805,19 @@ renderContacts();renderFeed();
                         <button class="win-btn close btn-close"><i class="fas fa-times text-[13px]"></i></button>
                     </div>
                 </div>
+                ${isGraduationPhoto ? `
+                <div class="app-skeleton grad-photo-shell" id="${viewerWinId}-shell">
+                    <div class="grad-photo-loading" id="${viewerWinId}-loading">
+                        <div class="grad-photo-spinner"></div>
+                        <div class="grad-photo-loading-text">正在加载图片…</div>
+                    </div>
+                    <canvas id="${viewerWinId}-canvas" class="grad-photo-canvas" style="display:none;"></canvas>
+                </div>
+                ` : `
                 <div class="app-skeleton" style="overflow:hidden; background:#1a1a2e; display:flex; align-items:center; justify-content:center; padding:16px;">
                     <canvas id="${viewerWinId}-canvas" style="max-width:100%; max-height:100%; border-radius:4px; box-shadow:0 2px 12px rgba(0,0,0,0.3);"></canvas>
                 </div>
+                `}
             `;
 
             document.getElementById('windows-container').appendChild(winEl);
@@ -22485,12 +22833,21 @@ renderContacts();renderFeed();
             winEl.querySelector('.btn-close').addEventListener('click', function() {
                 if (typeof clearScareTimers === 'function') clearScareTimers();
             }, { once: true });
+            winEl.querySelector('.btn-maximize').addEventListener('click', function() {
+                setTimeout(function() {
+                    var shell = document.getElementById(viewerWinId + '-shell');
+                    var c = document.getElementById(viewerWinId + '-canvas');
+                    if (!shell || !c || !c._gradCurrentImg) return;
+                    var bounds = getGradPhotoShellBounds(shell);
+                    drawImageOnCanvas(c, c._gradCurrentImg, bounds.w, bounds.h);
+                }, 50);
+            });
 
             setTimeout(function() {
                 const canvas = document.getElementById(viewerWinId + '-canvas');
                 if (!canvas) return;
                 if (isGraduationPhoto) {
-                    clearScareTimers = openGraduationPhotoViewer(canvas, viewerWinId) || null;
+                    clearScareTimers = openGraduationPhotoViewer(viewerWinId) || null;
                 } else {
                     renderIdCardOnCanvas(canvas);
                 }
@@ -22844,6 +23201,28 @@ renderContacts();renderFeed();
             setTimeout(finish, app.id === 'edge' ? 20000 : 10000);
         }
 
+        function ensureExplorerGraduationPhotoHTML(html) {
+            if (!html || html.indexOf('毕业照.jpg') !== -1) return html;
+            return html.replace(
+                "{ name: '沈安身份证.jpg', type: 'image', date: '2025-06-15 10:00', size: '2.3 MB', _corrupted: true, _restored: false }",
+                "{ name: '毕业照.jpg', type: 'image', date: '2025-05-08 18:30', size: '2.8 MB', _graduationPhoto: true },\n                    { name: '沈安身份证.jpg', type: 'image', date: '2025-06-15 10:00', size: '2.3 MB', _corrupted: true, _restored: false }"
+            );
+        }
+
+        function bindExplorerGraduationPhotoFix(iframe) {
+            if (!iframe) return;
+            iframe.addEventListener('load', function onExplorerGraduationFix() {
+                iframe.removeEventListener('load', onExplorerGraduationFix);
+                try {
+                    var win = iframe.contentWindow;
+                    if (win && typeof win.ensureGraduationPhotoItem === 'function') {
+                        win.ensureGraduationPhotoItem();
+                        if (typeof win.renderExplorer === 'function') win.renderExplorer();
+                    }
+                } catch (e) {}
+            }, { once: true });
+        }
+
         function openApp(app) {
             if (isGuideActive()) return;
             if (isTutorialBlockingApp(app.id)) return;
@@ -23063,7 +23442,7 @@ renderContacts();renderFeed();
                     }
                     else if (app.id === 'explorer' || app.id === 'trash' || app.id === 'photos') {
                         var _startPath = app.id === 'trash' ? 'recyclebin' : (app.id === 'photos' ? 'pictures' : 'documents');
-                        var _modifiedHTML = EXPLORER_HTML.replace(
+                        var _modifiedHTML = ensureExplorerGraduationPhotoHTML(EXPLORER_HTML).replace(
                             "let currentPathKey = 'pictures';",
                             "let currentPathKey = '" + _startPath + "';"
                         );
@@ -23071,6 +23450,7 @@ renderContacts();renderFeed();
                             "let historyStack = ['pictures'];",
                             "let historyStack = ['" + _startPath + "'];"
                         );
+                        bindExplorerGraduationPhotoFix(iframe);
                         iframe.srcdoc = _modifiedHTML;
                     }
                     else if (app.id === 'settings') iframe.srcdoc = SETTINGS_HTML;
