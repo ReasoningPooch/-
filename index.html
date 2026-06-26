@@ -1582,6 +1582,11 @@ const SUSPENSE_SEARCH_RESULTS = {
     title: '星辰秘密官网：保护你的隐私',
     snippet: '星辰秘密——一款专注于隐私保护的加密通信平台，端到端加密，零数据留存，让你的每一句话都安全无忧。',
     url: 'www.starsecret.cc'
+  }],
+  '曲线隧道': [{
+    title: 'Curve Panic - 经典曲线小游戏',
+    snippet: '操控小球穿越越来越窄的隧道，测试你的定力。第三关据说几乎没人能活着通过……',
+    url: 'www.whispercurve.net'
   }]
 };
 const {
@@ -2256,6 +2261,8 @@ const XingSouResults = ({
     }];
   } else if (query.includes('starsecret') || query.includes('星辰秘密')) {
     results = SUSPENSE_SEARCH_RESULTS['星辰秘密'] || [];
+  } else if (query.includes('whispercurve') || query.includes('曲线隧道') || query.includes('curve panic') || query.includes('曲线恐慌')) {
+    results = SUSPENSE_SEARCH_RESULTS['曲线隧道'] || [];
   } else if (query === '黑石沟未来一周精准天气预报') {
     results = [{
       title: '黑石沟气象站专报：2025年7月初天气趋势 — 7月5日午后短时暴雨伴强雷电',
@@ -2648,6 +2655,32 @@ const StarSecretPage = () => {
       height: '100%',
       border: 'none',
       minHeight: '600px'
+    }
+  }));
+};
+
+// 7.6. 经典曲线隧道跳脸小游戏
+const WhisperCurvePage = () => {
+  const iframeRef = React.useRef(null);
+  React.useEffect(() => {
+    if (iframeRef.current) {
+      try {
+        var html = null;
+        if (window.parent && window.parent.WHISPERCURVE_HTML) html = window.parent.WHISPERCURVE_HTML;
+        else if (window.WHISPERCURVE_HTML) html = window.WHISPERCURVE_HTML;
+        if (html) iframeRef.current.srcdoc = html;
+      } catch (e) {}
+    }
+  }, []);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bg-white min-h-full webpage-content"
+  }, /*#__PURE__*/React.createElement("iframe", {
+    ref: iframeRef,
+    style: {
+      width: '100%',
+      height: '100%',
+      border: 'none',
+      minHeight: '620px'
     }
   }));
 };
@@ -3249,6 +3282,7 @@ const BrowserContent = ({
   if (plotSlug) return /*#__PURE__*/React.createElement(PlotArticlePage, { slug: plotSlug });
   if (rawUrl.includes('www.xingsou.site/weather/heishigou')) return /*#__PURE__*/React.createElement(WeatherPage, null);
   if (rawUrl.includes('www.starsecret.cc')) return /*#__PURE__*/React.createElement(StarSecretPage, null);
+  if (rawUrl.includes('www.whispercurve.net')) return /*#__PURE__*/React.createElement(WhisperCurvePage, null);
 
   // No endless loading, fallback directly to pristine web connection error page
   return /*#__PURE__*/React.createElement(ConnectionErrorPage, {
@@ -3347,6 +3381,8 @@ const StarBrowser = () => {
     if (formattedUrl.includes('www.xingsou.site/weather/heishigou')) return '黑石沟（雾岭县）未来天气';
     const plotTitleSlug = resolvePlotArticleSlug(formattedUrl);
     if (plotTitleSlug && PLOT_ARTICLE_DATA[plotTitleSlug]) return PLOT_ARTICLE_DATA[plotTitleSlug].title;
+    if (formattedUrl.includes('www.starsecret.cc')) return '星辰秘密 - 保护你的隐私';
+    if (formattedUrl.includes('www.whispercurve.net')) return 'Curve Panic - 曲线隧道';
     if (formattedUrl.includes('heishigou')) return '黑石沟七月上旬实时天气汇总';
     if (formattedUrl.includes('history')) return '浏览历史记录';
     if (formattedUrl.includes('downloads')) return '下载管理器';
@@ -3358,8 +3394,9 @@ const StarBrowser = () => {
     if (!newUrl) return;
     let formattedUrl = newUrl.trim().replace(/^https?:\/\//, '');
 
-    // 星辰秘密链接始终在新标签页打开
+    // 星辰秘密 / 曲线隧道 链接始终在新标签页打开
     if (formattedUrl.includes('www.starsecret.cc')) openInNewTab = true;
+    if (formattedUrl.includes('www.whispercurve.net')) openInNewTab = true;
 
     // Fallback to XingSou Search if it looks like queries instead of domain
     if (!formattedUrl.includes('.') && !formattedUrl.startsWith('browser://') && !formattedUrl.startsWith('chrome://')) {
@@ -20665,6 +20702,323 @@ renderContacts();renderFeed();
 </body>
 </html>
 </script>
+    <script type="text/plain" id="embedded-whispercurve-html"><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curve Panic</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#fff;font-family:"Microsoft YaHei","PingFang SC",sans-serif;cursor:none}
+#wrap{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
+#hud{padding:10px 16px;background:#f5f5f5;border-bottom:1px solid #ddd;font-size:12px;color:#444;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;cursor:default}
+#hud strong{color:#111;font-size:13px}
+#stage{flex:1;position:relative;min-height:0;background:#fff}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.94);z-index:5;text-align:center;padding:24px;cursor:default}
+#overlay.hidden{display:none}
+#overlay h1{font-size:22px;color:#222;margin-bottom:8px}
+#overlay p{font-size:13px;color:#666;line-height:1.7;max-width:420px;margin-bottom:18px}
+#overlay button{padding:10px 28px;border:none;border-radius:4px;background:#222;color:#fff;font-size:14px;cursor:pointer}
+#overlay button:hover{background:#444}
+#msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:15px;color:#c00;font-weight:700;pointer-events:none;opacity:0;transition:opacity .15s;z-index:4;text-shadow:0 0 8px #fff}
+#msg.show{opacity:1}
+#scare{position:fixed;inset:0;z-index:99999;background:#000;display:none;align-items:center;justify-content:center;overflow:hidden;cursor:default}
+#scare.active{display:flex}
+#scare img{width:100%;height:100%;object-fit:cover;animation:scarePop .08s ease-out}
+@keyframes scarePop{from{transform:scale(1.08)}to{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div id="wrap">
+<div id="hud"><strong>Curve Panic</strong><span id="levelLabel">第 1 关 · 教学</span><span>不要碰到黑色边缘</span></div>
+<div id="stage">
+<canvas id="cv"></canvas>
+<div id="msg"></div>
+<div id="overlay">
+<h1>Curve Panic</h1>
+<p>用鼠标控制红色小球，沿白色隧道前进。<br>碰到黑色边缘会重新开始当前关卡。<br><span style="color:#888;font-size:12px">第一关很简单，后面会越来越窄……</span></p>
+<button type="button" id="startBtn">开始游戏</button>
+</div>
+</div>
+</div>
+<div id="scare"><img id="scareImg" alt=""></div>
+<script>
+(function(){
+var BALL_R = 5;
+var FACE_PRIMARY = '微信图片_20260627001755_25_11小.jpeg';
+var FACE_FALLBACK = '1.png';
+var SCREAM_FILE = null;
+
+function getRootWin(){
+  try{
+    var w = window;
+    for(var i = 0; i < 5; i++){
+      if(!w.parent || w.parent === w) break;
+      w = w.parent;
+    }
+    return w;
+  }catch(e){}
+  return window;
+}
+
+function assetUrl(name){
+  try{
+    var root = getRootWin();
+    if(root.WHISPERCURVE_FACE_PRIMARY && name === FACE_PRIMARY){
+      name = root.WHISPERCURVE_FACE_PRIMARY;
+    }
+    if(root.WHISPERCURVE_SCREAM){
+      SCREAM_FILE = root.WHISPERCURVE_SCREAM;
+    }
+    var base = root.location.href.replace(/[^/]+$/, '');
+    return base + encodeURIComponent(name).replace(/%2F/g, '/');
+  }catch(e){}
+  return name;
+}
+
+window.playWhisperCurveScream = function(){
+  try{
+    var root = getRootWin();
+    if(root.playWhisperCurveScream && root !== window){
+      root.playWhisperCurveScream();
+      return;
+    }
+  }catch(e){}
+  if(!SCREAM_FILE) return;
+  try{ new Audio(assetUrl(SCREAM_FILE)).play(); }catch(e){}
+};
+
+var LEVELS = [
+  {
+    label: '第 1 关 · 教学',
+    scare: false,
+    waypoints: [
+      {x:0.12,y:0.82,r:0.055},{x:0.12,y:0.55,r:0.055},{x:0.35,y:0.55,r:0.055},
+      {x:0.35,y:0.28,r:0.055},{x:0.72,y:0.28,r:0.055},{x:0.88,y:0.28,r:0.05}
+    ]
+  },
+  {
+    label: '第 2 关',
+    scare: false,
+    waypoints: [
+      {x:0.1,y:0.88,r:0.038},{x:0.1,y:0.62,r:0.036},{x:0.28,y:0.62,r:0.034},
+      {x:0.28,y:0.42,r:0.032},{x:0.52,y:0.42,r:0.03},{x:0.52,y:0.22,r:0.028},
+      {x:0.74,y:0.22,r:0.026},{x:0.74,y:0.48,r:0.024},{x:0.9,y:0.48,r:0.022},{x:0.9,y:0.18,r:0.02}
+    ]
+  },
+  {
+    label: '第 3 关 · 终点在望',
+    scare: true,
+    scareAt: 0.84,
+    waypoints: [
+      {x:0.08,y:0.9,r:0.028},{x:0.08,y:0.72,r:0.026},{x:0.22,y:0.72,r:0.024},
+      {x:0.22,y:0.56,r:0.022},{x:0.38,y:0.56,r:0.02},{x:0.38,y:0.4,r:0.019},
+      {x:0.54,y:0.4,r:0.018},{x:0.54,y:0.56,r:0.017},{x:0.68,y:0.56,r:0.016},
+      {x:0.68,y:0.4,r:0.015},{x:0.82,y:0.4,r:0.014},{x:0.82,y:0.24,r:0.013},
+      {x:0.92,y:0.24,r:0.012},{x:0.92,y:0.12,r:0.011}
+    ]
+  }
+];
+
+var cv = document.getElementById('cv');
+var ctx = cv.getContext('2d');
+var stage = document.getElementById('stage');
+var overlay = document.getElementById('overlay');
+var msgEl = document.getElementById('msg');
+var levelLabel = document.getElementById('levelLabel');
+var scareEl = document.getElementById('scare');
+var scareImg = document.getElementById('scareImg');
+
+var W = 800, H = 600, samples = [], levelIdx = 0, active = false;
+var ball = {x:0,y:0}, mouse = {x:0,y:0, ok:false}, dead = false, scared = false;
+var faceReady = false;
+
+function resize(){
+  var r = stage.getBoundingClientRect();
+  W = Math.max(320, Math.floor(r.width));
+  H = Math.max(240, Math.floor(r.height));
+  cv.width = W;
+  cv.height = H;
+  rebuildSamples();
+}
+
+function rebuildSamples(){
+  var lv = LEVELS[levelIdx];
+  samples = [];
+  var minDim = Math.min(W, H);
+  for(var i = 0; i < lv.waypoints.length - 1; i++){
+    var a = lv.waypoints[i], b = lv.waypoints[i+1];
+    var dx = (b.x - a.x) * W, dy = (b.y - a.y) * H;
+    var steps = Math.max(10, Math.ceil(Math.hypot(dx, dy) / 5));
+    for(var s = 0; s <= steps; s++){
+      var t = s / steps;
+      samples.push({
+        x: (a.x + (b.x - a.x) * t) * W,
+        y: (a.y + (b.y - a.y) * t) * H,
+        r: (a.r + (b.r - a.r) * t) * minDim
+      });
+    }
+  }
+}
+
+function closest(px, py){
+  var best = null, bestD = 1e9, bestI = 0;
+  for(var i = 0; i < samples.length; i++){
+    var d = Math.hypot(px - samples[i].x, py - samples[i].y);
+    if(d < bestD){ bestD = d; best = samples[i]; bestI = i; }
+  }
+  var prog = samples.length > 1 ? bestI / (samples.length - 1) : 0;
+  return {sample: best, dist: bestD, progress: prog};
+}
+
+function drawTunnel(){
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0, 0, W, H);
+  if(!samples.length) return;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#f8f8f8';
+  for(var i = 1; i < samples.length; i++){
+    var a = samples[i-1], b = samples[i];
+    ctx.lineWidth = (a.r + b.r);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.stroke();
+  }
+  var end = samples[samples.length - 1];
+  ctx.fillStyle = 'rgba(80,220,100,.35)';
+  ctx.beginPath();
+  ctx.arc(end.x, end.y, Math.max(8, end.r * 0.55), 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#5c5';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function drawBall(){
+  if(!mouse.ok) return;
+  ctx.fillStyle = '#e00';
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#900';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+function flashMsg(t){
+  msgEl.textContent = t;
+  msgEl.classList.add('show');
+  setTimeout(function(){ msgEl.classList.remove('show'); }, 900);
+}
+
+function resetBall(){
+  if(!samples.length) return;
+  ball.x = samples[0].x;
+  ball.y = samples[0].y;
+  mouse.ok = false;
+}
+
+function startLevel(idx){
+  levelIdx = idx;
+  dead = false;
+  scared = false;
+  levelLabel.textContent = LEVELS[levelIdx].label;
+  rebuildSamples();
+  resetBall();
+  active = true;
+}
+
+function restartLevel(){
+  dead = false;
+  resetBall();
+  flashMsg('碰到边缘了！重新开始');
+}
+
+function nextLevel(){
+  if(levelIdx >= LEVELS.length - 1) return;
+  flashMsg('过关！');
+  setTimeout(function(){ startLevel(levelIdx + 1); }, 700);
+}
+
+function preloadFace(){
+  var img = new Image();
+  img.onload = function(){ faceReady = true; scareImg.src = img.src; };
+  img.onerror = function(){
+    var fb = new Image();
+    fb.onload = function(){ faceReady = true; scareImg.src = fb.src; };
+    fb.src = assetUrl(FACE_FALLBACK);
+  };
+  img.src = assetUrl(FACE_PRIMARY);
+}
+
+function triggerScare(){
+  if(scared) return;
+  scared = true;
+  active = false;
+  if(!scareImg.src) scareImg.src = assetUrl(FACE_FALLBACK);
+  scareEl.classList.add('active');
+  window.playWhisperCurveScream();
+  try{
+    if(window.parent && window.parent !== window){
+      window.parent.focus && window.parent.focus();
+    }
+  }catch(e){}
+}
+
+function tick(){
+  if(active && mouse.ok && !dead && !scared){
+    ball.x = mouse.x;
+    ball.y = mouse.y;
+    var c = closest(ball.x, ball.y);
+    var lv = LEVELS[levelIdx];
+    if(c.dist > c.sample.r - BALL_R - 1){
+      dead = true;
+      setTimeout(restartLevel, 280);
+    } else if(lv.scare && c.progress >= (lv.scareAt || 0.84)){
+      triggerScare();
+    } else if(c.progress >= 0.97 && !lv.scare){
+      active = false;
+      nextLevel();
+    }
+  }
+  drawTunnel();
+  drawBall();
+  requestAnimationFrame(tick);
+}
+
+function pointerPos(e){
+  var rect = cv.getBoundingClientRect();
+  var sx = cv.width / rect.width, sy = cv.height / rect.height;
+  return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
+}
+
+cv.addEventListener('mousemove', function(e){
+  var p = pointerPos(e);
+  mouse.x = p.x; mouse.y = p.y;
+  if(!mouse.ok && active && samples.length){
+    var c = closest(p.x, p.y);
+    if(c.dist <= c.sample.r) mouse.ok = true;
+  }
+});
+cv.addEventListener('mouseleave', function(){ mouse.ok = false; });
+
+document.getElementById('startBtn').addEventListener('click', function(){
+  overlay.classList.add('hidden');
+  startLevel(0);
+});
+
+window.addEventListener('resize', resize);
+resize();
+preloadFace();
+requestAnimationFrame(tick);
+})();
+<!--__SCRIPT_END__-->
+</script>
+
     <script>
         // --- 读取内嵌应用 HTML ---
         const BROWSER_HTML = document.getElementById('embedded-browser-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
@@ -20691,6 +21045,17 @@ renderContacts();renderFeed();
         const VIDEO_HTML = document.getElementById('embedded-video-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         const SOCIAL_HTML = document.getElementById('embedded-social-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.STARSECRET_HTML = document.getElementById('embedded-starsecret-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
+        window.WHISPERCURVE_HTML = document.getElementById('embedded-whispercurve-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
+        window.WHISPERCURVE_FACE_PRIMARY = '微信图片_20260627001755_25_11小.jpeg';
+        window.WHISPERCURVE_FACE_FALLBACK = '1.png';
+        window.WHISPERCURVE_SCREAM = null;
+        window.playWhisperCurveScream = function() {
+            if (!window.WHISPERCURVE_SCREAM) return;
+            try {
+                var base = location.href.replace(/[^/]+$/, '');
+                new Audio(base + encodeURIComponent(window.WHISPERCURVE_SCREAM)).play();
+            } catch (e) {}
+        };
 
         // iframe 间状态共享变量（替代 localStorage，避免 srcdoc iframe 间污染）
         window.__MAIL_PENDING_EMAILS = [];
