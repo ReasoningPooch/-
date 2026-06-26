@@ -3459,6 +3459,11 @@ const StarBrowser = () => {
         var tq = decodeURIComponent(qm[1].replace(/\+/g, ' '));
         if (tq.indexOf('黑石沟') !== -1) window.parent.onTutorialBrowserSearched();
       }
+      if (formattedUrl.includes('www.whispercurve.net') && window.parent && window.parent.onWhisperCurvePageEntered) {
+        setTimeout(function () {
+          try { window.parent.onWhisperCurvePageEntered(); } catch (err) {}
+        }, 500);
+      }
     } catch (e) {}
   };
 
@@ -18640,6 +18645,9 @@ setInterval(tick, 1500);
                     unread: 8,
                     empty: false,
                     messages: [
+                        { type: 'time', text: '2025年4月1日' },
+                        { type: 'other', text: '给你看个好玩的 www.whispercurve.net' },
+                        { type: 'me', text: '你有毛病吧' },
                         { type: 'time', text: '2025年6月22日 14:10' },
                         { type: 'me', text: '下周出成绩，出来吃烧烤不？' },
                         { type: 'other', text: '吃吃吃！这次不醉不归，我来拉上几个哥们儿。' },
@@ -21173,6 +21181,7 @@ requestAnimationFrame(tick);
         window.__BRIGHTNESS = 80;
         window.__THEME_COLOR = null;
         window.__GRADUATION_SCARE_SHOWN = false;
+        window.__WHISPERCURVE_MAX_GUIDE_DONE = false;
 
         // 监听设置界面的亮度和主题色变化
         setInterval(function() {
@@ -22135,6 +22144,49 @@ requestAnimationFrame(tick);
             }
         }
 
+        function guideWhisperCurveMaximize() {
+            var win = state.openWindows['edge'];
+            if (!win || win.maximized) {
+                window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                clearGuideOverlay();
+                return;
+            }
+            var btn = win.element.querySelector('.btn-maximize');
+            if (!btn) return;
+            showGuideOverlay({
+                target: btn,
+                padding: 8,
+                hint: '点击最大化，方便查看网页',
+                holeEvent: 'click',
+                onHoleActivate: function () {
+                    btn.click();
+                    window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                }
+            });
+        }
+
+        window.onWhisperCurvePageEntered = function () {
+            if (window.__WHISPERCURVE_MAX_GUIDE_DONE || window.__DEV_SKIP_GUIDE) return;
+            var win = state.openWindows['edge'];
+            if (!win) return;
+            if (win.maximized) {
+                window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                return;
+            }
+            setTimeout(function () {
+                if (window.__WHISPERCURVE_MAX_GUIDE_DONE || window.__DEV_SKIP_GUIDE) return;
+                var w = state.openWindows['edge'];
+                if (!w) return;
+                if (w.maximized) {
+                    window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
+                    return;
+                }
+                showMonologue(['好像有些看不清楚，还是放大一点吧。'], function () {
+                    guideWhisperCurveMaximize();
+                }, { instant: true });
+            }, 350);
+        };
+
         function unbindBrowserSearchTutorialSubmit() {
             var doc = window.__TUTORIAL_BROWSER_SEARCH_DOC;
             if (doc && doc._tutorialSearchHandler) {
@@ -22555,6 +22607,7 @@ requestAnimationFrame(tick);
             window.__SPARK_INTRO_STARTED = true;
             window.__SPARK_FIRST_WIN = true;
             window.__CHAT_MONOLOGUE_SHOWN = true;
+            window.__WHISPERCURVE_MAX_GUIDE_DONE = true;
 
             if (window._monoDelayTimer) {
                 clearTimeout(window._monoDelayTimer);
