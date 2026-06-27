@@ -2292,6 +2292,12 @@ const XingSouResults = ({
       snippet: '7月5日午后东部山谷出现局部短时暴雨伴强雷电，单片区降雨时长55～90分钟，傍晚雨带逐步东撤移出辖区。日间气温28～32℃，暴雨过后气温骤降6～9℃，偏西风3～4级...',
       url: 'www.xingsou.site/weather/heishigou'
     }];
+  } else if (query.includes('灵异论坛') || query.includes('圈外勿扰')) {
+    results = [{
+      title: '灵异论坛客户端下载（官方镜像）',
+      snippet: '千禧年旧版界面、深夜诡谈分区、账号密码登录。支持本地安装到 D 盘并创建桌面快捷方式。',
+      url: 'www.xingsou.site/article/ghostforum-download'
+    }];
   } else {
     // Generics
     results = [{
@@ -3249,6 +3255,66 @@ const DownloadManagerPage = ({
   }, item.time)))));
 };
 
+const GhostForumDownloadPage = () => {
+  const [installed, setInstalled] = useState(() => {
+    try {
+      return !!(window.parent && window.parent.__GHOST_FORUM_INSTALLED);
+    } catch (e) {
+      return false;
+    }
+  });
+  const doInstall = () => {
+    if (installed) return;
+    try {
+      if (window.parent && typeof window.parent.installGhostForumFromSource === 'function') {
+        const result = window.parent.installGhostForumFromSource('browser');
+        if (result && (result.ok || result.installed)) {
+          setInstalled(true);
+          return;
+        }
+      }
+    } catch (e) {}
+    alert('安装失败，请稍后重试。');
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "min-h-full bg-[#08090d] text-slate-200 p-8 md:p-12 webpage-content"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "max-w-4xl mx-auto border border-red-950/70 bg-gradient-to-b from-[#140608] to-[#09090c] rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "px-8 py-6 border-b border-red-950/60 flex items-center justify-between"
+  }, /*#__PURE__*/React.createElement("h1", {
+    className: "text-2xl font-bold tracking-wide text-red-300"
+  }, "灵异论坛"), /*#__PURE__*/React.createElement("span", {
+    className: "text-xs text-red-500/70 font-mono"
+  }, "Classic Build 2003")), /*#__PURE__*/React.createElement("div", {
+    className: "px-8 py-8 space-y-5"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "text-sm leading-7 text-slate-300"
+  }, "欢迎来到旧版灵异论坛安装页。安装后将自动写入 D 盘目录并在桌面创建一个新的“灵异论坛”图标。"), /*#__PURE__*/React.createElement("ul", {
+    className: "text-xs text-slate-400 space-y-2 list-disc pl-5"
+  }, /*#__PURE__*/React.createElement("li", null, "支持刷帖、私聊、我的三个功能区"), /*#__PURE__*/React.createElement("li", null, "论坛内置口令保护，首次进入需输入密码"), /*#__PURE__*/React.createElement("li", null, "安装来源：星搜官方镜像分发节点")), /*#__PURE__*/React.createElement("div", {
+    className: "pt-3"
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: doInstall,
+    disabled: installed,
+    className: installed ? "px-6 py-2.5 rounded bg-slate-700 text-slate-300 text-sm cursor-not-allowed" : "px-6 py-2.5 rounded bg-red-700 hover:bg-red-600 text-white text-sm transition-colors"
+  }, installed ? "已安装" : "下载安装")))));
+};
+
+const GhostForumProfilePage = () => /*#__PURE__*/React.createElement("div", {
+  className: "min-h-full bg-[#08090d] text-slate-200 p-8 md:p-12 webpage-content"
+}, /*#__PURE__*/React.createElement("div", {
+  className: "max-w-4xl mx-auto border border-red-950/70 bg-[#0d0a0b] rounded-2xl p-8"
+}, /*#__PURE__*/React.createElement("h1", {
+  className: "text-xl font-bold text-red-300 mb-5"
+}, "圈外勿扰 - 用户词条"), /*#__PURE__*/React.createElement("p", {
+  className: "text-sm leading-7 text-slate-300 mb-4"
+}, "账号创建时间未知，活跃高峰集中在 2023 年 10 月。公开发帖仅 3 条："), /*#__PURE__*/React.createElement("ul", {
+  className: "text-sm text-slate-300 list-disc pl-5 space-y-1 mb-6"
+}, /*#__PURE__*/React.createElement("li", null, "死人复生"), /*#__PURE__*/React.createElement("li", null, "恶鬼索命"), /*#__PURE__*/React.createElement("li", null, "降头术")), /*#__PURE__*/React.createElement("p", {
+  className: "text-xs text-slate-500"
+}, "提示：如需浏览完整内容，请安装并登录灵异论坛客户端。")));
+
 // Web Content Dispatcher 
 const BrowserContent = ({
   url,
@@ -3301,6 +3367,7 @@ const BrowserContent = ({
   if (rawUrl.includes('www.xingsou.site/article/danger-zones')) return /*#__PURE__*/React.createElement(DangerZonesPage, null);
   if (rawUrl.includes('www.xingsou.site/article/no-signal-forests')) return /*#__PURE__*/React.createElement(NoSignalPage, null);
   if (rawUrl.includes('www.xingsou.site/article/rain-evidence')) return /*#__PURE__*/React.createElement(RainEvidencePage, null);
+  if (rawUrl.includes('www.xingsou.site/article/ghostforum-download')) return /*#__PURE__*/React.createElement(GhostForumDownloadPage, null);
   const plotSlug = resolvePlotArticleSlug(rawUrl);
   if (plotSlug) return /*#__PURE__*/React.createElement(PlotArticlePage, { slug: plotSlug });
   if (rawUrl.includes('www.xingsou.site/weather/heishigou')) return /*#__PURE__*/React.createElement(WeatherPage, null);
@@ -3400,6 +3467,7 @@ const StarBrowser = () => {
     if (formattedUrl.includes('danger-zones')) return '深度：四川最危险景区大考量';
     if (formattedUrl.includes('no-signal-forests')) return '四川深山区信号死角科普';
     if (formattedUrl.includes('rain-evidence')) return '法医学：暴雨消除痕迹原理解剖';
+    if (formattedUrl.includes('ghostforum-download')) return '灵异论坛客户端下载';
     if (formattedUrl.includes('www.heishigou.gov.cn')) return '黑石沟国家森林公园官方网站';
     if (formattedUrl.includes('www.xingsou.site/weather/heishigou')) return '黑石沟（雾岭县）未来天气';
     const plotTitleSlug = resolvePlotArticleSlug(formattedUrl);
@@ -3581,7 +3649,15 @@ const StarBrowser = () => {
   const closeTab = (e, id) => {
     e.stopPropagation();
     if (tabs.length === 1) {
-      triggerToast('浏览器必须保持至少一个运行的网页窗口', 'error');
+      try {
+        if (window.parent && window.parent.closeStarBrowserApp) {
+          window.parent.closeStarBrowserApp();
+          return;
+        }
+      } catch (err) {}
+      try {
+        window.parent.postMessage({ type: 'starbrowser-close' }, '*');
+      } catch (err2) {}
       return;
     }
     const newTabs = tabs.filter(t => t.id !== id);
@@ -6148,6 +6224,10 @@ requestAnimationFrame(function() {
         .context-item:hover {
             background-color: var(--win-hover);
         }
+        .context-item.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
 
         /* 6. 虚拟应用窗口（记事本/命令提示符等） */
         .v-window {
@@ -6913,11 +6993,6 @@ requestAnimationFrame(function() {
                 path: ['此电脑', '本地磁盘 (D:)', '星途浏览器'],
                 items: [{ name: '星途浏览器.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
             },
-            'd/文档': {
-                name: '文档',
-                path: ['此电脑', '本地磁盘 (D:)', '文档'],
-                items: [{ name: '图片.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
-            },
             'd/应用商店': {
                 name: '应用商店',
                 path: ['此电脑', '本地磁盘 (D:)', '应用商店'],
@@ -6927,16 +7002,6 @@ requestAnimationFrame(function() {
                 name: '邮件',
                 path: ['此电脑', '本地磁盘 (D:)', '邮件'],
                 items: [{ name: '邮件.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
-            },
-            'd/照片': {
-                name: '照片',
-                path: ['此电脑', '本地磁盘 (D:)', '照片'],
-                items: [{ name: '照片.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
-            },
-            'd/设置': {
-                name: '设置',
-                path: ['此电脑', '本地磁盘 (D:)', '设置'],
-                items: [{ name: '设置.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
             },
             'd/文档处理': {
                 name: '文档处理',
@@ -6968,10 +7033,10 @@ requestAnimationFrame(function() {
                 path: ['此电脑', '本地磁盘 (D:)', '画图 3D'],
                 items: [{ name: '画图 3D.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
             },
-            'd/计算器': {
-                name: '计算器',
-                path: ['此电脑', '本地磁盘 (D:)', '计算器'],
-                items: [{ name: '计算器.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
+            'd/豆浆私密助手': {
+                name: '豆浆私密助手',
+                path: ['此电脑', '本地磁盘 (D:)', '豆浆私密助手'],
+                items: [{ name: '豆浆私密助手.exe', type: 'exe', date: '2025-06-15 10:00', size: '45 MB' }]
             },
             'd/日历': {
                 name: '日历',
@@ -7051,18 +7116,15 @@ requestAnimationFrame(function() {
                 path: ['此电脑', '本地磁盘 (D:)'],
                 items: [
                     { name: '星途浏览器', type: 'folder', date: '2025-06-15 10:00', size: '' },
-                    { name: '文档', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '应用商店', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '邮件', type: 'folder', date: '2025-06-15 10:00', size: '' },
-                    { name: '照片', type: 'folder', date: '2025-06-15 10:00', size: '' },
-                    { name: '设置', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '文档处理', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '表格计算', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '幻灯片演示', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '媒体播放器', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '电影与电视', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '画图 3D', type: 'folder', date: '2025-06-15 10:00', size: '' },
-                    { name: '计算器', type: 'folder', date: '2025-06-15 10:00', size: '' },
+                    { name: '豆浆私密助手', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '日历', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '时钟', type: 'folder', date: '2025-06-15 10:00', size: '' },
                     { name: '便笺', type: 'folder', date: '2025-06-15 10:00', size: '' },
@@ -7247,6 +7309,56 @@ requestAnimationFrame(function() {
             document.addEventListener('wheel', closeExplorerContextMenu, true);
         }
 
+        function ensureDynamicDAppInVfs(folderName, key, exeName) {
+            const dNode = vfs['d'];
+            if (!dNode || !dNode.items) return;
+            if (!dNode.items.some(function (x) { return x.name === folderName; })) {
+                dNode.items.push({
+                    name: folderName,
+                    type: 'folder',
+                    date: '2025-07-10 23:10',
+                    size: ''
+                });
+            }
+            if (!vfs[key]) {
+                vfs[key] = {
+                    name: folderName,
+                    path: ['此电脑', '本地磁盘 (D:)', folderName],
+                    items: [{ name: exeName || (folderName + '.exe'), type: 'exe', date: '2025-07-10 23:10', size: '45 MB' }]
+                };
+            } else if (!vfs[key].items.some(function (x) { return x.type === 'exe'; })) {
+                vfs[key].items.push({ name: exeName || (folderName + '.exe'), type: 'exe', date: '2025-07-10 23:10', size: '45 MB' });
+            }
+        }
+
+        function removeDynamicDAppFromVfs(folderName, key) {
+            const dNode = vfs['d'];
+            if (dNode && dNode.items) {
+                const idx = dNode.items.findIndex(function (x) { return x.name === folderName; });
+                if (idx > -1) dNode.items.splice(idx, 1);
+            }
+            if (vfs[key]) delete vfs[key];
+        }
+
+        function applyParentDynamicDApps() {
+            try {
+                const installs = window.parent && window.parent.__D_DYNAMIC_INSTALLS;
+                if (!installs) return;
+                Object.keys(installs).forEach(function (folderName) {
+                    const meta = installs[folderName] || {};
+                    const key = meta.key || ('d/' + folderName);
+                    const exeName = meta.exe || (folderName + '.exe');
+                    if (meta.installed) ensureDynamicDAppInVfs(folderName, key, exeName);
+                    else removeDynamicDAppFromVfs(folderName, key);
+                });
+            } catch (e) {}
+        }
+
+        window.refreshDynamicDApps = function () {
+            applyParentDynamicDApps();
+            renderExplorer();
+        };
+
         // 初始化
         window.onload = function() {
             ensureGraduationPhotoItem();
@@ -7261,6 +7373,7 @@ requestAnimationFrame(function() {
                     }
                 }
             } catch(e) {}
+            applyParentDynamicDApps();
             renderExplorer();
             initDragSelector();
             initWindowDragAndDrop();
@@ -7398,15 +7511,8 @@ requestAnimationFrame(function() {
                     itemDiv.addEventListener('touchstart', function(e) {
                         longPressTimer = setTimeout(function() {
                             e.preventDefault();
-                            selectItem(index);
-                            // 模拟右键菜单
-                            var items2 = getFolderNode(currentPathKey).items;
-                            var item2 = items2[index];
-                            var menu = document.getElementById('right-menu');
                             var touch = e.touches[0];
-                            menu.style.left = touch.clientX + 'px';
-                            menu.style.top = touch.clientY + 'px';
-                            menu.style.display = 'block';
+                            handleRightClickItem({ preventDefault: function(){}, stopPropagation: function(){}, clientX: touch.clientX, clientY: touch.clientY }, index);
                         }, 300);
                     }, { passive: false });
                     itemDiv.addEventListener('touchend', function() {
@@ -7493,20 +7599,67 @@ requestAnimationFrame(function() {
             updateActionButtons();
         }
 
+        function resolveDAppName(folderOrItemName) {
+            try {
+                var map = window.parent.__D_FOLDER_APP_MAP;
+                if (map && map[folderOrItemName]) return map[folderOrItemName];
+            } catch (e) {}
+            return folderOrItemName;
+        }
+
+        function resolveDExeName(folderName) {
+            return folderName + '.exe';
+        }
+
+        function isCDrivePath() {
+            return currentPathKey === 'c' || currentPathKey.startsWith('c/');
+        }
+
         function isEditableFileItem(item) {
-            if (!item) return false;
-            if (currentPathKey === 'c' || currentPathKey.startsWith('c/')) return false;
+            return canRenameItem(item);
+        }
+
+        function canRenameItem(item) {
+            if (!item || isCDrivePath() || currentPathKey === 'recyclebin') return false;
             if (item.type === 'exe' || item.type === 'file') return false;
+            if (item.name && item.name.endsWith('.lnk')) return false;
             return true;
+        }
+
+        function canDeleteItem(item) {
+            if (!item || isCDrivePath()) return false;
+            if (currentPathKey === 'recyclebin') return true;
+            if (item.type === 'exe') {
+                return currentPathKey === 'd' || currentPathKey.startsWith('d/');
+            }
+            if (item.type === 'file' || (item.name && item.name.endsWith('.lnk'))) {
+                return currentPathKey === 'desktop' || currentPathKey.startsWith('desktop/') ||
+                    currentPathKey.startsWith('d/') || currentPathKey === 'documents';
+            }
+            return true;
+        }
+
+        function canShowItemContextMenu(item) {
+            if (!item || isCDrivePath()) return false;
+            if (currentPathKey === 'recyclebin') return true;
+            return canDeleteItem(item) || canRenameItem(item);
+        }
+
+        function showExplorerContextMenu(x, y) {
+            const menu = document.getElementById('right-menu');
+            if (!menu) return;
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.style.display = 'block';
         }
 
         function updateActionButtons() {
             const hasSelection = selectedIndex !== -1;
             const isRecyclebin = currentPathKey === 'recyclebin';
-            const isCDrive = currentPathKey === 'c' || currentPathKey.startsWith('c/');
+            const isCDrive = isCDrivePath();
             const node = getFolderNode(currentPathKey);
-            document.getElementById('btn-rename').classList.toggle('disabled', !hasSelection);
-            document.getElementById('btn-delete').classList.toggle('disabled', !hasSelection || isCDrive);
+            document.getElementById('btn-rename').classList.toggle('disabled', !hasSelection || !canRenameItem(node.items[selectedIndex]));
+            document.getElementById('btn-delete').classList.toggle('disabled', !hasSelection || !canDeleteItem(node.items[selectedIndex]) || isCDrive);
             
             // 回收站特殊菜单
             const ctxRestore = document.getElementById('ctx-restore');
@@ -7537,18 +7690,18 @@ requestAnimationFrame(function() {
                 if (sep1) sep1.style.display = 'none';
                 if (sep2) sep2.style.display = 'none';
             } else if (hasSelection) {
-                // 选中可改动文件：仅重命名、删除
-                var editable = isEditableFileItem(selectedItem);
+                var canRename = canRenameItem(selectedItem);
+                var canDelete = canDeleteItem(selectedItem);
                 if (ctxRestore) ctxRestore.style.display = 'none';
                 if (ctxPermDelete) ctxPermDelete.style.display = 'none';
                 if (ctxNewFolder) ctxNewFolder.style.display = 'none';
                 if (ctxNewTxt) ctxNewTxt.style.display = 'none';
                 if (ctxRefresh) ctxRefresh.style.display = 'none';
-                if (ctxRename) ctxRename.style.display = editable ? 'flex' : 'none';
-                if (ctxDelete) ctxDelete.style.display = editable ? 'flex' : 'none';
+                if (ctxRename) ctxRename.style.display = canRename ? 'flex' : 'none';
+                if (ctxDelete) ctxDelete.style.display = canDelete ? 'flex' : 'none';
                 if (ctxOpenImage) ctxOpenImage.style.display = 'none';
                 if (ctxOpenMemo) ctxOpenMemo.style.display = 'none';
-                if (sep1) sep1.style.display = 'none';
+                if (sep1) sep1.style.display = (canRename || canDelete) ? 'block' : 'none';
                 if (sep2) sep2.style.display = 'none';
             } else {
                 // 空白区域：新建与刷新
@@ -7565,8 +7718,8 @@ requestAnimationFrame(function() {
                 if (sep2) sep2.style.display = 'none';
             }
             
-            document.getElementById('ctx-rename').classList.toggle('disabled', !hasSelection);
-            document.getElementById('ctx-delete').classList.toggle('disabled', !hasSelection || isCDrive);
+            if (ctxRename) ctxRename.classList.toggle('disabled', !canRenameItem(selectedItem));
+            if (ctxDelete) ctxDelete.classList.toggle('disabled', !canDeleteItem(selectedItem));
         }
 
         function navTo(newKey, pushState = true) {
@@ -7660,6 +7813,7 @@ requestAnimationFrame(function() {
 
         function handleOpenItem(item, idx) {
             closeExplorerContextMenu();
+            if (currentPathKey === 'recyclebin') return;
             if (item.type === 'folder') {
                 const subKey = currentPathKey === 'pictures' ? item.name : `${currentPathKey}/${item.name}`;
                 navTo(subKey);
@@ -7674,17 +7828,18 @@ requestAnimationFrame(function() {
                     try {
                         var exeBase = item.name.replace(/\.exe$/i, '');
                         var folderName = currentPathKey.split('/').pop();
+                        var mappedAppName = resolveDAppName(folderName);
                         var parentApps = window.parent.apps || [];
                         var targetApp = null;
                         for (var ai = 0; ai < parentApps.length; ai++) {
-                            if (parentApps[ai].name === exeBase || parentApps[ai].name === folderName) {
+                            if (parentApps[ai].name === exeBase || parentApps[ai].name === folderName || parentApps[ai].name === mappedAppName) {
                                 targetApp = parentApps[ai];
                                 break;
                             }
                         }
                         if (!targetApp && window.parent.__allAppsCatalog) {
                             targetApp = window.parent.__allAppsCatalog.find(function(a) {
-                                return a.name === exeBase || a.name === folderName;
+                                return a.name === exeBase || a.name === folderName || a.name === mappedAppName;
                             });
                         }
                         if (targetApp && window.parent.openApp) {
@@ -7698,9 +7853,6 @@ requestAnimationFrame(function() {
                 // 回收站快捷方式直接跳转到回收站
                 if (linkName === '回收站') {
                     navTo('recyclebin');
-                } else if (currentPathKey === 'recyclebin' && item._originalApp) {
-                    // 回收站里的快捷方式：还原到桌面
-                    restoreFromRecyclebin(item);
                 } else {
                     try {
                         var openApp = item._originalApp;
@@ -7780,6 +7932,10 @@ requestAnimationFrame(function() {
 
         function triggerRename() {
             if (selectedIndex === -1 || isRenaming) return;
+            const node = getFolderNode(currentPathKey);
+            const item = node.items[selectedIndex];
+            if (!canRenameItem(item)) return;
+            closeExplorerContextMenu();
             isRenaming = true;
 
             const nameBox = document.getElementById(`name-txt-${selectedIndex}`);
@@ -7846,13 +8002,10 @@ requestAnimationFrame(function() {
             if (selectedIndex === -1) return;
             const node = getFolderNode(currentPathKey);
             if (!node) return;
-
             const removed = node.items[selectedIndex];
-            
-            // C盘不可删除
-            if (currentPathKey === 'c' || currentPathKey.startsWith('c/')) {
-                return;
-            }
+            if (!canDeleteItem(removed)) return;
+
+            closeExplorerContextMenu();
 
             // 如果是文件夹，清理可能注册在 vfs 下的所有嵌套项
             if (removed.type === 'folder') {
@@ -7880,7 +8033,14 @@ requestAnimationFrame(function() {
                     }
                     // 通知父窗口更新dDriveVfs
                     if (window.parent.dDriveVfs) {
-                        window.parent.dDriveVfs[removed.name] = false;
+                        var dFolderName = currentPathKey.startsWith('d/') ? currentPathKey.split('/')[1] : removed.name;
+                        var dAppName = resolveDAppName(dFolderName);
+                        if (dAppName in window.parent.dDriveVfs) {
+                            window.parent.dDriveVfs[dAppName] = false;
+                        }
+                        if (removed.type === 'folder' && window.parent.__D_DYNAMIC_INSTALLS && window.parent.__D_DYNAMIC_INSTALLS[dFolderName]) {
+                            window.parent.__D_DYNAMIC_INSTALLS[dFolderName].installed = false;
+                        }
                     }
                 } catch(e) {}
             }
@@ -7959,20 +8119,6 @@ requestAnimationFrame(function() {
         }
 
 
-        function restoreFromRecyclebin(item) {
-            if (item._originalApp) {
-                // 还原到主页面桌面
-                try { window.parent.apps.push(item._originalApp); } catch(e) {}
-                // 从全局回收站移除
-                try {
-                    const rb = window.parent.recyclebinItems;
-                    const idx = rb.indexOf(item);
-                    if (idx > -1) rb.splice(idx, 1);
-                } catch(e) {}
-                renderExplorer();
-            }
-        }
-
         function permanentlyDeleteFromRecyclebin(item) {
             try {
                 const rb = window.parent.recyclebinItems;
@@ -7985,6 +8131,7 @@ requestAnimationFrame(function() {
 
         function restoreSelected() {
             if (selectedIndex === -1 || currentPathKey !== 'recyclebin') return;
+            closeExplorerContextMenu();
             const node = getFolderNode(currentPathKey);
             const item = node.items[selectedIndex];
             if (!item) return;
@@ -7998,6 +8145,7 @@ requestAnimationFrame(function() {
                     if (idx > -1) rb.splice(idx, 1);
                 } catch(e) {}
                 try { window.parent.desktopRefresh(); } catch(e) {}
+                selectedIndex = -1;
                 renderExplorer();
             } else if (item._source === 'd-drive') {
                 // D盘文件还原：恢复VFS和dDriveVfs
@@ -8019,19 +8167,26 @@ requestAnimationFrame(function() {
                             vfs[subKey] = {
                                 name: item.name,
                                 path: ['此电脑', '本地磁盘 (D:)', item.name],
-                                items: [{ name: item.name + '.exe', type: 'exe', date: item.date || '2025-06-15 10:00', size: '45 MB' }]
+                                items: [{ name: resolveDExeName(item.name), type: 'exe', date: item.date || '2025-06-15 10:00', size: '45 MB' }]
                             };
                         }
                     }
                     // 恢复dDriveVfs
-                    if (window.parent.dDriveVfs && item.name in window.parent.dDriveVfs) {
-                        window.parent.dDriveVfs[item.name] = true;
+                    if (window.parent.dDriveVfs) {
+                        var restoreAppName = resolveDAppName(item.name);
+                        if (restoreAppName in window.parent.dDriveVfs) {
+                            window.parent.dDriveVfs[restoreAppName] = true;
+                        }
+                        if (item.type === 'folder' && window.parent.__D_DYNAMIC_INSTALLS && window.parent.__D_DYNAMIC_INSTALLS[item.name]) {
+                            window.parent.__D_DYNAMIC_INSTALLS[item.name].installed = true;
+                        }
                     }
                     // 从回收站移除
                     const rb = window.parent.recyclebinItems;
                     const idx = rb.indexOf(item);
                     if (idx > -1) rb.splice(idx, 1);
                 } catch(e) {}
+                selectedIndex = -1;
                 renderExplorer();
             } else if (item._source === 'pictures') {
                 // 图片文件夹文件还原
@@ -8052,12 +8207,14 @@ requestAnimationFrame(function() {
                     const idx = rb.indexOf(item);
                     if (idx > -1) rb.splice(idx, 1);
                 } catch(e) {}
+                selectedIndex = -1;
                 renderExplorer();
             }
         }
 
         function permanentlyDeleteSelected() {
             if (selectedIndex === -1 || currentPathKey !== 'recyclebin') return;
+            closeExplorerContextMenu();
             try {
                 const rb = window.parent.recyclebinItems;
                 const item = rb[selectedIndex];
@@ -8066,6 +8223,7 @@ requestAnimationFrame(function() {
                     if (idx > -1) rb.splice(idx, 1);
                 }
             } catch(e) {}
+            selectedIndex = -1;
             renderExplorer();
         }
 
@@ -8073,18 +8231,16 @@ requestAnimationFrame(function() {
             event.preventDefault();
             event.stopPropagation();
             closeExplorerContextMenu();
-            selectItem(idx);
+            selectItem(idx, event);
 
-            if (currentPathKey === 'c' || currentPathKey.startsWith('c/')) return;
+            if (isCDrivePath()) return;
 
             var items = getFolderNode(currentPathKey).items;
             var item = items[idx];
-            if (!isEditableFileItem(item)) return;
+            if (!canShowItemContextMenu(item)) return;
 
-            const menu = document.getElementById('right-menu');
-            menu.style.left = event.clientX + 'px';
-            menu.style.top = event.clientY + 'px';
-            menu.style.display = 'block';
+            updateActionButtons();
+            showExplorerContextMenu(event.clientX, event.clientY);
         }
 
         document.getElementById('content-container').oncontextmenu = function(e) {
@@ -10166,7 +10322,8 @@ requestAnimationFrame(function() {
             { id: 7, name: 'AudioEnhance Max', category: '实用工具', developer: 'AudioFX Systems', rating: 4.4, size: '60 MB', price: '免费下载', color: 'bg-[#000000]', icon: '🎧', desc: '为您的 PC 设置沉浸式全景声，享受震撼的沉浸式音频体验。' },
             { id: 8, name: 'SpeedRacer: Apex', category: '游戏', developer: 'Apex Games', rating: 4.7, size: '110 GB', price: '¥248.00', color: 'bg-[#E10052]', icon: '🏎️', desc: '在充满活力和不断变化的开放世界中，驾驶数百辆世界级好车，展开无拘无束的驾驶冒险。' },
             { id: 9, name: 'NoteMaster', category: '生产力', developer: 'NoteMaster Inc.', rating: 4.3, size: '200 MB', price: '免费下载', color: 'bg-[#00A82D]', icon: '🐘', desc: '管理你的笔记、任务和日程。在所有设备上同步，随时随地保持高效。' },
-            { id: 10, name: 'PolyMesh 3D', category: '照片与视频', developer: 'PolyMesh Foundation', rating: 4.9, size: '300 MB', price: '免费下载', color: 'bg-[#E87D0D]', icon: '🧊', desc: '免费开源的 3D 创作套件。支持整个 3D 创作流程：建模、绑定、动画、模拟、渲染、合成和运动跟踪。' }
+            { id: 10, name: 'PolyMesh 3D', category: '照片与视频', developer: 'PolyMesh Foundation', rating: 4.9, size: '300 MB', price: '免费下载', color: 'bg-[#E87D0D]', icon: '🧊', desc: '免费开源的 3D 创作套件。支持整个 3D 创作流程：建模、绑定、动画、模拟、渲染、合成和运动跟踪。' },
+            { id: 404, name: '灵异论坛', category: '社交', developer: '圈外网络', rating: 4.9, size: '13 MB', price: '免费下载', color: 'bg-[#1a0608]', icon: '🩸', desc: '千禧年风格的灵异讨论社区。可刷帖、私聊、发帖，支持与神秘用户“圈外勿扰”互动。', installer: 'ghostforum' }
         ];
 
         const NAV_ITEMS = [
@@ -10207,6 +10364,38 @@ requestAnimationFrame(function() {
         function handleAppClick(appId) {
             state.selectedAppId = appId;
             render();
+        }
+
+        function getInstallLabel(app) {
+            if (!app || app.installer !== 'ghostforum') return app && app.price ? (app.price === '免费下载' ? '下载' : app.price) : '下载';
+            try {
+                if (window.parent && window.parent.__GHOST_FORUM_INSTALLED) return '已安装';
+            } catch (e) {}
+            return '下载安装';
+        }
+
+        function installAppById(appId) {
+            const app = MOCK_APPS.find(a => a.id === appId);
+            if (!app) return;
+            if (app.installer !== 'ghostforum') {
+                alert('该应用暂不支持在此环境安装。');
+                return;
+            }
+            try {
+                if (window.parent && typeof window.parent.installGhostForumFromSource === 'function') {
+                    var res = window.parent.installGhostForumFromSource('store');
+                    if (res && res.ok) {
+                        render();
+                        return;
+                    }
+                    if (res && res.installed) {
+                        alert('灵异论坛已经安装。');
+                        render();
+                        return;
+                    }
+                }
+            } catch (e) {}
+            alert('安装失败，请稍后重试。');
         }
 
         // --- 视图渲染器 ---
@@ -10410,6 +10599,11 @@ requestAnimationFrame(function() {
 
         // 详情页：移除截图，改为左侧图标+大按钮，右侧文字介绍的形式
         function getDetailHTML(app) {
+            const installLabel = getInstallLabel(app);
+            const installed = installLabel === '已安装';
+            const installButtonClass = installed
+                ? 'w-full bg-slate-200 text-slate-500 py-2.5 px-4 rounded font-semibold text-sm flex items-center justify-center gap-2 mb-3 cursor-not-allowed'
+                : 'w-full bg-[#0078D7] text-white py-2.5 px-4 rounded hover:bg-[#005A9E] transition-colors font-semibold text-sm flex items-center justify-center gap-2 mb-3';
             return `
                 <div class="flex flex-col md:flex-row gap-10">
                     <!-- 左侧：图标与核心操作区 -->
@@ -10430,9 +10624,12 @@ requestAnimationFrame(function() {
                             </div>
                         </div>
 
-                        <!-- 下载按钮 (纯视觉，无动作) -->
-                        <button class="w-full bg-[#0078D7] text-white py-2.5 px-4 rounded hover:bg-[#005A9E] transition-colors font-semibold text-sm flex items-center justify-center gap-2 mb-3">
-                            ${app.price === '免费下载' ? '下载' : app.price}
+                        <button
+                            class="${installButtonClass}"
+                            ${installed ? 'disabled' : ''}
+                            onclick="${installed ? '' : `installAppById(${app.id})`}"
+                        >
+                            ${installLabel}
                         </button>
                         <button class="w-full bg-white border border-gray-300 text-gray-700 py-2.5 px-4 rounded hover:bg-gray-50 transition-colors font-semibold text-sm flex items-center justify-center gap-2">
                             <span class="w-4 h-4 flex items-center justify-center">↗</span> 分享
@@ -18253,7 +18450,7 @@ setInterval(tick, 1500);
       try { if (window.parent && window.parent.renameAppWindow) window.parent.renameAppWindow('calc', title); } catch (e) {}
     }
     function getPin() {
-      try { return (window.parent && window.parent.__SOYMILK_VAULT_PIN) || '0724'; } catch (e) { return '0724'; }
+      try { return (window.parent && window.parent.__SOYMILK_VAULT_PIN) || '1102'; } catch (e) { return '1102'; }
     }
     function getVaultFiles() {
       try {
@@ -18375,7 +18572,21 @@ setInterval(tick, 1500);
         content.innerHTML = '<div class="vault-empty"><div class="vault-empty-icon">📂</div><h3>暂无' + tabLabel(tab) + '</h3><p>此分类下还没有任何文件。后续导入的' +
           (tab === 'all' ? '私密文件' : tabLabel(tab)) + '会显示在这里。</p></div>';
       } else {
-        content.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;"></div>';
+        var grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;';
+        files.forEach(function (f) {
+          var card = document.createElement('div');
+          card.style.cssText = 'background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;cursor:default;';
+          var thumb = f.thumb || f.url;
+          var icon = f.kind === 'video' ? '🎬' : f.kind === 'audio' ? '🎵' : '🖼';
+          card.innerHTML = (thumb
+            ? '<div style="aspect-ratio:1;border-radius:6px;overflow:hidden;margin-bottom:8px;background:#111;"><img src="' + thumb + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent=\'' + icon + '\';this.remove();"></div>'
+            : '<div style="aspect-ratio:1;border-radius:6px;margin-bottom:8px;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font-size:28px;">' + icon + '</div>') +
+            '<div style="font-size:12px;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (f.name || '') + '">' + (f.name || '未命名') + '</div>';
+          grid.appendChild(card);
+        });
+        content.innerHTML = '';
+        content.appendChild(grid);
       }
     }
 
@@ -18745,7 +18956,10 @@ setInterval(tick, 1500);
                         { type: 'other', text: '你怎么回事啊，我手机快没电了，我得走了啊' },
                         { type: 'call-missed', text: '语音通话 (未接听)' },
                         { type: 'time', text: '2025年7月6日 21:30' },
-                        { type: 'other', text: '我怎么看新闻你失踪了？你真的不要吓我，赶紧的回我消息，求你了！！！！' }
+                        { type: 'other', text: '我怎么看新闻你失踪了？你真的不要吓我，赶紧的回我消息，求你了！！！！' },
+                        { type: 'time', text: '2025年7月7日 09:18' },
+                        { type: 'other', text: '我去，我把我邮箱密码告诉我妈了，结果忘了我密码都是一样的，她反手把我密聊也登了，我刚抢回来。' },
+                        { type: 'me', text: '笑死我啦，幸好我的密码全部都不一样。' }
                     ]
                 },
                 {
@@ -20220,6 +20434,289 @@ renderContacts();renderFeed();
 <!--__SCRIPT_END__-->
 </body>
 </html></script>
+    <script type="text/plain" id="embedded-ghostforum-html"><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵异论坛</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#070708;color:#ddd}
+.lock{position:fixed;inset:0;background:radial-gradient(circle,#18080b 0%,#050506 70%);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.lock-card{width:min(420px,100%);padding:18px;border:1px solid #4f1420;background:#10090b;border-radius:12px;box-shadow:0 20px 80px rgba(0,0,0,.55)}
+.lock-card h2{color:#ffd8de;margin-bottom:8px;font-size:18px}
+.lock-card input{width:100%;padding:10px;background:#090809;border:1px solid #4a1d25;border-radius:8px;color:#fff;outline:none}
+.lock-card button{margin-top:10px;width:100%;padding:10px;border:none;border-radius:8px;background:#8f1c2c;color:#fff;font-weight:700;cursor:pointer}
+.err{margin-top:8px;color:#ff8c9a;font-size:12px;min-height:16px}
+.app{display:none;flex-direction:column;height:100%}
+.top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:linear-gradient(180deg,#180607,#0b0b0d);border-bottom:1px solid #3f1016}
+.brand{display:flex;align-items:center;gap:8px;color:#f8c5c8;font-weight:700}
+.brand-dot{width:10px;height:14px;border-radius:60% 60% 80% 80%;background:linear-gradient(180deg,#ff556f,#790719)}
+.tabs{display:flex;gap:8px}
+.tab{padding:7px 14px;border:1px solid #3a1419;border-radius:999px;background:#120d10;color:#cf9ca2;font-size:12px;cursor:pointer}
+.tab.active{background:#5d131d;color:#fff}
+.content{flex:1;overflow:hidden;background:radial-gradient(circle at top,#12070a 0%,#070708 55%)}
+.view{display:none;width:100%;height:100%;overflow:auto}
+.view.active{display:block}
+.feed{max-width:1100px;margin:0 auto;padding:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.card{border:1px solid #2d1217;background:#0f0c0d;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#2a0d12;color:#ffc7cf;font-size:11px;font-weight:700;cursor:pointer}
+.avatar:hover{background:#47131d}
+.name{font-size:12px;color:#f0d6da}
+.time{font-size:11px;color:#8f7478}
+.title{font-size:14px;color:#fff;font-weight:700;line-height:1.45}
+.preview{font-size:12px;line-height:1.68;color:#d8c6c9;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:11px;color:#866d71;display:flex;gap:10px}
+.tag{font-size:10px;border:1px solid #5a1b26;color:#ffb3bf;padding:2px 6px;border-radius:999px}
+.btn{border:1px solid #432126;background:#171113;color:#d7b7bd;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer}
+.btn:hover{background:#241518}
+.chat-wrap{max-width:980px;margin:0 auto;padding:14px;display:flex;gap:12px;height:100%}
+.chat-list{width:260px;border:1px solid #301217;background:#0e0b0d;border-radius:10px;padding:10px;overflow:auto}
+.chat-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer}
+.chat-item.active{background:#3f131d}
+.chat-item b{font-size:13px;color:#ffd6dc}
+.chat-item span{display:block;font-size:11px;color:#9d7b81}
+.chat-panel{flex:1;border:1px solid #301217;background:#0e0b0d;border-radius:10px;display:flex;flex-direction:column;min-height:0}
+.chat-title{padding:12px 14px;border-bottom:1px solid #2f181d;color:#ffd5da;font-size:13px}
+.chat-messages{padding:14px;overflow:auto;flex:1}
+.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid #2f181d}
+.chat-input input{flex:1;background:#09090a;border:1px solid #372126;border-radius:8px;color:#ddd;padding:8px;font-size:12px;outline:none}
+.msg{max-width:78%;padding:8px 10px;border-radius:10px;font-size:12px;line-height:1.65;margin-bottom:8px}
+.msg.me{margin-left:auto;background:#52131f;color:#ffe7eb}
+.msg.other{background:#1d1214;color:#e9d5d9}
+.msg.time{max-width:unset;margin:10px auto;color:#8c7579;font-size:11px;padding:0;background:transparent}
+.mine{max-width:880px;margin:0 auto;padding:14px}
+.panel{border:1px solid #301217;background:#0f0c0d;border-radius:10px;padding:12px}
+.panel h3{font-size:14px;color:#ffd4da;margin-bottom:10px}
+.panel input,.panel textarea{width:100%;background:#09090a;border:1px solid #3a2227;border-radius:8px;color:#e5d7da;padding:8px;font-size:12px;margin-bottom:8px;outline:none}
+.panel textarea{height:96px;resize:none}
+.my-post{border-top:1px solid #2c161a;padding-top:8px;margin-top:8px}
+.my-post b{color:#ffd4da}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:center;justify-content:center;z-index:30}
+.modal.show{display:flex}
+.modal-card{width:min(860px,calc(100% - 24px));max-height:84vh;overflow:auto;border:1px solid #4b1620;background:#0e0b0d;border-radius:12px;padding:14px}
+.floor{border-top:1px solid #29161b;padding-top:8px;margin-top:8px}
+.floor:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.floor-meta{font-size:11px;color:#8d7378;margin-bottom:4px}
+.floor-text{font-size:12px;line-height:1.75;color:#e2d4d8;white-space:pre-wrap}
+.pop{position:fixed;z-index:40;width:230px;border:1px solid #51202a;background:#120d10;border-radius:10px;padding:10px;display:none}
+.pop.show{display:block}
+.pop h4{font-size:13px;color:#ffd7de;margin-bottom:4px}
+.pop p{font-size:11px;color:#a88a90;line-height:1.6;margin-bottom:8px}
+.pop .a{display:flex;gap:8px}
+.toast{position:fixed;bottom:14px;right:14px;background:#351015;color:#ffd7dd;border:1px solid #6e1d2b;padding:8px 12px;border-radius:8px;font-size:12px;opacity:0;transform:translateY(10px);transition:.2s;z-index:50}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+  <div class="lock-card">
+    <h2>请输入密码</h2>
+    <input id="pw" type="password" placeholder="请输入密码">
+    <button onclick="unlockForum()">进入论坛</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+<div class="app" id="app">
+  <div class="top">
+    <div class="brand"><span class="brand-dot"></span><span>灵异论坛</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('feed',this)">刷帖子</button>
+      <button class="tab" onclick="switchTab('chat',this)">私聊</button>
+      <button class="tab" onclick="switchTab('mine',this)">我的</button>
+    </div>
+  </div>
+  <div class="content">
+    <section class="view active" id="view-feed"><div class="feed" id="feed"></div></section>
+    <section class="view" id="view-chat">
+      <div class="chat-wrap">
+        <div class="chat-list" id="dm-list"></div>
+        <div class="chat-panel">
+          <div class="chat-title" id="dm-title"></div>
+          <div class="chat-messages" id="dm-messages"></div>
+          <div class="chat-input"><input id="dm-input" placeholder="输入消息..."><button class="btn" onclick="sendDm()">发送</button></div>
+        </div>
+      </div>
+    </section>
+    <section class="view" id="view-mine">
+      <div class="mine"><div class="panel"><h3>发帖</h3><input id="my-title" placeholder="标题"><textarea id="my-content" placeholder="写点什么…"></textarea><button class="btn" onclick="publishMine()">发布帖子</button><div id="my-list"></div></div></div>
+    </section>
+  </div>
+</div>
+<div class="modal" id="detail-modal"><div class="modal-card" id="detail-body"></div></div>
+<div class="pop" id="user-pop"></div>
+<div class="toast" id="toast"></div>
+<script>
+const FORUM_PASSWORD = 'linyue20071102';
+let minePosts = [];
+let currentDm = '圈外勿扰';
+let currentOpenThread = null;
+const KEEP_NAMES = new Set(['圈外勿扰','网吧网管小周','无神论先锋','快递行业老炮']);
+function alias(name){
+  if (KEEP_NAMES.has(name)) return name;
+  if (/(司机|工程师|维保|分拣|代驾|网管|打工人|从业者|老师傅|研究生|程序猿|策划|维修|行业|住户|发烧友|国营厂|照相馆|租碟|快递|出租车|夜班|电梯|老韩|老吕|老周|老陈)/.test(name)) return '夜游网友' + String((name.length * 17) % 97).padStart(2,'0');
+  return name.replace('老','阿').replace('小','小小');
+}
+function avatarText(name){ return alias(name).slice(0,1); }
+function preview(text){ return (text || '').replace(/\n/g,' ').slice(0,76) + '...'; }
+function nowTime(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); }
+
+const secretThreads = [
+  {id:'qwr-1',title:'死人复生',author:'圈外勿扰',time:'2023-10-03 21:16',views:'8.7w',tag:'最近在看',floors:[
+    {author:'圈外勿扰',time:'2023-10-03 21:16',text:'死人复生'},
+    {author:'好评小队员',time:'2023-10-03 21:20',text:'好评，太解气了。'},
+    {author:'半夜不关灯',time:'2023-10-03 21:22',text:'这是什么啊，怎么就四个字，楼主干嘛的，什么圈外勿扰1。'},
+    {author:'看帖别较真',time:'2023-10-03 21:24',text:'看不懂字面意思吗？'},
+    {author:'圈外勿扰',time:'2023-10-03 21:31',text:'这三个人，网民随便写一个。'}
+  ]},
+  {id:'qwr-2',title:'恶鬼索命',author:'圈外勿扰',time:'2023-10-08 00:21',views:'5.3w',floors:[{author:'圈外勿扰',time:'2023-10-08 00:21',text:'恶鬼索命'},{author:'桥头看客',time:'2023-10-08 00:33',text:'这个太狠了各位最好别干。'}]},
+  {id:'qwr-3',title:'降头术',author:'圈外勿扰',time:'2023-10-19 23:49',views:'4.9w',floors:[{author:'圈外勿扰',time:'2023-10-19 23:49',text:'降头术'},{author:'夜路慢行',time:'2023-10-20 00:07',text:'帮你们问了，成都以外的可以不用来了。'}]}
+];
+
+const threads = [
+  {id:'t2',title:'网吧通宵，我旁边坐的人，监控里没有',author:'通宵打红警阿伟',time:'2002-07-23 04:02',views:'3.7w',floors:[{author:'通宵打红警阿伟',time:'2002-07-23 04:02',text:`学校门口蓝极速网吧，今晚通宵。凌晨两点多，我左边坐了个穿白短袖的男的，一直玩扫雷，我余光瞟了俩小时，连他点鼠标的节奏我都熟。\n刚才我去厕所撒尿，回来位置被一个黄毛占了。我问刚才坐这的人去哪了，黄毛说他一点半就坐这了，中间根本没人来过。\n喊网管调监控，我左边那排机器，一整晚就我一个人。\n但我键盘旁边，多了半瓶没开的橘子汽水，我从来没买过。`},{author:'魔兽争霸菜鸟',time:'2002-07-23 04:05',text:'蓝极速？去年不是着火了吗？你说的哪个店？'},{author:'网吧网管小周',time:'2002-07-23 04:25',text:'楼主走了？我刚去看了，吧台没有什么汽水啊。'}]},
+  {id:'t10',title:'居家隔离，我家智能音箱半夜在跟人对话',author:'隔离在家的小孟',time:'2020-02-14 03:12',views:'4.5w',floors:[{author:'隔离在家的小孟',time:'2020-02-14 03:12',text:`疫情封城，我一个人在家隔离。半夜三点醒了，听见客厅智能音箱在说话，一会答“好的”一会说“明白了”，还有男声跟它对话。\n第二天查语音记录，凌晨三点多有十几条男声指令，全是“开灯”“拉窗帘”“放哀乐”。我一个人住，门窗全锁着。`},{author:'居家隔离中',time:'2020-02-14 03:15',text:'太吓人了……会不会是邻居家的信号串了？'},{author:'同款遭遇',time:'2020-02-14 03:25',text:'我家的也这样！半夜自己唱歌，还笑。后来我拔电源了。'}]},
+  secretThreads[0],
+  {id:'t1',title:'跨年夜我家电话响了，来电号码是空的',author:'张建国1968',time:'2000-12-31 23:59',views:'2.1w',floors:[{author:'张建国1968',time:'2000-12-31 23:59',text:`十二点整电视刚数完数，家里固定电话突然炸响。接起来是个女的，声音特别冷，翻来覆去就一句“时间错了”，说了三遍直接挂。\n我翻来电显示，那一条记录是空的，连号码都没有。打去电信局问，值班的人查了半天，说我家这条线，今晚十一点到十二点半根本没有呼入记录。\n下楼倒垃圾碰见三楼老王，他说他家刚才也接到了，一模一样的声音。`},{author:'国营厂老郑',time:'2001-01-01 00:05',text:'千年虫闹的吧？新闻不说了吗，电脑时间会乱，电话说不定也乱了。'},{author:'胡同串子小李',time:'2001-01-01 00:08',text:'别扯了，我家电话也响了，接了没人说话，滋滋的电流声。'}]},
+  {id:'t3',title:'租的恐怖片碟，最后十分钟拍的是我家楼下',author:'租碟爱好者老周',time:'2003-10-16 23:47',views:'2.4w',floors:[{author:'租碟爱好者老周',time:'2003-10-16 23:47',text:`巷口那家音像店，租了个香港鬼片，叫《楼道魅影》，前面都正常。放到最后十分钟，画面突然跳了，变成我们小区单元门的镜头。\n我以为老板录错了，倒回去再放，那段又没了，变回原片结局。`},{author:'港片发烧友',time:'2003-10-16 23:52',text:'《楼道魅影》我看过啊，结局是主角死了。'},{author:'住老小区的王姨',time:'2003-10-17 00:00',text:'你们小区是不是去年有个姑娘跳楼了？'}]},
+  {id:'t4',title:'【直播】我租的老房子，衣柜门每天早上都是开的',author:'租房的小周',time:'2005-06-17 20:13',views:'4.2w',floors:[{author:'租房的小周',time:'2005-06-17 20:13',text:`每天醒过来，卧室那个大衣柜的门，肯定是半开的。\n昨天晚上特意关得严严实实，还在门缝贴了透明胶。刚才醒了，胶带断成两截，门又开了。`},{author:'贴吧老鬼',time:'2005-06-17 20:18',text:'老房子吧？以前是不是死过人？'},{author:'无神论者小李',time:'2005-06-17 20:30',text:'热胀冷缩知道不？木门受潮变形自己就开了。'}]},
+  {id:'t5',title:'小区电梯最高12楼，昨晚停在了13楼',author:'电梯维保小曹',time:'2006-10-30 23:05',views:'3.9w',floors:[{author:'电梯维保小曹',time:'2006-10-30 23:05',text:`最高12层，面板上连13的按钮都没有。\n凌晨两点多紧急呼叫响了，里面的人喊“电梯停13楼了”。\n拆开面板查程序，根本没有13楼设置。`},{author:'住10楼的王姐',time:'2006-10-30 23:10',text:'我的妈呀，我以后再也不敢坐电梯了！'},{author:'无神论先锋',time:'2006-10-31 00:12',text:'一群人合伙编故事，无聊透顶。'}]},
+  {id:'t6',title:'高三毕业照，多了个十年前死掉的学生',author:'照相馆老陈',time:'2011-06-25 15:41',views:'6.4w',floors:[{author:'照相馆老陈',time:'2011-06-25 15:41',text:`三中的高三毕业照，我拍的时候数了三遍，36个人。\n洗出来一看，第二排最左边，多了个女生。穿十年前旧校服，脸白得像纸。`},{author:'往届学姐',time:'2011-06-25 15:48',text:'01届确实有过同样传闻，后来学校让重拍了。'},{author:'不信邪的物理老师',time:'2011-06-25 16:00',text:'光学错觉而已。'}]},
+  {id:'t7',title:'凌晨拉了个乘客，下车的地方三年前就拆了',author:'夜班司机老韩',time:'2016-04-03 03:27',views:'7.1w',floors:[{author:'夜班司机老韩',time:'2016-04-03 03:27',text:`凌晨两点，市医院门口接了个单，目的地老街口32号。\n开到地方我转头收钱，后排空了。车费却自动到账了。\n老街口三年前就拆平了。`},{author:'深夜打车党',time:'2016-04-03 03:32',text:'那他怎么下的车？你没听见开门声吗？'},{author:'出租车队老李',time:'2016-04-03 03:40',text:'老街口那片拆迁的时候死过人。'}]},
+  {id:'t8',title:'快递分拣到一个包裹，寄件人是我去世三年的爷爷',author:'快递分拣员小吴',time:'2018-12-24 20:51',views:'5.8w',floors:[{author:'快递分拣员小吴',time:'2018-12-24 20:51',text:`今天平安夜，分拣快递时扫到个包裹，寄件人是我爷爷。\n那房子十年前就拆了，我爷爷去世三年了。\n拆开是个铁皮玩具汽车，我小时候一直想要。`},{author:'快递员阿凯',time:'2018-12-24 20:55',text:'会不会是你家里人寄的？'},{author:'快递行业老炮',time:'2018-12-24 21:05',text:'先排查面单系统错误。'}]},
+  {id:'t9',title:'朋友圈有个好友，我根本不认识，也没人认识',author:'广告策划小林',time:'2015-07-22 01:08',views:'6.2w',floors:[{author:'广告策划小林',time:'2015-07-22 01:08',text:`翻朋友圈刷到个账号，名字乱码，发的是我家楼下夜景。\n问了所有共同好友，所有人列表里都没这个人。`},{author:'细思极恐爱好者',time:'2015-07-22 01:18',text:'他就在你附近，能看见你在玩手机。'},{author:'无神论程序猿',time:'2015-07-22 01:20',text:'盗号了吧，先查手机安全。'}]},
+  {id:'t11',title:'部门线上会，有个不存在的参会者，踢都踢不出去',author:'互联网打工人阿泽',time:'2022-04-18 19:47',views:'5.9w',floors:[{author:'互联网打工人阿泽',time:'2022-04-18 19:47',text:`部门开线上会议，一共8个人，参会列表一直显示9个。\n多出来的ID叫“未命名用户”，踢了三次都没用。`},{author:'大厂社畜',time:'2022-04-18 19:50',text:'我们上周也遇到了！'},{author:'IT运维老王',time:'2022-04-18 19:53',text:'系统bug吧，后台数据不同步。'}]},
+  {id:'t12',title:'收了台旧手机，相册里全是我小时候的照片',author:'二手数码贩子阿凯',time:'2023-10-07 21:05',views:'7.6w',floors:[{author:'二手数码贩子阿凯',time:'2023-10-07 21:05',text:`今天上门收了台旧iPhone，回家导数据，相册里全是我小时候的照片。\n还有我去年过生日在家拍的图，没发过任何社交平台。`},{author:'二手行业老炮',time:'2023-10-07 21:10',text:'会不会是你以前丢的手机？'},{author:'数码维修师傅',time:'2023-10-07 21:20',text:'云同步bug也可能。'}]},
+  {id:'t13',title:'导航导去了一条地图上没有的路',author:'代驾司机老吕',time:'2025-03-12 00:17',views:'9.1w',floors:[{author:'代驾司机老吕',time:'2025-03-12 00:17',text:`凌晨接了单去郊区，导航让拐进一条小路。开了二十分钟都没到头。\n白天再去看，那个路口根本没有路。地图上也搜不到。`},{author:'经常跑夜路',time:'2025-03-12 00:20',text:'鬼打墙吧？老辈人都这么说。'},{author:'导航产品经理',time:'2025-03-12 00:25',text:'也可能是离线地图残留。'}]}
+];
+
+const threadById = {};
+[...threads, ...secretThreads].forEach(t => threadById[t.id] = t);
+const dmMap = {
+  '圈外勿扰': [
+    {type:'time',text:'2025年7月1日'},
+    {type:'me',text:'真的能让死人复生吗？'},
+    {type:'me',text:'到底行不行呀？你怎么不回我？'},
+    {type:'me',text:'？？？？？'},
+    {type:'me',text:'你就当安慰我一下吧，我真的太想他了，我听说是不是这类东西要提供生辰八字什么的？我知道他生日是2007年11月2日，男性，名字需要吗？叫林栎。'},
+    {type:'time',text:'28分钟后'},
+    {type:'other',text:'我看你是成都的？你是大研的吗？'},
+    {type:'me',text:'你怎么知道？'},
+    {type:'other',text:'你是不是大研一中的？'},
+    {type:'me',text:'不是，你问我那么多干什么呢？你都不回答一下我的问题。'},
+    {type:'other',text:'根本不是你想，这世界上哪里有人能复活死人，你有脑子吗？'},
+    {type:'other',text:'你叫什么名字，是不是一中的。'},
+    {type:'me',text:'不能复活死人那到底是什么意思？'},
+    {type:'other',text:'那是术语，意思是假死脱身，就是你如果想报复，哎算了给你这种智商的人说了也没用。'},
+    {type:'me',text:'那我要是有想报复的人呢？'},
+    {type:'other',text:'就是你想办法让别人以为是他杀了你，懂了吗？但你是假死，有需求再来找我，行吗？你是不是认识大研一中的林栎？'},
+    {type:'me',text:'对啊我是他朋友。'},
+    {type:'other',text:'我也是他朋友，我一直在找你，他说他把那东西给你了，还没来得及说是谁就......哎，不提了，所以那东西是在你手上吧。'},
+    {type:'me',text:'你说什么？哦，对在我这里，我存在手机里了。'},
+    {type:'other',text:'我......我能见见你吗？他经常提起你，我和他是在一个小区里认识的，你什么时候有空？'},
+    {type:'me',text:'我过几天要去黑石沟，6号我就有时间了。'},
+    {type:'other',text:'黑石沟？'},
+    {type:'me',text:'对，我前一天晚上现在酒店住一晚上，我酒店都订好了，你绝对想不到，银河酒店有一间多人间特价居然只需要423钱一晚上！'}
+  ]
+};
+
+function unlockForum(){
+  const val = document.getElementById('pw').value.trim();
+  if (val !== FORUM_PASSWORD) { document.getElementById('err').textContent = '口令错误，请重试。'; return; }
+  document.getElementById('lock').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  renderFeed(); renderDmList(); renderDm(); renderMine();
+}
+function switchTab(tab,el){ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); if(el) el.classList.add('active'); document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById('view-'+tab).classList.add('active'); }
+function renderFeed(){
+  const box = document.getElementById('feed');
+  box.innerHTML = threads.map(t => '<article class="card"><div class="row"><div style="display:flex;align-items:center;gap:8px;"><div class="avatar" onclick="openUser(event,\''+t.author.replace(/'/g,"\\'")+'\')">'+avatarText(t.author)+'</div><div><div class="name">'+alias(t.author)+'</div><div class="time">'+t.time+'</div></div></div>'+(t.tag?'<span class="tag">'+t.tag+'</span>':'')+'</div><div class="title">'+t.title+'</div><div class="preview">'+preview(t.floors[0].text)+'</div><div class="meta"><span>浏览 '+t.views+'</span><span>楼层 '+t.floors.length+'</span></div><div class="row"><button class="btn" onclick="openThread(\''+t.id+'\')">查看完整内容</button></div></article>').join('');
+}
+function openThread(id){
+  const t = threadById[id]; if(!t) return; currentOpenThread = id;
+  const html = '<div class="row" style="margin-bottom:10px;"><div><div class="title">'+t.title+'</div><div class="time">'+alias(t.author)+' · '+t.time+' · 浏览 '+(t.views||'--')+'</div></div><button class="btn" onclick="closeThread()">关闭</button></div>'+t.floors.map((f,i)=>'<div class="floor"><div class="floor-meta">'+(i+1)+'楼 · '+alias(f.author)+' · '+f.time+'</div><div class="floor-text">'+f.text+'</div></div>').join('')+'<div style="margin-top:12px;border-top:1px solid #29161b;padding-top:10px;"><textarea id="reply-text" style="width:100%;height:66px;border:1px solid #3a2227;background:#09090a;color:#fff;border-radius:8px;padding:8px;resize:none;" placeholder="在这个帖子下留言..."></textarea><div style="margin-top:8px;"><button class="btn" onclick="sendReply()">发表评论</button></div></div>';
+  document.getElementById('detail-body').innerHTML = html;
+  document.getElementById('detail-modal').classList.add('show');
+}
+function closeThread(){ document.getElementById('detail-modal').classList.remove('show'); }
+function sendReply(){
+  const el = document.getElementById('reply-text'); const txt = el ? el.value.trim() : ''; if(!txt) return;
+  const t = threadById[currentOpenThread]; if(!t) return;
+  t.floors.push({author:'思念',time:nowTime(),text:txt}); openThread(currentOpenThread); renderFeed(); toast('已留言');
+}
+
+function openUser(e, author){
+  e.stopPropagation();
+  const p = document.getElementById('user-pop');
+  const bio = author === '圈外勿扰' ? '神秘账号，发布过“死人复生 / 恶鬼索命 / 降头术”。' : '深夜活跃用户，可查看主页或发起私聊。';
+  p.innerHTML = '<h4>'+alias(author)+'</h4><p>'+bio+'</p><div class="a"><button class="btn" onclick="openHome(\''+author.replace(/'/g,"\\'")+'\')">查看首页</button><button class="btn" onclick="goDm(\''+author.replace(/'/g,"\\'")+'\')">私聊</button></div>';
+  p.style.left = Math.max(8, Math.min(window.innerWidth - 238, e.clientX - 90)) + 'px';
+  p.style.top = Math.max(8, e.clientY - 110) + 'px';
+  p.classList.add('show');
+}
+function openHome(author){
+  const list = author === '圈外勿扰' ? secretThreads : threads.filter(x => x.author === author);
+  if (!list.length) { toast('该用户主页暂无帖子'); document.getElementById('user-pop').classList.remove('show'); return; }
+  document.getElementById('user-pop').classList.remove('show');
+  const head = '<div class="row" style="margin-bottom:12px;"><div><div class="title">'+alias(author)+' 的首页</div><div class="time">共 '+list.length+' 条帖子</div></div><div style="display:flex;gap:8px;"><button class="btn" onclick="goDm(\''+author.replace(/'/g,"\\'")+'\')">私聊</button><button class="btn" onclick="closeThread()">关闭</button></div></div>';
+  const cards = list.map(p => '<div class="floor"><div class="floor-meta">'+p.time+' · 浏览 '+(p.views||'--')+'</div><div class="title" style="font-size:13px;margin-bottom:6px;">'+p.title+'</div><div class="preview" style="-webkit-line-clamp:2;">'+preview(p.floors[0].text)+'</div><div style="margin-top:8px;"><button class="btn" onclick="openThread(\''+p.id+'\')">查看完整内容</button></div></div>').join('');
+  document.getElementById('detail-body').innerHTML = head + cards;
+  document.getElementById('detail-modal').classList.add('show');
+}
+function goDm(author){
+  document.getElementById('user-pop').classList.remove('show');
+  closeThread();
+  if (!dmMap[author]) dmMap[author] = [{type:'time',text:'暂无历史记录'}];
+  currentDm = author;
+  switchTab('chat', document.querySelectorAll('.tab')[1]);
+  renderDmList(); renderDm();
+}
+function renderDmList(){
+  const b = document.getElementById('dm-list');
+  b.innerHTML = Object.keys(dmMap).map(name => '<div class="chat-item '+(name===currentDm?'active':'')+'" onclick="selectDm(\''+name.replace(/'/g,"\\'")+'\')"><div class="avatar">'+avatarText(name)+'</div><div><b>'+alias(name)+'</b><span>'+(name==='圈外勿扰'?'最后活跃：2025-07-01':'新会话')+'</span></div></div>').join('');
+}
+function selectDm(name){ currentDm = name; renderDmList(); renderDm(); }
+function renderDm(){
+  const timeline = dmMap[currentDm] || [];
+  document.getElementById('dm-title').textContent = '与 ' + alias(currentDm) + ' 的私聊';
+  const box = document.getElementById('dm-messages');
+  box.innerHTML = timeline.map(m => m.type==='time' ? '<div class="msg time">'+m.text+'</div>' : '<div class="msg '+m.type+'">'+m.text+'</div>').join('');
+  box.scrollTop = box.scrollHeight;
+}
+function sendDm(){
+  const el = document.getElementById('dm-input'); const txt = el.value.trim(); if(!txt) return;
+  dmMap[currentDm] = dmMap[currentDm] || [];
+  dmMap[currentDm].push({type:'me',text:txt});
+  el.value = '';
+  renderDm(); renderDmList();
+}
+function publishMine(){
+  const title = document.getElementById('my-title').value.trim();
+  const content = document.getElementById('my-content').value.trim();
+  if (!title || !content) { toast('请先填写标题和内容'); return; }
+  const item = {id:'my-'+Date.now(),title,author:'思念',time:nowTime(),views:'0',floors:[{author:'思念',time:nowTime(),text:content}]};
+  minePosts.unshift(item); threads.unshift(item); threadById[item.id]=item;
+  document.getElementById('my-title').value=''; document.getElementById('my-content').value='';
+  renderMine(); renderFeed(); toast('发布成功');
+}
+function renderMine(){
+  const box = document.getElementById('my-list');
+  box.innerHTML = minePosts.length ? minePosts.map(p => '<div class="my-post"><b>'+p.title+'</b><div style="font-size:12px;color:#b79ca1;line-height:1.7;margin-top:4px;">'+p.floors[0].text+'</div></div>').join('') : '<div class="my-post" style="font-size:12px;color:#8f787d;">还没有发布过帖子。</div>';
+}
+
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') unlockForum(); });
+document.getElementById('dm-input').addEventListener('keydown', e => { if (e.key === 'Enter') sendDm(); });
+document.getElementById('detail-modal').addEventListener('click', e => { if (e.target.id === 'detail-modal') closeThread(); });
+document.addEventListener('click', e => {
+  const pop = document.getElementById('user-pop');
+  if (!pop.contains(e.target) && !e.target.classList.contains('avatar')) pop.classList.remove('show');
+});
+<!--__SCRIPT_END__-->
+</body>
+</html></script>
     <script type="text/plain" id="embedded-starsecret-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -20614,7 +21111,7 @@ renderContacts();renderFeed();
             <div class="diary-entry">
                 <div class="diary-date">写于 2025 年 7 月 1 日</div>
                 <div class="diary-content">
-                    我都想通了……我那天遇到了张宏远和他妈妈，他妈妈好像特别高兴，因为他考的很好，而且他妈妈一定很爱很爱他，笑得那么灿烂，和我说话的时候那么温柔……虽然不知道她知不知道其实我不是她儿子的朋友，但我在那一刻就后悔了，我不想杀人了，他们如果死了他们家人得多伤心啊……我也不敢想象我要是死了，哥哥和妈妈会多伤心，之前哥哥说，虽然现在法律很难制裁他们，但可以把他们做的事发到网上让所有人谴责他们，可我也不愿意这样做，网上的人太吓人了，虽然他们可能是正义的，但是那种网暴真的很可怕，如果我把他们曝光到网上，他们不就成了当初的我了吗？还是算了吧，我觉得人和人之间还是应该多一点善意，如果我足够强大，我根本不会害怕和在意这些！所以我决定好了，虽然行程还是黑石沟，但是我要在我生日那天（有暴雨），在暴雨后迎接彩虹！然后和我的过去，也就是他们彻底告别！赵贺答应我会提前帮我去踩点，应该不会错过彩虹的，只可惜，林栎他看不到了……
+                    我昨天遇到了张宏远和他妈妈，他妈妈好像特别高兴，因为他考的很好，而且他妈妈一定很爱很爱他，笑得那么灿烂，和我说话的时候那么温柔……为什么他妈妈那么好，还给我买爆米花，虽然不知道她知不知道其实我不是她儿子的朋友，但我在那一刻就后悔了，我不想杀人了，他们如果死了他们家人得多伤心啊……我也不敢想象我要是死了，哥哥和妈妈会多伤心，之前哥哥说，虽然现在法律很难制裁他们，但可以把他们做的事发到网上让所有人谴责他们，可我也不愿意这样做，网上的人太吓人了，虽然他们可能是正义的，但是那种网暴真的很可怕，如果我把他们曝光到网上，他们不就成了当初的我了吗？那个神神叨叨的人还说可以帮我报复他们，只需要我假装死，还是算了吧，我觉得如果我足够强大，我根本不会害怕和在意这些！所以我决定好了，还是去黑石沟，但是我不会和他们同归于尽了，我要和他们和解，和我自己和解，就把我攒了一学期的零花钱请他们一起吃顿饭吧！我还要在我生日那天，在暴雨后迎接彩虹！希望真的能看到彩虹吧，看天气预报好像很符合彩虹出现的特征，毕竟这可是林栎的心愿！然后和我的过去，也就是他们彻底告别！赵贺答应我会提前帮我去踩点，应该不会错过彩虹的，林栎，到时候你能看到的吧……
                 </div>
             </div>
         </div>
@@ -21275,6 +21772,7 @@ requestAnimationFrame(tick);
         const MAIL_LOGIN_HTML = document.getElementById('embedded-mail-login-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         const VIDEO_HTML = document.getElementById('embedded-video-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         const SOCIAL_HTML = document.getElementById('embedded-social-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
+        const GHOSTFORUM_HTML = document.getElementById('embedded-ghostforum-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.STARSECRET_HTML = document.getElementById('embedded-starsecret-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.WHISPERCURVE_HTML = document.getElementById('embedded-whispercurve-html').textContent.replace(/<!--__SCRIPT_END__-->/g, '<\/script>');
         window.WHISPERCURVE_FACE_PRIMARY = '3.jpeg';
@@ -21300,6 +21798,50 @@ requestAnimationFrame(tick);
         window.__GRADUATION_SCARE_SHOWN = false;
         window.__WHISPERCURVE_MAX_GUIDE_DONE = false;
         window.__WHISPERCURVE_ENTER_SCHEDULED = false;
+
+        window.GLOBAL_BGM_FILE = 'Come Play with Me.mp3';
+        window.GLOBAL_BGM_VOLUME = 0.38;
+
+        function initGlobalBgm() {
+            if (window.__globalBgmAudio) return;
+            try {
+                var audio = new Audio();
+                var base = location.href.replace(/[^/]+$/, '');
+                audio.src = base + encodeURIComponent(window.GLOBAL_BGM_FILE);
+                audio.loop = true;
+                audio.volume = window.GLOBAL_BGM_VOLUME;
+                audio.preload = 'auto';
+                window.__globalBgmAudio = audio;
+            } catch (e) {}
+        }
+
+        window.tryStartGlobalBgm = function () {
+            if (window.__globalBgmStarted) return;
+            initGlobalBgm();
+            var audio = window.__globalBgmAudio;
+            if (!audio) return;
+            var playPromise = audio.play();
+            if (!playPromise || !playPromise.then) return;
+            playPromise.then(function () {
+                window.__globalBgmStarted = true;
+                document.removeEventListener('pointerdown', window.tryStartGlobalBgm, true);
+                document.removeEventListener('keydown', window.tryStartGlobalBgm, true);
+            }).catch(function () {});
+        };
+
+        window.closeStarBrowserApp = function () {
+            var appId = 'edge';
+            var win = state.openWindows[appId];
+            if (!win) return;
+            clearGuideOverlay();
+            unbindBrowserSearchTutorialSubmit();
+            window.__STARBROWSER_PENDING_URL = null;
+            win.element.remove();
+            delete state.openWindows[appId];
+            var taskIcon = document.getElementById('taskbar-icon-' + appId);
+            if (taskIcon) taskIcon.remove();
+            updateTaskbarActiveState();
+        };
 
         // 监听设置界面的亮度和主题色变化
         setInterval(function() {
@@ -21328,14 +21870,99 @@ requestAnimationFrame(tick);
         // --- 全局回收站数据（主页面和文件管理器共享） ---
         window.recyclebinItems = window.recyclebinItems || [];
 
+        // 灵异论坛：默认未安装，可由应用商店/浏览器安装并写入 D 盘
+        window.GHOST_FORUM_APP = {
+            id: 'ghostforum',
+            name: '灵异论坛',
+            icon: 'fa-ghost',
+            gradient: 'linear-gradient(135deg, #6d28d9, #1e1b4b)',
+            svg: `<svg viewBox="0 0 48 48"><defs><linearGradient id="gf" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4b63"/><stop offset="100%" stop-color="#7a0618"/></linearGradient></defs><path d="M24 4 C24 4 11 18 11 27 C11 36 17.5 42 24 42 C30.5 42 37 36 37 27 C37 18 24 4 24 4Z" fill="url(#gf)"/><ellipse cx="20" cy="20" rx="4.2" ry="6.2" fill="rgba(255,190,202,0.45)" transform="rotate(18 20 20)"/></svg>`
+        };
+        window.__GHOST_FORUM_INSTALLED = window.__GHOST_FORUM_INSTALLED === true;
+        window.__D_DYNAMIC_INSTALLS = window.__D_DYNAMIC_INSTALLS || {
+            '灵异论坛': { key: 'd/灵异论坛', exe: '灵异论坛.exe', installed: window.__GHOST_FORUM_INSTALLED }
+        };
+        window.__D_DYNAMIC_INSTALLS['灵异论坛'].installed = window.__GHOST_FORUM_INSTALLED;
+
+        function cloneGhostForumApp() {
+            return {
+                id: window.GHOST_FORUM_APP.id,
+                name: window.GHOST_FORUM_APP.name,
+                icon: window.GHOST_FORUM_APP.icon,
+                gradient: window.GHOST_FORUM_APP.gradient,
+                svg: window.GHOST_FORUM_APP.svg
+            };
+        }
+
+        function ensureGhostForumCatalogEntry() {
+            if (!Array.isArray(window.__allAppsCatalog)) return;
+            if (!window.__allAppsCatalog.some(function (a) { return a && a.id === 'ghostforum'; })) {
+                window.__allAppsCatalog.push(cloneGhostForumApp());
+            }
+        }
+
+        window.installGhostForumFromSource = function (source) {
+            if (window.__GHOST_FORUM_INSTALLED) {
+                if (typeof showOsToast === 'function') showOsToast('灵异论坛已经安装。');
+                return { ok: false, installed: true };
+            }
+            window.__GHOST_FORUM_INSTALLED = true;
+            if (window.__D_DYNAMIC_INSTALLS && window.__D_DYNAMIC_INSTALLS['灵异论坛']) {
+                window.__D_DYNAMIC_INSTALLS['灵异论坛'].installed = true;
+            }
+            if (window.dDriveVfs) window.dDriveVfs['灵异论坛'] = true;
+            if (Array.isArray(window.apps)) {
+                window.apps.push(cloneGhostForumApp());
+            }
+            ensureGhostForumCatalogEntry();
+            if (typeof desktopRefresh === 'function') desktopRefresh();
+
+            // 同步已打开的资源管理器窗口
+            if (state && state.openWindows) {
+                Object.keys(state.openWindows).forEach(function (id) {
+                    var win = state.openWindows[id];
+                    if (!win || !win.element) return;
+                    var iframe = win.element.querySelector('iframe[id^="app-iframe-"]');
+                    if (!iframe || !iframe.contentWindow) return;
+                    try {
+                        if (typeof iframe.contentWindow.refreshDynamicDApps === 'function') {
+                            iframe.contentWindow.refreshDynamicDApps();
+                        }
+                    } catch (e) {}
+                });
+            }
+            if (typeof showOsToast === 'function') {
+                var suffix = source === 'browser' ? '（来自浏览器）' : '（来自应用商店）';
+                showOsToast('灵异论坛安装完成，桌面已创建快捷方式' + suffix);
+            }
+            return { ok: true, installed: true };
+        };
+
+        (function seedRecycleBinItems() {
+            if (window.__RECYCLEBIN_PRESEED_DONE) return;
+            window.__RECYCLEBIN_PRESEED_DONE = true;
+            window.recyclebinItems.push({
+                name: '灵异论坛.lnk',
+                type: 'file',
+                date: '',
+                size: '1 KB',
+                _originalApp: window.GHOST_FORUM_APP,
+                _source: 'desktop'
+            });
+        })();
+
+        // D 盘文件夹名 → 桌面程序名（文件夹名可与 exe/快捷方式显示名不同）
+        window.__D_FOLDER_APP_MAP = { '豆浆私密助手': '计算器', '灵异论坛': '灵异论坛' };
+
         // --- D盘程序状态跟踪（主页面和文件管理器共享） ---
         window.dDriveVfs = window.dDriveVfs || {
-            '星途浏览器': true, '文档': true, '应用商店': true, '邮件': true,
-            '照片': true, '设置': true, '文档处理': true, '表格计算': true,
+            '星途浏览器': true, '应用商店': true, '邮件': true,
+            '文档处理': true, '表格计算': true,
             '幻灯片演示': true, '媒体播放器': true, '电影与电视': true, '画图 3D': true,
             '计算器': true, '日历': true, '时钟': true, '便笺': true,
             '聊天': true, '社交网络': true,  '天气': true,
-            '压缩软件': true, '安全中心': true, '任务管理器': true, '风正设备互联': true
+            '压缩软件': true, '安全中心': true, '任务管理器': true, '风正设备互联': true,
+            '灵异论坛': window.__GHOST_FORUM_INSTALLED
         };
 
         window.renameAppWindow = function (appId, name) {
@@ -21346,8 +21973,24 @@ requestAnimationFrame(tick);
             }
         };
 
-        window.__SOYMILK_VAULT_PIN = '0724';
+        window.__SOYMILK_VAULT_PIN = '1102';
         window.__SOYMILK_VAULT_FILES = window.__SOYMILK_VAULT_FILES || { all: [], photos: [], videos: [], audios: [] };
+        /** 线索文件放入仓库后在此登记：{ id, name, kind:'photo'|'video'|'audio', url, thumb? } */
+        window.__SOYMILK_VAULT_MANIFEST = window.__SOYMILK_VAULT_MANIFEST || [];
+        window.mergeSoymilkVaultManifest = function (entries) {
+            var list = entries || window.__SOYMILK_VAULT_MANIFEST;
+            if (!Array.isArray(list)) return;
+            var store = window.__SOYMILK_VAULT_FILES;
+            list.forEach(function (e) {
+                if (!e || !e.id || store.all.some(function (x) { return x.id === e.id; })) return;
+                store.all.push(e);
+                var kind = e.kind || e.type;
+                if (kind === 'photo') store.photos.push(e);
+                else if (kind === 'video') store.videos.push(e);
+                else if (kind === 'audio') store.audios.push(e);
+            });
+        };
+        if (window.__SOYMILK_VAULT_MANIFEST.length) window.mergeSoymilkVaultManifest();
 
         // --- 1. 超级详尽的专业应用库数据 (Windows 11 Fluent 风格) ---
         let apps = [
@@ -22346,6 +22989,10 @@ requestAnimationFrame(tick);
                         try { window.onWhisperCurvePageEntered(); } catch (err) {}
                     }, 400);
                 }
+                return;
+            }
+            if (ev.data.type === 'starbrowser-close') {
+                window.closeStarBrowserApp();
             }
         });
 
@@ -23235,6 +23882,10 @@ requestAnimationFrame(tick);
             updateClock();
             setInterval(updateClock, 1000);
 
+            initGlobalBgm();
+            document.addEventListener('pointerdown', window.tryStartGlobalBgm, true);
+            document.addEventListener('keydown', window.tryStartGlobalBgm, true);
+
             const startBtn = document.getElementById('start-btn');
             startBtn.addEventListener('click', (e) => {
                 if (isGuideActive()) { e.preventDefault(); e.stopPropagation(); return; }
@@ -23247,6 +23898,7 @@ requestAnimationFrame(tick);
             // 暴露 apps 到全局，供 iframe 内访问
             window.apps = apps;
             window.__allAppsCatalog = apps.slice();
+            ensureGhostForumCatalogEntry();
 
             // 快捷键：更像真实 PC
             document.addEventListener('keydown', function(e) {
@@ -24218,7 +24870,7 @@ requestAnimationFrame(tick);
                 </div>
                 <!-- 软件内容骨架 -->
                 <div class="app-skeleton" style="overflow: hidden;">
-                    ${(app.id === 'fengzheng' || app.id === 'edge' || app.id === 'explorer' || app.id === 'trash' || app.id === 'photos' || app.id === 'paint' || app.id === 'mail' || app.id === 'settings' || app.id === 'store' || app.id === 'word' || app.id === 'sheet' || app.id === 'slide' || app.id === 'music' || app.id === 'calendar' || app.id === 'clock' || app.id === 'sticky' || app.id === 'zipapp' || app.id === 'security' || app.id === 'taskmgr' || app.id === 'calc' || app.id === 'weather' || app.id === 'video' || app.id === 'social' || app.id === 'chat' || app.id === 'chat' || app.id === 'chat')
+                    ${(app.id === 'fengzheng' || app.id === 'edge' || app.id === 'explorer' || app.id === 'trash' || app.id === 'photos' || app.id === 'paint' || app.id === 'mail' || app.id === 'settings' || app.id === 'store' || app.id === 'word' || app.id === 'sheet' || app.id === 'slide' || app.id === 'music' || app.id === 'calendar' || app.id === 'clock' || app.id === 'sticky' || app.id === 'zipapp' || app.id === 'security' || app.id === 'taskmgr' || app.id === 'calc' || app.id === 'weather' || app.id === 'video' || app.id === 'social' || app.id === 'chat' || app.id === 'chat' || app.id === 'chat' || app.id === 'ghostforum')
                         ? (app.id === 'edge'
                             ? '<div class="app-iframe-wrap"><div class="app-iframe-loader" id="loader-' + app.id + '"><div class="loader-ring"></div><span>星途浏览器正在加载…</span></div><iframe id="app-iframe-' + app.id + '" style="width:100%;height:100%;border:none;" allowfullscreen></iframe></div>'
                             : '<iframe id="app-iframe-' + app.id + '" style="width:100%;height:100%;border:none;" allowfullscreen></iframe>')
@@ -24264,7 +24916,7 @@ requestAnimationFrame(tick);
             winEl.addEventListener('mousedown', () => bringToFront(app.id));
 
             // 内嵌应用：通过 srcdoc 加载完整代码
-            if (app.id === 'fengzheng' || app.id === 'edge' || app.id === 'explorer' || app.id === 'trash' || app.id === 'photos' || app.id === 'paint' || app.id === 'mail' || app.id === 'settings' || app.id === 'store' || app.id === 'word' || app.id === 'sheet' || app.id === 'slide' || app.id === 'music' || app.id === 'calendar' || app.id === 'clock' || app.id === 'sticky' || app.id === 'zipapp' || app.id === 'security' || app.id === 'taskmgr' || app.id === 'calc' || app.id === 'weather' || app.id === 'video' || app.id === 'social' || app.id === 'chat' || app.id === 'chat' || app.id === 'chat') {
+            if (app.id === 'fengzheng' || app.id === 'edge' || app.id === 'explorer' || app.id === 'trash' || app.id === 'photos' || app.id === 'paint' || app.id === 'mail' || app.id === 'settings' || app.id === 'store' || app.id === 'word' || app.id === 'sheet' || app.id === 'slide' || app.id === 'music' || app.id === 'calendar' || app.id === 'clock' || app.id === 'sticky' || app.id === 'zipapp' || app.id === 'security' || app.id === 'taskmgr' || app.id === 'calc' || app.id === 'weather' || app.id === 'video' || app.id === 'social' || app.id === 'chat' || app.id === 'chat' || app.id === 'chat' || app.id === 'ghostforum') {
                 const iframe = winEl.querySelector('#app-iframe-' + app.id);
                 if (iframe) {
                     if (app.id === 'edge') attachIframeLoader(iframe, app);
@@ -24352,6 +25004,7 @@ requestAnimationFrame(tick);
                     }
                     else if (app.id === 'video') iframe.srcdoc = VIDEO_HTML;
                     else if (app.id === 'social') iframe.srcdoc = SOCIAL_HTML;
+                    else if (app.id === 'ghostforum') iframe.srcdoc = GHOSTFORUM_HTML;
                     else if (app.id === 'weather') iframe.srcdoc = WEATHER_HTML;
                 }
             }
