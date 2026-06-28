@@ -797,6 +797,16 @@
             letter-spacing: 0.05em; font-family: "PingFang SC", "Microsoft YaHei", serif;
             white-space: pre-wrap; min-height: 1.6em; text-align: center;
         }
+        .final-ending-cursor {
+            display: inline-block; width: 2px; height: 1.05em;
+            margin-left: 2px; vertical-align: text-bottom;
+            background: currentColor; opacity: 1;
+            animation: finalCursorBlink 0.82s step-end infinite;
+        }
+        @keyframes finalCursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
         .final-ending-wrap.is-true .final-ending-title {
             color: #ff3d52; text-shadow: 0 0 28px rgba(255,40,60,0.55), 0 0 8px rgba(255,80,90,0.4);
         }
@@ -925,7 +935,7 @@
             to { opacity: 1; transform: scale(1); }
         }
         .true-ending-error-dialog .te-titlebar {
-            background: linear-gradient(180deg, #0058e6, #0050d0);
+            background: linear-gradient(180deg, #c42b1c, #a82418);
             color: #fff; padding: 4px 8px; font-size: 12px;
             display: flex; justify-content: space-between; align-items: center;
         }
@@ -948,13 +958,19 @@
             background: #e8e8e8; font-size: 12px; font-family: inherit;
         }
         .desktop-item.true-ending-vanish {
-            animation: trueIconVanish 0.55s ease forwards;
+            animation: trueIconVanish 0.38s ease forwards;
             pointer-events: none;
         }
         @keyframes trueIconVanish {
             0% { opacity: 1; transform: scale(1); filter: none; }
             100% { opacity: 0; transform: scale(0.55) translateY(16px); filter: blur(6px) hue-rotate(90deg); }
         }
+        .true-ending-flash {
+            position: fixed; inset: 0; z-index: 100031;
+            background: #fff; opacity: 0.92; pointer-events: none;
+            transition: opacity 0.28s ease;
+        }
+        .true-ending-flash.fade-out { opacity: 0; }
         #true-ending-black-veil {
             position: fixed; inset: 0; z-index: 100028;
             background: #000; opacity: 0;
@@ -971,6 +987,64 @@
         #true-ending-blood-text.active {
             display: flex;
         }
+
+        /* ================= 最终阶段转场 ================= */
+        #final-stage-transition {
+            position: fixed; inset: 0; z-index: 100045;
+            display: none; pointer-events: auto;
+        }
+        #final-stage-transition.active { display: block; }
+        #fst-expand-overlay {
+            position: fixed; background: #000; z-index: 1;
+            border-radius: 8px; pointer-events: none;
+            will-change: left, top, width, height, border-radius;
+        }
+        #fst-text-layer {
+            position: fixed; inset: 0; z-index: 2;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            pointer-events: none; opacity: 0;
+            transition: opacity 0.55s ease;
+        }
+        #fst-text-layer.show { opacity: 1; }
+        #fst-text-layer .fst-title {
+            font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 200;
+            letter-spacing: 0.35em; color: rgba(255,255,255,0.92);
+            font-family: -apple-system, "Segoe UI", sans-serif;
+            text-indent: 0.35em;
+        }
+        #fst-text-layer .fst-sub {
+            font-size: clamp(0.85rem, 2.2vw, 1rem);
+            letter-spacing: 0.55em; color: rgba(255,255,255,0.38);
+            margin-top: 18px; text-indent: 0.55em;
+            font-family: "PingFang SC", "Noto Serif SC", serif;
+        }
+        #final-stage-transition.fst-fade-out #fst-expand-overlay,
+        #final-stage-transition.fst-fade-out #fst-text-layer {
+            opacity: 0; transition: opacity 0.45s ease;
+        }
+
+        /* ================= 实景壁纸（图片） ================= */
+        .wallpaper-photo-coral,
+        .wallpaper-photo-mist,
+        .wallpaper-photo-palace,
+        .wallpaper-photo-future {
+            position: relative; overflow: hidden;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .wallpaper-photo-coral::before, .wallpaper-photo-coral::after,
+        .wallpaper-photo-mist::before, .wallpaper-photo-mist::after,
+        .wallpaper-photo-palace::before, .wallpaper-photo-palace::after,
+        .wallpaper-photo-future::before, .wallpaper-photo-future::after {
+            display: none !important; content: none !important;
+        }
+        .wallpaper-photo-coral { background-image: url('壁纸1.png'); }
+        .wallpaper-photo-mist { background-image: url('壁纸2.png'); }
+        .wallpaper-photo-palace { background-image: url('壁纸3.png'); }
+        .wallpaper-photo-future { background-image: url('壁纸4.png'); }
         #true-ending-blood-text .te-blood-inner {
             max-width: 680px; width: 100%;
             color: #8a0303; font-family: "Noto Serif SC", "SimSun", serif;
@@ -1223,6 +1297,37 @@
             font-family: inherit; font-size: 0.9rem; transition: all 0.25s;
         }
         .title-modal-close:hover { color: #fff; border-color: #8a0303; text-shadow: 0 0 8px rgba(138,3,3,0.6); }
+        .title-archive-tabs {
+            display: flex; gap: 10px; margin-bottom: 18px; border-bottom: 1px solid rgba(138,3,3,0.25);
+            padding-bottom: 12px;
+        }
+        .title-archive-tab {
+            background: transparent; border: 1px solid rgba(138,3,3,0.35);
+            color: #aaa; padding: 7px 16px; cursor: pointer;
+            font-family: inherit; font-size: 0.88rem; letter-spacing: 0.15em;
+            transition: all 0.22s;
+        }
+        .title-archive-tab:hover { color: #ddd; border-color: rgba(138,3,3,0.6); }
+        .title-archive-tab.active {
+            color: #fff; border-color: rgba(138,3,3,0.85);
+            background: rgba(138,3,3,0.18);
+            text-shadow: 0 0 8px rgba(138,3,3,0.35);
+        }
+        .title-archive-tab.is-locked:not(.active) { opacity: 0.72; }
+        .title-archive-tab.is-unlocked { border-color: rgba(255,80,90,0.45); }
+        .title-archive-section { display: none; }
+        .title-archive-section.active { display: block; }
+        .title-archive-truth-locked {
+            text-align: center; padding: 28px 12px; color: #888;
+            font-size: 0.92rem; line-height: 1.9; letter-spacing: 0.06em;
+        }
+        .title-archive-truth-locked .lock-icon {
+            display: block; font-size: 1.6rem; margin-bottom: 12px; opacity: 0.65;
+        }
+        .title-archive-truth-body p {
+            margin: 0 0 1.1em; text-align: justify;
+        }
+        .title-archive-truth-body p:last-child { margin-bottom: 0; }
         .title-setting-row {
             display: flex; align-items: center; justify-content: space-between;
             padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -1242,6 +1347,20 @@
         .title-settings-tip {
             margin-top: 18px; font-size: 0.82rem; line-height: 1.85; color: #777;
             letter-spacing: 0.04em; border-top: 1px solid rgba(138,3,3,0.2); padding-top: 16px;
+        }
+        #gs-fullscreen-btn {
+            position: absolute; top: 20px; right: 22px; z-index: 30;
+            background: rgba(0,0,0,0.35); border: 1px solid rgba(138,3,3,0.45);
+            color: rgba(255,255,255,0.82); padding: 8px 14px; cursor: pointer;
+            font-family: 'Noto Serif SC', 'SimSun', serif; font-size: 0.82rem;
+            letter-spacing: 0.12em; transition: all 0.25s; backdrop-filter: blur(4px);
+        }
+        #gs-fullscreen-btn:hover {
+            color: #fff; border-color: rgba(138,3,3,0.85);
+            box-shadow: 0 0 12px rgba(138,3,3,0.35);
+        }
+        #gs-fullscreen-btn.is-active {
+            background: rgba(138,3,3,0.28); border-color: rgba(138,3,3,0.75);
         }
 
         /* Windows 登录界面 · 居中：时间 → 头像 → 密码 */
@@ -1344,41 +1463,9 @@
 </head>
 <body>
 
-    <!-- DEV：开发测试用，上线前删除 -->
-    <button type="button" id="dev-skip-guide-btn" class="dev-skip-guide-btn" title="开发者模式：快进到真结局（结局卡片起）">开发者模式</button>
-    <script>
-    (function () {
-        window.enableDeveloperMode = function () {
-            if (typeof window.devFastForwardTrueEnding === 'function') {
-                window.devFastForwardTrueEnding();
-            } else {
-                setTimeout(window.enableDeveloperMode, 80);
-            }
-        };
-        function pinDevSkipBtn() {
-            var btn = document.getElementById('dev-skip-guide-btn');
-            if (!btn) {
-                btn = document.createElement('button');
-                btn.id = 'dev-skip-guide-btn';
-                btn.type = 'button';
-                btn.className = 'dev-skip-guide-btn';
-                btn.title = '开发者模式：快进到真结局（结局卡片起）';
-                btn.textContent = '开发者模式';
-                document.body.appendChild(btn);
-            } else {
-                document.body.appendChild(btn);
-            }
-            btn.onclick = function () {
-                window.enableDeveloperMode();
-            };
-        }
-        pinDevSkipBtn();
-        document.addEventListener('DOMContentLoaded', pinDevSkipBtn);
-    })();
-    </script>
-
     <!-- 0. 游戏主菜单 -->
     <div id="game-title-screen">
+        <button type="button" id="gs-fullscreen-btn" title="切换全屏">全屏</button>
         <div class="gs-noise-overlay"></div>
         <div class="gs-vignette"></div>
         <div class="gs-flashlight" id="gs-flashlight"></div>
@@ -1435,9 +1522,22 @@
     </div>
 
     <div id="title-archive-overlay">
-        <div class="title-modal-panel">
+        <div class="title-modal-panel title-archive-panel">
             <h2>案件档案</h2>
-            <p>我是一名刚刚从高校毕业的大学生，本来怀揣着开启新生活的喜悦准备重返家乡，不料却在几天前收到了自己亲生弟弟沈安失踪的消息……他留下的唯一线索，便是房间里的一台电脑，为了找到弟弟失踪的真相，我打开了这台电脑……</p>
+            <div class="title-archive-tabs">
+                <button type="button" class="title-archive-tab active" data-archive-tab="prologue" id="title-archive-tab-prologue">前情提要</button>
+                <button type="button" class="title-archive-tab is-locked" data-archive-tab="truth" id="title-archive-tab-truth">真相</button>
+            </div>
+            <div id="title-archive-prologue" class="title-archive-section active">
+                <p>我是一名刚刚从高校毕业的大学生，本来怀揣着开启新生活的喜悦准备重返家乡，不料却在几天前收到了自己亲生弟弟沈安失踪的消息……他留下的唯一线索，便是房间里的一台电脑，为了找到弟弟失踪的真相，我打开了这台电脑……</p>
+            </div>
+            <div id="title-archive-truth" class="title-archive-section">
+                <div class="title-archive-truth-locked" id="title-archive-truth-locked">
+                    <span class="lock-icon">🔒</span>
+                    尚未解锁。达成真结局后可在此查看完整真相。
+                </div>
+                <div class="title-archive-truth-body" id="title-archive-truth-body" hidden></div>
+            </div>
             <button type="button" class="title-modal-close" id="title-archive-close">关闭</button>
         </div>
     </div>
@@ -1490,6 +1590,61 @@
         if (!screen) return;
         screen.classList.add('entry-locked');
 
+        var ENTRY_PREFS_KEY = 'seasonGraduationEntry';
+
+        function getSavedEntryPrefs() {
+            try {
+                var raw = sessionStorage.getItem(ENTRY_PREFS_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function saveEntryPrefs(wantFullscreen) {
+            try {
+                sessionStorage.setItem(ENTRY_PREFS_KEY, JSON.stringify({
+                    confirmed: true,
+                    wantFullscreen: !!wantFullscreen
+                }));
+            } catch (e) {}
+        }
+
+        function isDocumentFullscreen() {
+            return !!(
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
+            );
+        }
+
+        function restoreFullscreenOnNextGesture() {
+            function tryRestore() {
+                document.removeEventListener('pointerdown', tryRestore, true);
+                document.removeEventListener('keydown', tryRestore, true);
+                if (isFullscreenSupported() && !isDocumentFullscreen()) {
+                    requestGameFullscreen().catch(function () {});
+                }
+            }
+            document.addEventListener('pointerdown', tryRestore, true);
+            document.addEventListener('keydown', tryRestore, true);
+        }
+
+        function applySavedEntryPrefs() {
+            var saved = getSavedEntryPrefs();
+            if (!saved || !saved.confirmed) return false;
+            window.__ENTRY_CONFIRMED = true;
+            var entry = document.getElementById('game-entry-overlay');
+            if (entry) entry.classList.add('dismissed');
+            screen.classList.remove('entry-locked');
+            if (saved.wantFullscreen) restoreFullscreenOnNextGesture();
+            return true;
+        }
+
+        window.isDocumentFullscreen = isDocumentFullscreen;
+
         function isFullscreenSupported() {
             var el = document.documentElement;
             return !!(
@@ -1512,6 +1667,39 @@
                 return p || Promise.resolve();
             } catch (e) {
                 return Promise.reject(e);
+            }
+        }
+
+        function exitGameFullscreen() {
+            var doc = document;
+            var exit = doc.exitFullscreen ||
+                doc.webkitExitFullscreen ||
+                doc.mozCancelFullScreen ||
+                doc.msExitFullscreen;
+            if (!exit) return Promise.reject(new Error('unsupported'));
+            try {
+                var p = exit.call(doc);
+                return p || Promise.resolve();
+            } catch (e) {
+                return Promise.reject(e);
+            }
+        }
+
+        function updateTitleFullscreenBtn() {
+            var btn = document.getElementById('gs-fullscreen-btn');
+            if (!btn) return;
+            var on = isDocumentFullscreen();
+            btn.textContent = on ? '退出全屏' : '全屏';
+            btn.title = on ? '退出全屏' : '进入全屏';
+            btn.classList.toggle('is-active', on);
+        }
+
+        function toggleTitleFullscreen() {
+            if (!isFullscreenSupported()) return;
+            if (isDocumentFullscreen()) {
+                exitGameFullscreen().catch(function () {});
+            } else {
+                requestGameFullscreen().catch(function () {});
             }
         }
 
@@ -1545,6 +1733,7 @@
         function confirmGameEntry(wantFullscreen) {
             if (window.__ENTRY_CONFIRMED) return;
             window.__ENTRY_CONFIRMED = true;
+            saveEntryPrefs(wantFullscreen);
             startBgmFromUserGesture();
             if (wantFullscreen) {
                 requestGameFullscreen().catch(function () {});
@@ -1558,6 +1747,8 @@
             var msgEl = document.getElementById('game-entry-msg');
             var actionsEl = document.getElementById('game-entry-actions');
             if (!msgEl || !actionsEl) return;
+
+            if (applySavedEntryPrefs()) return;
 
             function makeBtn(label, primary, onClick) {
                 var btn = document.createElement('button');
@@ -1583,7 +1774,23 @@
         window.confirmGameEntry = confirmGameEntry;
         window.isFullscreenSupported = isFullscreenSupported;
         window.requestGameFullscreen = requestGameFullscreen;
+        window.exitGameFullscreen = exitGameFullscreen;
         window.startBgmFromUserGesture = startBgmFromUserGesture;
+
+        var fsBtn = document.getElementById('gs-fullscreen-btn');
+        if (fsBtn) {
+            if (!isFullscreenSupported()) {
+                fsBtn.style.display = 'none';
+            } else {
+                fsBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    toggleTitleFullscreen();
+                });
+                document.addEventListener('fullscreenchange', updateTitleFullscreenBtn);
+                document.addEventListener('webkitfullscreenchange', updateTitleFullscreenBtn);
+                updateTitleFullscreenBtn();
+            }
+        }
 
         var canvas = document.getElementById('gs-particle-canvas');
         var ctx = canvas ? canvas.getContext('2d') : null;
@@ -1735,7 +1942,74 @@
             if (el) el.classList.remove('show');
         };
 
+        var ARCHIVE_TRUTH_UNLOCK_KEY = 'seasonGraduationTruthUnlocked';
+
+        window.isArchiveTruthUnlocked = function () {
+            try { return localStorage.getItem(ARCHIVE_TRUTH_UNLOCK_KEY) === '1'; } catch (e) { return false; }
+        };
+
+        window.unlockArchiveTruth = function () {
+            try { localStorage.setItem(ARCHIVE_TRUTH_UNLOCK_KEY, '1'); } catch (e) {}
+            if (typeof window.refreshTitleArchiveView === 'function') window.refreshTitleArchiveView();
+        };
+
+        window.getArchiveTruthParagraphs = function () {
+            return [
+                '一直以来，弟弟都被他们三人，以开玩笑的方式欺负……但幸运的是，在那段黑暗的时光，他仍然遇到了光 —— 与他同班的赵贺成为了他的死党，会在必要的时候挺身而出，会和他打趣，会给他抄作业……',
+                '还有在食堂结识的学校最优秀的班型「飞天班」的林栎。林栎虽然聪明但却挑食，身形消瘦，偶然在一次倒饭的时候撞到沈安，弟弟看到满盘的「老妈仔鸭」，忍不住询问对方能不能分给自己，对方爽快答应，并且约定每次都由弟弟帮他解决多出来的饭菜，二人就此结识，成为了无话不谈的饭搭子。',
+                '然而，好景不长，林栎状态变得越来越奇怪，他似乎被卷进了什么事情，时常顶着两个大大的黑眼圈，面对沈安的询问，也总是避而不谈。直到有一天晚上，对方匆匆交付给弟弟一张纸条，然后嘱托对方几句后匆忙离开，就在那不久后……学校被封闭起来 —— 有三具尸体被发现，其中便包含林栎，这场惨案惊天动地，甚至上了当地热搜，但至今仍是悬案。弟弟谨遵林栎的嘱托，没有声张，默默地思念着对方。',
+                '大约一年后，高考结束，分数出炉的那一刻，弟弟五味杂陈，看着朋友圈炫耀分数、行程的三个霸凌者，他感到无比愤怒，为什么自己是受害者，却过着比他们那么悲惨的生活？那一刻，挤压多年的委屈化为愤怒 —— 他想杀了他们。地点就在黑石沟，他要和他们同归于尽……但后来我们得知，这并未发生。',
+                '也许是因为善良的本质，也许是因为他周围的善意永远还是存在的，让他没有放弃希望，他最后决定，和过去的自己告别，和过去伤害过自己、成为自己阴影的人和解。临近旅程，弟弟无意间在某个平台了解到了「死人复生」，尽管知道是假的，他还是因为对林栎的深深思念，鬼使神差地下载了灵异论坛，找到了发起者，却了解到一层更隐秘的内幕。单纯的他并没有多想，反而一不小心暴露了自己和林栎的关系，绝不能透露的事意外地让最不能知晓的人知晓了……',
+                '这位「圈外勿扰」，正是一年前的真凶！不仅如此，弟弟还彻底暴露了自己的行踪，只要搜索当地同名酒店的同价位房间……对方终于找到了当年遗留的另外一个潜在知情人，好在弟弟够笨，他只需要把林栎留下的东西清理干净就行，没想到弟弟却在一瞬间意识到了什么，还是发现了他的身份。他不得已临时把弟弟灭口，并且根据另外三人的把柄，保证了他们不会说出去，并且威胁三人第二天按他的方式营造弟弟在山中发生意外的假象，自己则把弟弟和弟弟的手机一同在半夜沉入河中，当地位置偏僻，根本没有监控拍到这一切……',
+                '在这之后，对方进一步调查，得知了哥哥「我」的存在，并且一直悄悄监视着自己。',
+                '下一章（如果有的话），将随着林栎的视角，回到过去，找出那个躲在暗处的真凶。'
+            ];
+        };
+
+        window.refreshTitleArchiveView = function () {
+            var unlocked = window.isArchiveTruthUnlocked();
+            var tabTruth = document.getElementById('title-archive-tab-truth');
+            var lockedEl = document.getElementById('title-archive-truth-locked');
+            var bodyEl = document.getElementById('title-archive-truth-body');
+            if (tabTruth) {
+                tabTruth.classList.toggle('is-locked', !unlocked);
+                tabTruth.classList.toggle('is-unlocked', unlocked);
+            }
+            if (lockedEl && bodyEl) {
+                if (unlocked) {
+                    lockedEl.hidden = true;
+                    bodyEl.hidden = false;
+                    if (!bodyEl.dataset.filled) {
+                        var paras = window.getArchiveTruthParagraphs();
+                        bodyEl.innerHTML = paras.map(function (t) {
+                            return '<p>' + t + '</p>';
+                        }).join('');
+                        bodyEl.dataset.filled = '1';
+                    }
+                } else {
+                    lockedEl.hidden = false;
+                    bodyEl.hidden = true;
+                }
+            }
+        };
+
+        function switchArchiveTab(tabName) {
+            var tabs = document.querySelectorAll('.title-archive-tab');
+            var sections = document.querySelectorAll('.title-archive-section');
+            tabs.forEach(function (btn) {
+                btn.classList.toggle('active', btn.getAttribute('data-archive-tab') === tabName);
+            });
+            sections.forEach(function (sec) {
+                var id = sec.id;
+                var active = (tabName === 'prologue' && id === 'title-archive-prologue') ||
+                    (tabName === 'truth' && id === 'title-archive-truth');
+                sec.classList.toggle('active', active);
+            });
+        }
+
         window.showTitleArchive = function () {
+            if (typeof window.refreshTitleArchiveView === 'function') window.refreshTitleArchiveView();
+            switchArchiveTab('prologue');
             var el = document.getElementById('title-archive-overlay');
             if (el) el.classList.add('show');
         };
@@ -1847,6 +2121,12 @@
         if (btnClose) btnClose.addEventListener('click', window.hideTitleHelp);
         if (btnArchiveClose) btnArchiveClose.addEventListener('click', window.hideTitleArchive);
         if (btnSettingsClose) btnSettingsClose.addEventListener('click', window.hideTitleSettings);
+        document.querySelectorAll('.title-archive-tab').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                switchArchiveTab(btn.getAttribute('data-archive-tab'));
+            });
+        });
+        window.refreshTitleArchiveView();
         if (helpOverlay) helpOverlay.addEventListener('click', function (e) {
             if (e.target === helpOverlay) window.hideTitleHelp();
         });
@@ -9334,6 +9614,7 @@ requestAnimationFrame(function() {
             selectedIndex = -1;
             updateActionButtons();
             renderExplorer();
+            try { if (window.parent.playFileDeleteRustle) window.parent.playFileDeleteRustle(); } catch (e) {}
             try { if (window.parent.syncExplorerVfsSnapshot) window.parent.syncExplorerVfsSnapshot(vfs); } catch (e) {}
         }
 
@@ -9345,6 +9626,7 @@ requestAnimationFrame(function() {
                 if (idx > -1) rb.splice(idx, 1);
             } catch(e) {}
             renderExplorer();
+            try { if (window.parent.playFileDeleteRustle) window.parent.playFileDeleteRustle(); } catch (e) {}
             try { if (window.parent.syncExplorerVfsSnapshot) window.parent.syncExplorerVfsSnapshot(vfs); } catch (e) {}
         }
 
@@ -9484,6 +9766,7 @@ requestAnimationFrame(function() {
             } catch(e) {}
             selectedIndex = -1;
             renderExplorer();
+            try { if (window.parent.playFileDeleteRustle) window.parent.playFileDeleteRustle(); } catch (e) {}
         }
 
         function handleRightClickItem(event, idx) {
@@ -10796,11 +11079,11 @@ requestAnimationFrame(function() {
                 <div class="bg-white rounded border border-[#E5E5E5] p-5 space-y-4 shadow-sm">
                     <h3 class="text-xs font-bold text-gray-700">选择桌面壁纸</h3>
                     <div class="grid grid-cols-5 gap-3" id="wallpaperGrid">
-                        <button onclick="setWallpaper('default')" class="wallpaper-btn relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-accent ring-2 ring-accent/20 transition-all hover:scale-105" data-wallpaper="default">
+                        <button onclick="setWallpaper('default')" class="wallpaper-btn relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-300 transition-all hover:scale-105" data-wallpaper="default">
                             <div class="absolute inset-0" style="background:linear-gradient(118deg,#030610 0%,#0a2038 48%,#285878 100%)"></div>
                             <div class="absolute inset-0 opacity-75" style="background:linear-gradient(188deg,transparent 15%,rgba(40,230,255,.25) 38%,rgba(120,255,210,.2) 50%,transparent 72%)"></div>
                             <span class="absolute bottom-1 left-1 text-[9px] text-white/85 bg-black/30 px-1.5 py-0.5 rounded">极光</span>
-                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check"></i>
+                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check hidden"></i>
                         </button>
                         <button onclick="setWallpaper('neon')" class="wallpaper-btn relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-300 transition-all hover:scale-105" data-wallpaper="neon">
                             <div class="absolute inset-0" style="background:linear-gradient(180deg,#0a1020 0%,#4a2868 55%,#ffb870 94%)"></div>
@@ -10864,6 +11147,30 @@ requestAnimationFrame(function() {
                             <div class="absolute inset-0" style="background:linear-gradient(180deg,#0c1418 0%,#2a4458 52%,#4a6878 58%,#1e3040 100%)"></div>
                             <div class="absolute inset-x-0 top-[54%] h-px bg-orange-200/20"></div>
                             <span class="absolute bottom-1 left-1 text-[9px] text-white/80 bg-black/30 px-1.5 py-0.5 rounded">晚潮</span>
+                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check hidden"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-xs font-bold text-gray-700 pt-1">实景壁纸</h3>
+                    <p class="text-[10px] text-gray-400 -mt-2">摄影 / 插画素材，与上方纯建模风格区分</p>
+                    <div class="grid grid-cols-5 gap-3" id="wallpaperPhotoGrid">
+                        <button onclick="setWallpaper('photo-coral')" class="wallpaper-btn wallpaper-btn-photo relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-accent ring-2 ring-accent/20 transition-all hover:scale-105" data-wallpaper="photo-coral">
+                            <img src="壁纸1.png" alt="" class="absolute inset-0 w-full h-full object-cover" draggable="false">
+                            <span class="absolute bottom-1 left-1 text-[9px] text-white/90 bg-black/45 px-1.5 py-0.5 rounded">珊瑚</span>
+                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check"></i>
+                        </button>
+                        <button onclick="setWallpaper('photo-mist')" class="wallpaper-btn wallpaper-btn-photo relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-300 transition-all hover:scale-105" data-wallpaper="photo-mist">
+                            <img src="壁纸2.png" alt="" class="absolute inset-0 w-full h-full object-cover" draggable="false">
+                            <span class="absolute bottom-1 left-1 text-[9px] text-white/90 bg-black/45 px-1.5 py-0.5 rounded">晨雾</span>
+                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check hidden"></i>
+                        </button>
+                        <button onclick="setWallpaper('photo-palace')" class="wallpaper-btn wallpaper-btn-photo relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-300 transition-all hover:scale-105" data-wallpaper="photo-palace">
+                            <img src="壁纸3.png" alt="" class="absolute inset-0 w-full h-full object-cover" draggable="false">
+                            <span class="absolute bottom-1 left-1 text-[9px] text-white/90 bg-black/45 px-1.5 py-0.5 rounded">云庭</span>
+                            <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check hidden"></i>
+                        </button>
+                        <button onclick="setWallpaper('photo-future')" class="wallpaper-btn wallpaper-btn-photo relative w-full aspect-[16/10] rounded-lg overflow-hidden border-2 border-transparent hover:border-gray-300 transition-all hover:scale-105" data-wallpaper="photo-future">
+                            <img src="壁纸4.png" alt="" class="absolute inset-0 w-full h-full object-cover" draggable="false">
+                            <span class="absolute bottom-1 left-1 text-[9px] text-white/90 bg-black/45 px-1.5 py-0.5 rounded">未来城</span>
                             <i data-lucide="check" class="absolute top-1 right-1 w-3 h-3 text-white bg-accent rounded-full p-0.5 wallpaper-check hidden"></i>
                         </button>
                     </div>
@@ -11255,7 +11562,7 @@ requestAnimationFrame(function() {
         }
 
         // 壁纸切换功能
-        var wallpaperClasses = ['wallpaper-neon','wallpaper-aurora','wallpaper-magma','wallpaper-cyber','wallpaper-dawn','wallpaper-ocean','wallpaper-quantum','wallpaper-rose','wallpaper-platinum','wallpaper-matrix'];
+        var wallpaperClasses = ['wallpaper-neon','wallpaper-aurora','wallpaper-magma','wallpaper-cyber','wallpaper-dawn','wallpaper-ocean','wallpaper-quantum','wallpaper-rose','wallpaper-platinum','wallpaper-matrix','wallpaper-photo-coral','wallpaper-photo-mist','wallpaper-photo-palace','wallpaper-photo-future'];
         function setWallpaper(name) {
             var desktop = window.parent.document.getElementById('desktop');
             if (!desktop) return;
@@ -11290,7 +11597,7 @@ requestAnimationFrame(function() {
             try {
                 var desktop = window.parent.document.getElementById('desktop');
                 if (!desktop) return;
-                var wpClasses = ['wallpaper-neon','wallpaper-aurora','wallpaper-magma','wallpaper-cyber','wallpaper-dawn','wallpaper-ocean','wallpaper-quantum','wallpaper-rose','wallpaper-platinum','wallpaper-matrix'];
+                var wpClasses = ['wallpaper-neon','wallpaper-aurora','wallpaper-magma','wallpaper-cyber','wallpaper-dawn','wallpaper-ocean','wallpaper-quantum','wallpaper-rose','wallpaper-platinum','wallpaper-matrix','wallpaper-photo-coral','wallpaper-photo-mist','wallpaper-photo-palace','wallpaper-photo-future'];
                 var currentWp = 'default';
                 wpClasses.forEach(function(c) {
                     if (desktop.classList.contains(c)) {
@@ -19775,6 +20082,17 @@ setInterval(tick, 1500);
       } catch (e) {}
       return { all: [], photos: [], videos: [], audios: [] };
     }
+    function resolveVaultAssetUrl(u) {
+      if (!u) return u;
+      if (/^(https?:|data:|blob:)/i.test(u)) return u;
+      try {
+        if (window.parent && window.parent.location && window.parent.location.href) {
+          var base = window.parent.location.href.replace(/[^/]+$/, '');
+          return base + encodeURI(u).replace(/%2F/g, '/');
+        }
+      } catch (e) {}
+      return u;
+    }
     function resetSeq() {
       seq.stage = 'idle'; seq.ac = 0; seq.blues = {};
     }
@@ -19866,6 +20184,15 @@ setInterval(tick, 1500);
       if (tab === 'all') return store.all || [];
       return store[tab] || [];
     }
+    function openVaultPhoto(f) {
+      if (!f || f.kind !== 'photo') return;
+      var item = { name: f.name || '未命名', _assetSrc: f.url || f.thumb };
+      try {
+        if (window.parent && typeof window.parent.openImageViewerWindow === 'function') {
+          window.parent.openImageViewerWindow(item);
+        }
+      } catch (e) {}
+    }
     function renderVaultTab(tab) {
       vaultTab = tab;
       document.querySelectorAll('.vault-nav').forEach(function (n) {
@@ -19895,13 +20222,17 @@ setInterval(tick, 1500);
         grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;';
         files.forEach(function (f) {
           var card = document.createElement('div');
-          card.style.cssText = 'background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;cursor:default;';
-          var thumb = f.thumb || f.url;
+          var isPhoto = f.kind === 'photo';
+          card.style.cssText = 'background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px;cursor:' + (isPhoto ? 'pointer' : 'default') + ';';
+          var thumb = resolveVaultAssetUrl(f.thumb || f.url);
           var icon = f.kind === 'video' ? '🎬' : f.kind === 'audio' ? '🎵' : '🖼';
           card.innerHTML = (thumb
             ? '<div style="aspect-ratio:1;border-radius:6px;overflow:hidden;margin-bottom:8px;background:#111;"><img src="' + thumb + '" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent=\'' + icon + '\';this.remove();"></div>'
             : '<div style="aspect-ratio:1;border-radius:6px;margin-bottom:8px;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font-size:28px;">' + icon + '</div>') +
             '<div style="font-size:12px;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (f.name || '') + '">' + (f.name || '未命名') + '</div>';
+          if (isPhoto) {
+            card.addEventListener('dblclick', function () { openVaultPhoto(f); });
+          }
           grid.appendChild(card);
         });
         content.innerHTML = '';
@@ -24268,6 +24599,41 @@ button{font-family:inherit}
             });
         };
 
+        window.playFileDeleteRustle = function () {
+            try {
+                var ctx = window.ensureWhisperCurveAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+                var now = ctx.currentTime;
+                var dur = 0.24;
+                var buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
+                var data = buf.getChannelData(0);
+                for (var i = 0; i < data.length; i++) {
+                    var t = i / data.length;
+                    var env = Math.pow(1 - t, 1.6);
+                    data[i] = (Math.random() * 2 - 1) * env * 0.42;
+                }
+                var src = ctx.createBufferSource();
+                src.buffer = buf;
+                var hp = ctx.createBiquadFilter();
+                hp.type = 'highpass';
+                hp.frequency.value = 2400;
+                var lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.value = 6800;
+                var g = ctx.createGain();
+                g.gain.setValueAtTime(0.0001, now);
+                g.gain.exponentialRampToValueAtTime(0.09, now + 0.01);
+                g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+                src.connect(hp);
+                hp.connect(lp);
+                lp.connect(g);
+                g.connect(ctx.destination);
+                src.start(now);
+                src.stop(now + dur);
+            } catch (e) {}
+        };
+
         window.playTrueEndingErrorBeep = function () {
             try {
                 var ctx = window.ensureWhisperCurveAudioContext();
@@ -24881,7 +25247,10 @@ button{font-family:inherit}
         window.__SOYMILK_VAULT_PIN = '1102';
         window.__SOYMILK_VAULT_FILES = window.__SOYMILK_VAULT_FILES || { all: [], photos: [], videos: [], audios: [] };
         /** 线索文件放入仓库后在此登记：{ id, name, kind:'photo'|'video'|'audio', url, thumb? } */
-        window.__SOYMILK_VAULT_MANIFEST = window.__SOYMILK_VAULT_MANIFEST || [];
+        window.__SOYMILK_VAULT_MANIFEST = window.__SOYMILK_VAULT_MANIFEST || [
+            { id: 'soymilk-note', name: '便条.jpg', kind: 'photo', url: '豆浆1.png' },
+            { id: 'soymilk-glasses', name: '镜腿.jpg', kind: 'photo', url: '豆浆2.png' }
+        ];
         window.mergeSoymilkVaultManifest = function (entries) {
             var list = entries || window.__SOYMILK_VAULT_MANIFEST;
             if (!Array.isArray(list)) return;
@@ -26424,11 +26793,106 @@ button{font-family:inherit}
             } else if (typeof isGuideActive === 'function' && isGuideActive()) {
                 return;
             }
-            if (typeof window.enterFinalPhase === 'function') {
-                window.enterFinalPhase();
-            } else {
-                showOsToast('最终环节即将开放，请继续收集线索');
+            function beginFinalPhase() {
+                if (typeof window.enterFinalPhase === 'function') {
+                    window.enterFinalPhase();
+                } else {
+                    showOsToast('最终环节即将开放，请继续收集线索');
+                }
             }
+            if (typeof window.playFinalStageTransition === 'function') {
+                window.playFinalStageTransition(beginFinalPhase);
+            } else {
+                beginFinalPhase();
+            }
+        };
+
+        window.getWordSaveBtnScreenRect = function () {
+            try {
+                if (typeof state === 'undefined' || !state.openWindows) return null;
+                var winData = state.openWindows.word;
+                if (!winData || !winData.element) return null;
+                var iframe = winData.element.querySelector('iframe');
+                if (!iframe) return null;
+                var doc = iframe.contentDocument;
+                if (!doc) return null;
+                var btn = doc.getElementById('word-save-btn');
+                if (!btn) return null;
+                var btnRect = btn.getBoundingClientRect();
+                var iframeRect = iframe.getBoundingClientRect();
+                return {
+                    left: iframeRect.left + btnRect.left,
+                    top: iframeRect.top + btnRect.top,
+                    width: Math.max(btnRect.width, 36),
+                    height: Math.max(btnRect.height, 36)
+                };
+            } catch (e) {
+                return null;
+            }
+        };
+
+        window.playFinalStageTransition = function (onDone) {
+            var layer = document.getElementById('final-stage-transition');
+            var overlay = document.getElementById('fst-expand-overlay');
+            var textLayer = document.getElementById('fst-text-layer');
+            if (!layer || !overlay || !textLayer) {
+                if (onDone) onDone();
+                return;
+            }
+
+            var vw = window.innerWidth;
+            var vh = window.innerHeight;
+            var rect = window.getWordSaveBtnScreenRect();
+            if (!rect) {
+                rect = {
+                    left: vw / 2 - 90,
+                    top: vh * 0.72 - 28,
+                    width: 180,
+                    height: 56
+                };
+            }
+
+            layer.classList.remove('fst-fade-out');
+            layer.classList.add('active');
+            layer.setAttribute('aria-hidden', 'false');
+            textLayer.classList.remove('show');
+            overlay.style.transition = 'none';
+            overlay.style.left = rect.left + 'px';
+            overlay.style.top = rect.top + 'px';
+            overlay.style.width = rect.width + 'px';
+            overlay.style.height = rect.height + 'px';
+            overlay.style.borderRadius = '8px';
+
+            void overlay.offsetWidth;
+
+            var expandDur = 880;
+            var ease = 'cubic-bezier(0.77, 0, 0.18, 1)';
+            overlay.style.transition =
+                'left ' + expandDur + 'ms ' + ease + ', top ' + expandDur + 'ms ' + ease +
+                ', width ' + expandDur + 'ms ' + ease + ', height ' + expandDur + 'ms ' + ease +
+                ', border-radius ' + expandDur + 'ms ease';
+
+            requestAnimationFrame(function () {
+                overlay.style.left = '0px';
+                overlay.style.top = '0px';
+                overlay.style.width = vw + 'px';
+                overlay.style.height = vh + 'px';
+                overlay.style.borderRadius = '0px';
+            });
+
+            var textIn = Math.round(expandDur * 0.55);
+            var holdMs = 1500;
+            setTimeout(function () {
+                textLayer.classList.add('show');
+            }, textIn);
+
+            setTimeout(function () {
+                if (onDone) onDone();
+                layer.classList.remove('active', 'fst-fade-out');
+                layer.setAttribute('aria-hidden', 'true');
+                textLayer.classList.remove('show');
+                overlay.style.transition = 'none';
+            }, textIn + holdMs);
         };
 
         window.__EXPLORER_VFS_SNAPSHOT = window.__EXPLORER_VFS_SNAPSHOT || null;
@@ -26484,18 +26948,27 @@ button{font-family:inherit}
         }
 
         window.returnToGameTitleScreen = function () {
+            try {
+                var raw = sessionStorage.getItem('seasonGraduationEntry');
+                var saved = raw ? JSON.parse(raw) : {};
+                var inFs = typeof window.isDocumentFullscreen === 'function' && window.isDocumentFullscreen();
+                sessionStorage.setItem('seasonGraduationEntry', JSON.stringify({
+                    confirmed: true,
+                    wantFullscreen: inFs || !!saved.wantFullscreen
+                }));
+            } catch (e) {}
             try { location.reload(); } catch (e) { location.href = location.pathname; }
         };
 
         window.__TRUE_ENDING_ERROR_MSGS = [
-            { title: '系统错误', body: '无法完成操作。错误代码：0x80070005\n拒绝访问。' },
-            { title: '桌面', body: '系统资源不足，无法加载桌面图标。' },
-            { title: 'KERNEL_SECURITY_CHECK_FAILURE', body: '你的电脑遇到问题，需要重新启动。我们只收集某些错误信息，然后为你重新启动。' },
-            { title: '文件损坏', body: 'C:\\Users\\沈砚舟\\Desktop 中的文件已损坏或被未知进程删除。' },
-            { title: 'Windows — 应用程序错误', body: '0x0000007B 引用的内存不能为 read。' },
-            { title: '安全警告', body: '检测到未授权远程访问。正在终止会话……' },
-            { title: '系统', body: '桌面环境响应超时。' },
-            { title: '致命错误', body: '无法恢复的系统状态。' }
+            { title: 'Error', body: 'The operation could not be completed.\nError code: 0x80070005\nAccess is denied.' },
+            { title: 'Error', body: 'Insufficient system resources to load desktop icons.' },
+            { title: 'Error', body: 'KERNEL_SECURITY_CHECK_FAILURE\nYour PC ran into a problem and needs to restart.' },
+            { title: 'Error', body: 'Files in C:\\Users\\沈砚舟\\Desktop are corrupted or were deleted by an unknown process.' },
+            { title: 'Error', body: 'Application Error\nThe instruction at 0x0000007B referenced memory could not be read.' },
+            { title: 'Error', body: 'Unauthorized remote access detected. Terminating session…' },
+            { title: 'Error', body: 'Desktop environment response timed out.' },
+            { title: 'Error', body: 'Fatal error: unrecoverable system state.' }
         ];
 
         window.showTrueEndingCinematic = function (onDone) {
@@ -26564,12 +27037,25 @@ button{font-family:inherit}
                 var list = Array.prototype.slice.call(icons);
                 return list.reduce(function (p, el, i) {
                     return p.then(function () {
-                        return delay(i === 0 ? 400 : 260).then(function () {
+                        return delay(i === 0 ? 180 : 130).then(function () {
                             el.classList.add('true-ending-vanish');
-                            return delay(320);
+                            if (window.playFileDeleteRustle) window.playFileDeleteRustle();
+                            return delay(180);
                         });
                     });
                 }, Promise.resolve());
+            }
+
+            function flashScreen() {
+                var flash = document.createElement('div');
+                flash.className = 'true-ending-flash';
+                document.body.appendChild(flash);
+                return delay(120).then(function () {
+                    flash.classList.add('fade-out');
+                    return delay(280).then(function () {
+                        if (flash.parentNode) flash.remove();
+                    });
+                });
             }
 
             function spawnErrorDialog() {
@@ -26581,7 +27067,7 @@ button{font-family:inherit}
                 dlg.style.top = Math.max(48, Math.min(window.innerHeight - 200, 60 + Math.random() * (window.innerHeight - 260))) + 'px';
                 dlg.innerHTML = '<div class="te-titlebar"><span>' + msg.title + '</span><span>✕</span></div>' +
                     '<div class="te-body"><div class="te-icon">!</div><div class="te-msg">' + msg.body.replace(/\n/g, '<br>') + '</div></div>' +
-                    '<div class="te-footer"><button type="button" class="te-ok" tabindex="-1">确定</button></div>';
+                    '<div class="te-footer"><button type="button" class="te-ok" tabindex="-1">OK</button></div>';
                 errBox.appendChild(dlg);
                 if (window.playTrueEndingErrorBeep) window.playTrueEndingErrorBeep();
             }
@@ -26634,22 +27120,25 @@ button{font-family:inherit}
                         if (charIdx < line.length) {
                             bloodInner.textContent += line.charAt(charIdx);
                             charIdx++;
-                            var wait = charMs;
-                            if ('，。！？；：…'.indexOf(line.charAt(charIdx - 1)) !== -1) wait = Math.round(charMs * 2.5);
+                            var ch = line.charAt(charIdx - 1);
+                            var wait = window.getTrueEndingTypewriterCharDelay
+                                ? window.getTrueEndingTypewriterCharDelay(ch, charMs)
+                                : charMs;
                             setTimeout(tick, wait);
                             return;
                         }
                         lineIdx++;
                         charIdx = 0;
-                        setTimeout(tick, 520);
+                        setTimeout(tick, 800);
                     }
                     tick();
                 });
             }
 
-            vanishIcons()
-                .then(function () { return delay(500); })
-                .then(function () { return runErrorSpam(10, 520); })
+            flashScreen()
+                .then(vanishIcons)
+                .then(function () { return delay(280); })
+                .then(function () { return runErrorSpam(10, 420); })
                 .then(function () { return runGlitchBurst(); })
                 .then(fadeToBlack)
                 .then(typeBloodText)
@@ -26663,23 +27152,24 @@ button{font-family:inherit}
         window.buildGameCreditsBlocks = function (opts) {
             opts = opts || {};
             var isTrue = !!opts.isTrueEnding;
-            var blocks = [
-                { cls: 'title-main', text: '感谢您的游玩！！！', delay: 0 },
-                { text: '本作为一个刚刚参加完高考（且成绩不理想）的高中生在假期无聊期间耗费两周时间制作，剧本也是半个小时内就突发奇想写出来的，没有经过非常仔细的打磨和推敲，如果让您感到不满在此致歉！', delay: 900 }
-            ];
+            var blocks = [];
             if (isTrue) {
                 blocks.push({
                     cls: 'is-true',
-                    text: '您已触及更深层的真相（达成真结局！）——但关于真凶与一年前在大研一中发生的一切，尚未完全揭开。（也许是给续作挖的坑？如果玩的人多的话？）',
-                    delay: 2100
+                    text: '您已触及更深层的真相（达成真结局！）——但关于真凶与一年前在大研一中发生的一切，尚未完全揭开。（也许是给续作挖的坑？如果玩的人多的话？）\n\n本章节真相已解锁，可随时前往主页案件档案查看！',
+                    delay: 0
                 });
             } else {
                 blocks.push({
                     cls: 'not-true',
                     text: '这里很遗憾地告知您该结局并非真结局，您未能发现最终真相～',
-                    delay: 2100
+                    delay: 0
                 });
             }
+            blocks.push(
+                { cls: 'title-main', text: '感谢您的游玩！！！', delay: 900 },
+                { text: '本作为一个刚刚参加完高考（且成绩不理想）的高中生在假期无聊期间耗费两周时间制作，剧本也是半个小时内就突发奇想写出来的，没有经过非常仔细的打磨和推敲，如果让您感到不满在此致歉！', delay: 2100 }
+            );
             blocks.push(
                 { cls: 'social', text: '如果您感兴趣，欢迎关注我的b站与抖音账号（同名）：ReasoingPooch，并且和我互动！', delay: 3300 },
                 { cls: 'credits-heading', text: 'Music Credits:', delay: 4500 },
@@ -26710,6 +27200,10 @@ button{font-family:inherit}
             overlay.setAttribute('aria-hidden', 'false');
             overlay.scrollTop = 0;
 
+            if (opts.isTrueEnding && typeof window.unlockArchiveTruth === 'function') {
+                window.unlockArchiveTruth();
+            }
+
             var blocks = window.buildGameCreditsBlocks(opts);
             blocks.forEach(function (block, i) {
                 var el = document.createElement('div');
@@ -26736,11 +27230,32 @@ button{font-family:inherit}
             }, btnDelay);
         };
 
+        window.getTypewriterCharDelay = function (ch, charMs) {
+            if ('。！？；…，,'.indexOf(ch) !== -1 || ch === '\n') return 800;
+            if ('：'.indexOf(ch) !== -1) return Math.round(charMs * 2.2);
+            return charMs;
+        };
+
+        window.isTrueEndingPunctuation = function (ch) {
+            if (ch === '\n') return true;
+            if (!ch) return false;
+            return /[\u2000-\u206F\u3000-\u303F\uFF00-\uFFEF!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~，。！？；：、…「」『』【】《》（）—－·～]/.test(ch);
+        };
+
+        window.getTrueEndingTypewriterCharDelay = function (ch, charMs) {
+            if (window.isTrueEndingPunctuation && window.isTrueEndingPunctuation(ch)) return 800;
+            return charMs;
+        };
+
+        window.getTrueEndingBodyText = function () {
+            return '一年前大研中学的惨案；林栎托付给弟弟的线索；「圈外勿扰」账号......一系列线索在脑海里逐渐清晰起来。我一定会找到你的......一年前和现如今杀死安的凶手！如果我没记错的话，一年前的惨案 —— 等等，怎么回事';
+        };
+
         window.getTrueEndingResult = function () {
             return {
                 id: 'true',
                 title: '我会找出你的',
-                body: '所有的线索在你脑中串联起来——黑石沟、日记里那些欲言又止的字句、论坛上的那个账号、豆浆私密助手里藏着的东西……\n\n弟弟不是死于霸凌者之手。\n\n你会找出「圈外勿扰」。无论他躲在哪里。',
+                body: window.getTrueEndingBodyText(),
                 isTrue: true
             };
         };
@@ -26777,19 +27292,25 @@ button{font-family:inherit}
                     var text = result.body || '';
                     var idx = 0;
                     body.textContent = '';
+                    var cursor = document.createElement('span');
+                    cursor.className = 'final-ending-cursor';
+                    cursor.setAttribute('aria-hidden', 'true');
+                    body.appendChild(cursor);
                     function typeNextChar() {
                         if (idx >= text.length) {
+                            if (cursor.parentNode) cursor.remove();
                             window.__FINAL_ENDING_TYPE_TIMER = null;
                             window.showFinalEndingContinuePrompt(result, wrap, overlay);
                             return;
                         }
                         var ch = text.charAt(idx);
-                        body.textContent += ch;
+                        body.insertBefore(document.createTextNode(ch), cursor);
                         idx++;
-                        var delay = charMs;
-                        if ('，。！？；：…'.indexOf(ch) !== -1) delay = Math.round(charMs * 2.8);
-                        else if (ch === '\n') delay = Math.round(charMs * 1.6);
-                        window.__FINAL_ENDING_TYPE_TIMER = setTimeout(typeNextChar, delay);
+                        var delayFn = result.isTrue && window.getTrueEndingTypewriterCharDelay
+                            ? window.getTrueEndingTypewriterCharDelay
+                            : window.getTypewriterCharDelay;
+                        var delayMs = delayFn ? delayFn(ch, charMs) : charMs;
+                        window.__FINAL_ENDING_TYPE_TIMER = setTimeout(typeNextChar, delayMs);
                     }
                     typeNextChar();
                 }, TITLE_FADE_MS);
@@ -26944,7 +27465,7 @@ button{font-family:inherit}
                             return {
                                 id: 'true',
                                 title: '我会找出你的',
-                                body: '所有的线索在你脑中串联起来——黑石沟、日记里那些欲言又止的字句、论坛上的那个账号、豆浆私密助手里藏着的东西……\n\n弟弟不是死于霸凌者之手。\n\n你会找出「圈外勿扰」。无论他躲在哪里。',
+                                body: window.getTrueEndingBodyText ? window.getTrueEndingBodyText() : '',
                                 isTrue: true
                             };
                         }
@@ -27271,51 +27792,6 @@ button{font-family:inherit}
             if (!opts.silent && window.showOsToast) window.showOsToast('开发模式：已跳过全部引导');
         };
 
-        window.devFastForwardTrueEnding = function () {
-            var btn = document.getElementById('dev-skip-guide-btn');
-            if (btn) btn.remove();
-
-            window.__GAME_STARTED = true;
-            window.__ENTRY_CONFIRMED = true;
-            window.__FINAL_PHASE_ACTIVE = false;
-
-            var title = document.getElementById('game-title-screen');
-            if (title) title.style.display = 'none';
-            var login = document.getElementById('os-login-screen');
-            if (login) login.classList.remove('active');
-            var entry = document.getElementById('game-entry-overlay');
-            if (entry) entry.remove();
-
-            if (typeof window.skipAllGuidesForDev === 'function') {
-                window.skipAllGuidesForDev({ silent: true });
-            }
-
-            window.__FINAL_PHASE_ACTIVE = true;
-            window.__WORD_CLOSE_PROTECTED = false;
-
-            try {
-                var bgm = window.__globalBgmAudio;
-                if (bgm) {
-                    var vol = bgm.volume;
-                    var fade = setInterval(function () {
-                        vol = Math.max(0, vol - 0.04);
-                        bgm.volume = vol;
-                        if (vol <= 0) { clearInterval(fade); try { bgm.pause(); } catch (e) {} }
-                    }, 120);
-                }
-            } catch (e) {}
-
-            var overlay = document.getElementById('final-phase-overlay');
-            if (!overlay) return;
-            overlay.innerHTML = '';
-            overlay.classList.add('active');
-            overlay.setAttribute('aria-hidden', 'false');
-
-            window.renderFinalEndingCard(window.getTrueEndingResult(), overlay);
-
-            if (window.showOsToast) window.showOsToast('开发者模式：已快进到真结局');
-        };
-
         window.onSparkUiAppeared = function (source, el, iframeEl) {
             if (window.__SPARK_INTRO_STARTED) return;
             window.__SPARK_INTRO_STARTED = true;
@@ -27583,15 +28059,6 @@ button{font-family:inherit}
         // --- 2. 初始化核心系统 ---
         // 直接执行（脚本在 body 末尾，DOM 已就绪）
         (function initSystem() {
-            (function pinDevSkipBtnLate() {
-                var btn = document.getElementById('dev-skip-guide-btn');
-                if (window.__DEV_BYPASS_PASSWORDS) {
-                    if (btn) btn.remove();
-                    return;
-                }
-                if (btn) document.body.appendChild(btn);
-            })();
-
             setTimeout(function () {
                 if (window.__GAME_STARTED && !window.__TUTORIAL_DESKTOP_DONE && window.__OS_BOOT_DONE) {
                     startDesktopTutorial();
@@ -27750,7 +28217,11 @@ button{font-family:inherit}
 
             initDesktop();
             initStartMenu();
-            updateDesktopWallpaperFx('default');
+            (function applyInitialWallpaper() {
+                var desktopEl = document.getElementById('desktop');
+                if (desktopEl) desktopEl.classList.add('wallpaper-photo-coral');
+                updateDesktopWallpaperFx('photo-coral');
+            })();
             updateClock();
             setInterval(updateClock, 1000);
 
@@ -28603,6 +29074,7 @@ button{font-family:inherit}
             });
             desktopRefresh();
             document.getElementById('desktop-context-menu').style.display = 'none';
+            if (window.playFileDeleteRustle) window.playFileDeleteRustle();
         }
 
         function initStartMenu() {
@@ -29194,6 +29666,13 @@ button{font-family:inherit}
     </script>
     <div id="global-brightness-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:black;pointer-events:none;z-index:99999;opacity:0;"></div>
     <div id="final-phase-overlay" aria-hidden="true"></div>
+    <div id="final-stage-transition" aria-hidden="true">
+        <div id="fst-expand-overlay"></div>
+        <div id="fst-text-layer">
+            <div class="fst-title">Final Stage</div>
+            <div class="fst-sub">最终阶段</div>
+        </div>
+    </div>
     <div id="game-credits-overlay" aria-hidden="true">
         <div class="game-credits-inner" id="game-credits-inner"></div>
     </div>
