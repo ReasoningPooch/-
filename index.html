@@ -763,7 +763,9 @@
             width: 120px; background: transparent; border: none;
             border-bottom: 1px solid rgba(255,255,255,0.35); color: #fff;
             font-size: 16px; padding: 8px 4px; text-align: center; outline: none; font-family: inherit;
+            cursor: text;
         }
+        .final-name-input::placeholder { color: rgba(255,255,255,0.28); font-size: 13px; }
         .final-name-input:focus { border-bottom-color: rgba(255,255,255,0.75); }
         .final-choices { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
         .final-choice-btn {
@@ -6511,7 +6513,7 @@ requestAnimationFrame(function() {
 .backdrop-blur-sm { backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 .backdrop-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 .transform { transform: translateX(var(--tw-translate-x,0)) translateY(var(--tw-translate-y,0)); }
-.-translate-y-1\/2 { --tw-translate-y: 50%; transform: translateX(var(--tw-translate-x,0)) translateY(var(--tw-translate-y,0)); }
+.-translate-y-1\/2 { --tw-translate-y: -50%; transform: translateX(var(--tw-translate-x,0)) translateY(var(--tw-translate-y,0)); }
 .translate-x-1 { --tw-translate-x: 0.25rem; transform: translateX(var(--tw-translate-x,0)) translateY(var(--tw-translate-y,0)); }
 .outline-none { outline: 2px solid transparent; outline-offset: 2px; }
 .focus\:ring-2:focus { box-shadow: var(--tw-ring-offset-shadow,0 0 #fff 0), var(--tw-ring-shadow,0 0 #000 0); --tw-ring-color: rgba(59,130,246,0.5); --tw-ring-offset-shadow: var(--tw-ring-inset,0 0 0 2px var(--tw-ring-offset-color,#fff)) 0 0 var(--tw-ring-offset-width,2px) var(--tw-ring-offset-color,#fff); --tw-ring-shadow: 0 0 0 calc(2px + var(--tw-ring-offset-width,0px)) var(--tw-ring-color,rgba(59,130,246,0.5)); }
@@ -6525,8 +6527,14 @@ requestAnimationFrame(function() {
             font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f3f4f6;
             margin: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden; /* 防止最外层滚动 */
+            display: flex;
+            flex-direction: column;
         }
+        body > header { flex-shrink: 0; }
+        body > main { flex: 1; min-height: 0; display: flex; overflow: hidden; }
 
         /* 自定义滚动条 */
         ::-webkit-scrollbar {
@@ -20295,11 +20303,115 @@ setInterval(tick, 1500);
     <title>Link Desktop - 密友聊天终端</title>
     <script src="https://cdn.tailwindcss.com"><!--__SCRIPT_END__-->
     <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
         body {
             font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: #0d1117;
             user-select: none;
             -webkit-user-select: none;
+            position: relative;
+        }
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0d1117;
+            padding: 16px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #lock-card {
+            width: min(320px, 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #lock-card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin: 0 0 8px;
+        }
+        #lock-card p {
+            font-size: 12px;
+            color: #64748b;
+            margin: 0 0 24px;
+        }
+        #lock-card .lock-logo {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        #pin-input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #161b22;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+            font-size: 16px;
+            color: #e2e8f0;
+            outline: none;
+        }
+        #pin-input:focus {
+            border-color: rgba(59,130,246,0.6);
+        }
+        #lock-card .lock-submit {
+            width: 100%;
+            height: 48px;
+            border: none;
+            border-radius: 12px;
+            background: #2563eb;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        #lock-card .lock-submit:hover { background: #3b82f6; }
+        #pin-error { font-size: 12px; color: #f87171; min-height: 16px; margin: 0 0 16px; opacity: 0; transition: opacity .2s; }
+        #chat-app-shell {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            overflow: hidden;
+            background: #151b23;
+            color: #f1f5f9;
+        }
+        #chat-app-shell > aside {
+            width: 4rem;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #chat-app-shell > section:first-of-type {
+            width: 18rem;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        #chat-app-shell > section:last-of-type {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Custom scrollbar for an authentic desktop app vibe */
@@ -20389,28 +20501,28 @@ setInterval(tick, 1500);
         }
     </style>
 </head>
-<body class="w-full h-screen flex items-center justify-center p-0 overflow-hidden bg-[#0d1117]">
+<body>
 
     <!-- 密码锁定界面 -->
-    <div id="lock-screen" class="fixed inset-0 z-[9999] bg-[#0d1117] flex flex-col items-center justify-center">
-        <div class="w-80 flex flex-col items-center">
-            <div class="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20 mb-6">
+    <div id="lock-screen">
+        <div id="lock-card">
+            <div class="lock-logo">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
             </div>
-            <h2 class="text-lg font-bold text-slate-200 mb-2">Link 密友终端</h2>
-            <p class="text-xs text-slate-500 mb-6">请输入访问密码</p>
-            <div class="w-full mb-4">
-                <input type="password" id="pin-input" class="w-full bg-[#161b22] border border-slate-700 rounded-xl px-4 py-3.5 text-center text-base text-slate-200 tracking-wider outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/10 transition-all placeholder:text-slate-600" placeholder="输入密码" autocomplete="off">
+            <h2>Link 密友终端</h2>
+            <p>请输入访问密码</p>
+            <div class="w-full mb-4" style="width:100%;margin-bottom:16px;">
+                <input type="password" id="pin-input" placeholder="输入密码" autocomplete="off">
             </div>
-            <p id="pin-error" class="text-xs text-red-400 mb-4 h-4 opacity-0 transition-opacity">密码错误</p>
-            <button onclick="checkPin()" class="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-medium text-sm transition-all shadow-md shadow-blue-600/10">
+            <p id="pin-error">密码错误</p>
+            <button type="button" onclick="checkPin()" class="lock-submit">
                 确认
             </button>
             <p class="text-[10px] text-slate-600 mt-6"></p>
         </div>
     </div>
 
-    <div class="w-full h-full flex bg-[#151b23] text-slate-100 overflow-hidden relative shadow-2xl border border-slate-800/40">
+    <div id="chat-app-shell">
         
         <!-- SIDEBAR NAVIGATION (LEFT) -->
         <aside class="w-16 bg-[#0d1117] border-r border-slate-800/60 flex flex-col justify-between items-center py-4 flex-shrink-0">
@@ -21079,6 +21191,9 @@ setInterval(tick, 1500);
         }
 
         function renderActiveChat() {
+            if (appState.currentContactId === 'brother') {
+                try { if (window.parent) window.parent.__BROTHER_CHAT_VIEWED = true; } catch (e) {}
+            }
             const scrollContainer = document.getElementById('chat-messages-scroll');
             const emptyOverlay = document.getElementById('chat-empty-view');
             
@@ -21471,14 +21586,22 @@ setInterval(tick, 1500);
   body {
     background: #f0f4f8;
     color: #1f2937;
+    position: relative;
   }
 
   /* 登录界面 */
   #login-screen {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    box-sizing: border-box;
     transition: opacity 0.6s ease, visibility 0.6s ease;
-    position: absolute; top: 0; left: 0; z-index: 10;
+    z-index: 10;
   }
 
   #login-screen.hidden {
@@ -21488,8 +21611,10 @@ setInterval(tick, 1500);
   }
 
   .login-card {
-    width: 380px;
-    padding: 44px 36px;
+    width: min(340px, 100%);
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 28px 24px;
     border-radius: 20px;
     background: #fff;
     box-shadow: 0 10px 50px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
@@ -27665,6 +27790,7 @@ button{font-family:inherit}
             }
 
             function stepNames() {
+                var brotherNamesKnown = !!window.__BROTHER_CHAT_VIEWED;
                 showQuestion('与弟弟前往黑石沟的同行者的名字是：', function (wrap) {
                     var row = document.createElement('div');
                     row.className = 'final-names-row';
@@ -27674,6 +27800,10 @@ button{font-family:inherit}
                         inp.type = 'text';
                         inp.className = 'final-name-input';
                         inp.autocomplete = 'off';
+                        if (brotherNamesKnown) {
+                            inp.placeholder = '点击填入';
+                            inp.title = '点击自动填入名字';
+                        }
                         inputs.push(inp);
                         row.appendChild(inp);
                     }
@@ -27697,7 +27827,13 @@ button{font-family:inherit}
                     });
                     wrap.appendChild(submit);
                     inputs[0].focus();
-                    inputs.forEach(function (inp) {
+                    inputs.forEach(function (inp, idx) {
+                        inp.addEventListener('click', function () {
+                            if (brotherNamesKnown && !normalizeName(inp.value)) {
+                                inp.value = FINAL_CORRECT_NAMES[idx];
+                            }
+                            inp.select();
+                        });
                         inp.addEventListener('keydown', function (e) {
                             if (e.key === 'Enter') submit.click();
                         });
@@ -29228,11 +29364,25 @@ button{font-family:inherit}
         }
 
         // 打开登录小窗口（聊天/邮件）
+        function getCenteredWindowRect(winWidth, winHeight) {
+            var taskbarH = 52;
+            var maxX = Math.max(10, window.innerWidth - winWidth - 10);
+            var maxY = Math.max(10, window.innerHeight - winHeight - taskbarH);
+            var left = Math.round((window.innerWidth - winWidth) / 2);
+            var top = Math.round((window.innerHeight - winHeight - taskbarH) / 2);
+            return {
+                left: Math.min(Math.max(10, left), maxX),
+                top: Math.min(Math.max(10, top), maxY),
+                width: winWidth,
+                height: winHeight
+            };
+        }
+
         function openLoginWindow(app) {
-            const offset = Object.keys(state.openWindows).length * 40;
             const winWidth = 420, winHeight = 520;
-            const startX = Math.round((window.innerWidth - winWidth) / 2) + offset;
-            const startY = Math.round((window.innerHeight - winHeight) / 2) + offset;
+            const rect = getCenteredWindowRect(winWidth, winHeight);
+            const startX = rect.left;
+            const startY = rect.top;
 
             const winEl = document.createElement('div');
             winEl.className = 'os-window pointer-events-auto active';
@@ -29313,11 +29463,18 @@ button{font-family:inherit}
             const winEl = document.createElement('div');
             winEl.className = 'os-window pointer-events-auto active';
             
-            const offset = Object.keys(state.openWindows).length * 40;
             const winWidth = Math.min(window.innerWidth * 0.8, window.innerWidth - 40);
             const winHeight = Math.min(window.innerHeight * 0.7, window.innerHeight - 80);
-            const startX = Math.min(100 + offset, window.innerWidth - winWidth - 20);
-            const startY = Math.min(60 + offset, window.innerHeight - winHeight - 20);
+            var startX, startY;
+            if (app.id === 'chat' || app.id === 'mail') {
+                var rect = getCenteredWindowRect(Math.round(winWidth), Math.round(winHeight));
+                startX = rect.left;
+                startY = rect.top;
+            } else {
+                const offset = Object.keys(state.openWindows).length * 40;
+                startX = Math.min(100 + offset, window.innerWidth - winWidth - 20);
+                startY = Math.min(60 + offset, window.innerHeight - winHeight - 20);
+            }
             
             winEl.style.width = winWidth + 'px'; winEl.style.height = winHeight + 'px';
             winEl.style.left = Math.max(10, startX) + 'px'; winEl.style.top = Math.max(10, startY) + 'px';
