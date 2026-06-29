@@ -1273,12 +1273,22 @@
         }
 
         /* 案件档案 / 系统设置（主菜单） */
-        #title-archive-overlay, #title-settings-overlay {
+        #title-archive-overlay, #title-settings-overlay, #title-loadsave-overlay {
             position: fixed; inset: 0; z-index: 100060; display: none;
             align-items: center; justify-content: center; padding: 24px;
             background: rgba(0,0,0,0.82); backdrop-filter: blur(4px);
         }
-        #title-archive-overlay.show, #title-settings-overlay.show { display: flex; }
+        #title-archive-overlay.show, #title-settings-overlay.show, #title-loadsave-overlay.show { display: flex; }
+        .title-loadsave-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 8px; }
+        .title-loadsave-btn {
+            background: transparent; border: 1px solid rgba(138,3,3,0.55);
+            color: #ddd; padding: 10px 24px; cursor: pointer;
+            font-family: inherit; font-size: 0.92rem; letter-spacing: 0.2rem;
+            transition: all 0.25s; min-width: 120px;
+        }
+        .title-loadsave-btn.primary { border-color: rgba(138,3,3,0.85); color: #ffb4b4; }
+        .title-loadsave-btn:hover { color: #fff; border-color: #8a0303; }
+        #title-loadsave-time { font-size: 0.82rem; color: #777; margin: 0 0 18px; }
         .title-modal-panel {
             max-width: 580px; width: 100%; max-height: 80vh; overflow-y: auto;
             background: rgba(8,4,4,0.96); border: 1px solid rgba(138,3,3,0.45);
@@ -1518,7 +1528,8 @@
                 <li>当你认为推理已经充分，在 Word 中点击「保存」进入最终环节——进入后无法退出，请谨慎。</li>
                 <li>最终环节会根据你的探索进度，解锁不同的选项与结局。</li>
             </ul>
-            <p style="color:#666;font-size:0.85rem;">提示：哥哥是计算机高材生，游戏中一些情况下，点击「骇入」按钮，会像玩小游戏般解决遇到的问题。</p>
+            <p style="color:#666;font-size:0.85rem;">提示：哥哥是计算机高材生，游戏中一些情况下，点击「骇入」按钮，会像玩游戏般解决遇到的问题。</p>
+            <p style="color:#666;font-size:0.82rem;margin-top:14px;line-height:1.85;">游戏中部分地名、事件可能有原型，但内容全部为虚构，请勿带入现实。并且为避免侵权，游戏中未涉及任何现实中的软件图标、名称等，可能一定程度上减弱了代入感，在此致歉！</p>
             <button type="button" id="title-help-close">关闭</button>
         </div>
     </div>
@@ -1556,6 +1567,18 @@
             </div>
             <p class="title-settings-tip">温馨提示：该游戏内含突脸、恐怖音效等可能令人不适的内容。关闭背景音乐可适当减少恐怖感，但为更好的游戏体验，建议保持开启。</p>
             <button type="button" class="title-modal-close" id="title-settings-close">关闭</button>
+        </div>
+    </div>
+
+    <div id="title-loadsave-overlay">
+        <div class="title-modal-panel">
+            <h2>读取存档</h2>
+            <p>检测到上次未完成的游戏进度，是否加载？</p>
+            <p id="title-loadsave-time"></p>
+            <div class="title-loadsave-actions">
+                <button type="button" class="title-loadsave-btn primary" id="title-loadsave-yes">加载进度</button>
+                <button type="button" class="title-loadsave-btn" id="title-loadsave-no">重新开始</button>
+            </div>
         </div>
     </div>
 
@@ -1642,6 +1665,7 @@
             if (entry) entry.classList.add('dismissed');
             screen.classList.remove('entry-locked');
             if (saved.wantFullscreen) restoreFullscreenOnNextGesture();
+            setTimeout(maybeShowLoadSavePrompt, 120);
             return true;
         }
 
@@ -1714,7 +1738,7 @@
                     setTimeout(go, 50);
                     return;
                 }
-                var vol = typeof window.GLOBAL_BGM_VOLUME === 'number' ? window.GLOBAL_BGM_VOLUME : 0.52;
+                var vol = typeof window.GLOBAL_BGM_VOLUME === 'number' ? window.GLOBAL_BGM_VOLUME : 0.58;
                 audio.volume = vol;
                 var p = audio.play();
                 if (p && p.then) {
@@ -1743,7 +1767,30 @@
             var entry = document.getElementById('game-entry-overlay');
             if (entry) entry.classList.add('dismissed');
             screen.classList.remove('entry-locked');
+            setTimeout(maybeShowLoadSavePrompt, 120);
         }
+
+        function maybeShowLoadSavePrompt() {
+            if (window.__LOADSAVE_PROMPT_SHOWN) return;
+            var data = typeof window.loadGameAutosaveRaw === 'function' ? window.loadGameAutosaveRaw() : null;
+            if (!data || !data.savedAt || !data.inProgress) return;
+            window.__LOADSAVE_PROMPT_SHOWN = true;
+            var overlay = document.getElementById('title-loadsave-overlay');
+            var timeEl = document.getElementById('title-loadsave-time');
+            if (timeEl) {
+                try {
+                    timeEl.textContent = '上次保存：' + new Date(data.savedAt).toLocaleString('zh-CN');
+                } catch (e) {
+                    timeEl.textContent = '';
+                }
+            }
+            if (overlay) overlay.classList.add('show');
+        }
+
+        window.dismissLoadSavePrompt = function () {
+            var overlay = document.getElementById('title-loadsave-overlay');
+            if (overlay) overlay.classList.remove('show');
+        };
 
         function initGameEntryPrompt() {
             var msgEl = document.getElementById('game-entry-msg');
@@ -2032,13 +2079,39 @@
             if (!window.__ENTRY_CONFIRMED) return;
             if (window.__GAME_STARTED) return;
             window.__GAME_STARTED = true;
-            window.__LOGIN_MONO_SHOWN = false;
-            window.__OS_LOGIN_FLOW_ACTIVE = false;
-            window.__OS_BOOT_DONE = false;
+            window.__LOGIN_MONO_SHOWN = window.__LOGIN_MONO_SHOWN || false;
+            window.__OS_LOGIN_FLOW_ACTIVE = window.__OS_LOGIN_FLOW_ACTIVE || false;
+            window.__OS_BOOT_DONE = window.__OS_BOOT_DONE || false;
             document.body.classList.remove('os-desktop-ready');
             hideTitleHelp();
             hideTitleArchive();
             hideTitleSettings();
+            window.dismissLoadSavePrompt();
+
+            if (window.__RESTORE_FROM_AUTOSAVE && window.__OS_BOOT_DONE) {
+                stopTitleScreen();
+                if (screen.parentNode) screen.remove();
+                document.body.classList.add('os-desktop-ready');
+                if (typeof window.restoreGameDesktopFromSave === 'function') window.restoreGameDesktopFromSave();
+                window.__RESTORE_FROM_AUTOSAVE = false;
+                return;
+            }
+
+            if (window.__RESTORE_FROM_AUTOSAVE && !window.__OS_BOOT_DONE) {
+                stopTitleScreen();
+                if (screen.parentNode) screen.remove();
+                function goLoginRestore() {
+                    if (typeof window.enterOsLoginFlow === 'function') {
+                        window.enterOsLoginFlow();
+                        if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer();
+                    } else {
+                        setTimeout(goLoginRestore, 50);
+                    }
+                }
+                goLoginRestore();
+                window.__RESTORE_FROM_AUTOSAVE = false;
+                return;
+            }
 
             if (typeof window.playStartInvestigateSound === 'function') {
                 window.playStartInvestigateSound();
@@ -2137,6 +2210,24 @@
         });
         if (settingsOverlay) settingsOverlay.addEventListener('click', function (e) {
             if (e.target === settingsOverlay) window.hideTitleSettings();
+        });
+
+        var loadSaveOverlay = document.getElementById('title-loadsave-overlay');
+        var btnLoadSaveYes = document.getElementById('title-loadsave-yes');
+        var btnLoadSaveNo = document.getElementById('title-loadsave-no');
+        if (btnLoadSaveYes) btnLoadSaveYes.addEventListener('click', function () {
+            var data = typeof window.loadGameAutosaveRaw === 'function' ? window.loadGameAutosaveRaw() : null;
+            if (data && typeof window.applyGameAutosave === 'function') window.applyGameAutosave(data);
+            window.__RESTORE_FROM_AUTOSAVE = true;
+            window.dismissLoadSavePrompt();
+        });
+        if (btnLoadSaveNo) btnLoadSaveNo.addEventListener('click', function () {
+            if (typeof window.clearGameAutosave === 'function') window.clearGameAutosave();
+            window.__RESTORE_FROM_AUTOSAVE = false;
+            window.dismissLoadSavePrompt();
+        });
+        if (loadSaveOverlay) loadSaveOverlay.addEventListener('click', function (e) {
+            if (e.target === loadSaveOverlay) window.dismissLoadSavePrompt();
         });
 
         screen.querySelectorAll('.gs-menu-btn').forEach(function (btn) {
@@ -8694,6 +8785,52 @@ requestAnimationFrame(function() {
         window.ensureGraduationPhotoItem = ensureGraduationPhotoItem;
         ensureGraduationPhotoItem();
 
+        window.__serializeVfsForSave = function () {
+            var out = {};
+            Object.keys(vfs).forEach(function (k) {
+                var node = vfs[k];
+                if (!node || typeof node !== 'object') return;
+                var items = node.items;
+                if (typeof items === 'function') {
+                    try { items = items(); } catch (e) { items = []; }
+                }
+                out[k] = {
+                    name: node.name,
+                    path: node.path ? node.path.slice() : [],
+                    items: JSON.parse(JSON.stringify(items || []))
+                };
+            });
+            return out;
+        };
+
+        window.__applyVfsSnapshot = function (snap) {
+            if (!snap) return;
+            Object.keys(snap).forEach(function (k) {
+                if (!vfs[k]) {
+                    vfs[k] = { name: snap[k].name, path: snap[k].path || [], items: [] };
+                }
+                vfs[k].name = snap[k].name || vfs[k].name;
+                vfs[k].path = snap[k].path || vfs[k].path;
+                vfs[k].items = JSON.parse(JSON.stringify(snap[k].items || []));
+            });
+            ensureGraduationPhotoItem();
+            if (typeof renderExplorer === 'function') renderExplorer();
+        };
+
+        window.__pushVfsSnapshot = function () {
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.__EXPLORER_VFS_JSON = window.__serializeVfsForSave();
+                }
+            } catch (e) {}
+        };
+
+        try {
+            if (window.parent && window.parent.__EXPLORER_VFS_JSON) {
+                window.__applyVfsSnapshot(window.parent.__EXPLORER_VFS_JSON);
+            }
+        } catch (e) {}
+
         // 统一的高质量 Fluent SVG 图标包
         const iconLibrary = {
             folder: `
@@ -10417,6 +10554,7 @@ requestAnimationFrame(function() {
                 item._restored = true;
                 try { if (window.parent) window.parent.__PHOTOS_RESTORED = true; } catch(e) {}
                 renderExplorer();
+                if (typeof window.__pushVfsSnapshot === 'function') window.__pushVfsSnapshot();
             }
         }
         // ================== 系统拖拽控制 ==================
@@ -13892,6 +14030,11 @@ function wordSaveClueDocument() {
 }
 var wordSaveBtn = document.getElementById('word-save-btn');
 if (wordSaveBtn) wordSaveBtn.addEventListener('click', wordSaveClueDocument);
+try {
+  var _paperRestore = window.parent && window.parent.__WORD_DOC_SNAPSHOT;
+  var _paperEl = document.getElementById('paper');
+  if (_paperRestore && _paperEl) _paperEl.innerHTML = _paperRestore;
+} catch (e) {}
 
 // ===== Ribbon Tab 切换 =====
 document.querySelectorAll('.ribbon-tab').forEach(tab => {
@@ -22765,16 +22908,16 @@ const dmMap = {
     {type:'me',text:'？？？？？'},
     {type:'me',text:'你就当安慰我一下吧，我真的太想他了，我听说是不是这类东西要提供生辰八字什么的？我知道他生日是2007年11月2日，男性，名字需要吗？叫林栎。'},
     {type:'time',text:'28分钟后'},
-    {type:'other',text:'我看你是成都的？你是大研的吗？'},
+    {type:'other',text:'我看你是成都的？你是云禾的吗？'},
     {type:'me',text:'你怎么知道？'},
-    {type:'other',text:'你是不是大研一中的？'},
+    {type:'other',text:'你是不是云禾一中的？'},
     {type:'me',text:'不是，你问我那么多干什么呢？你都不回答一下我的问题。'},
     {type:'other',text:'根本不是你想，这世界上哪里有人能复活死人，你有脑子吗？'},
     {type:'other',text:'你叫什么名字，是不是一中的。'},
     {type:'me',text:'不能复活死人那到底是什么意思？'},
     {type:'other',text:'那是术语，意思是假死脱身，就是你如果想报复，哎算了给你这种智商的人说了也没用。'},
     {type:'me',text:'那我要是有想报复的人呢？'},
-    {type:'other',text:'就是你想办法让别人以为是他杀了你，懂了吗？但你是假死，有需求再来找我，行吗？你是不是认识大研一中的林栎？'},
+    {type:'other',text:'就是你想办法让别人以为是他杀了你，懂了吗？但你是假死，有需求再来找我，行吗？你是不是认识云禾一中的林栎？'},
     {type:'me',text:'对啊我是他朋友。'},
     {type:'other',text:'我也是他朋友，我一直在找你，他说他把那东西给你了，还没来得及说是谁就......哎，不提了，所以那东西是在你手上吧。'},
     {type:'me',text:'你说什么？哦，对在我这里，我存在手机里了。'},
@@ -23633,7 +23776,9 @@ window.playWhisperCurveScream = function(){
   try{
     var a = new Audio(assetUrl(SCREAM_FILE));
     a.preload = 'auto';
-    a.volume = 1;
+    var root = getRootWin();
+    var volFn = root.getHorrorSfxVolume;
+    a.volume = typeof volFn === 'function' ? volFn.call(root) : 0.62;
     var offset = 0;
     try{
       var rootOffset = getRootWin().WHISPERCURVE_SCREAM_OFFSET;
@@ -24576,7 +24721,7 @@ button{font-family:inherit}
                 for (var i = 0; i < 3; i++) {
                     var audio = new Audio(src);
                     audio.preload = 'auto';
-                    audio.volume = 1;
+                    audio.volume = window.getHorrorSfxVolume ? window.getHorrorSfxVolume() : 0.62;
                     try { audio.load(); } catch (e) {}
                     window.__WHISPERCURVE_SCREAM_POOL.push(audio);
                 }
@@ -24593,7 +24738,7 @@ button{font-family:inherit}
                     var source = ctx.createBufferSource();
                     source.buffer = buffer;
                     var gain = ctx.createGain();
-                    gain.gain.value = 1;
+                    gain.gain.value = window.getHorrorSfxVolume();
                     source.connect(gain);
                     gain.connect(ctx.destination);
                     var offset = Number(window.WHISPERCURVE_SCREAM_OFFSET || 0);
@@ -24608,7 +24753,7 @@ button{font-family:inherit}
                     var base = location.href.replace(/[^/]+$/, '');
                     audio = new Audio(base + encodeURIComponent(window.WHISPERCURVE_SCREAM));
                 }
-                audio.volume = 1;
+                audio.volume = window.getHorrorSfxVolume();
                 try {
                     var offset = Number(window.WHISPERCURVE_SCREAM_OFFSET || 0);
                     if (isFinite(offset) && offset > 0) {
@@ -24630,6 +24775,16 @@ button{font-family:inherit}
         window.primeWhisperCurveAudio();
         window.addEventListener('pointerdown', window.primeWhisperCurveAudio, { once: true, capture: true });
         window.addEventListener('keydown', window.primeWhisperCurveAudio, { once: true, capture: true });
+
+        // 恐怖音效总音量（开始调查略低）
+        window.HORROR_SFX_VOLUME = 0.62;
+        window.HORROR_SFX_VOLUME_START = 0.42;
+        window.getHorrorSfxVolume = function (kind) {
+            return kind === 'start' ? window.HORROR_SFX_VOLUME_START : window.HORROR_SFX_VOLUME;
+        };
+        window.scaleHorrorGain = function (value, kind) {
+            return value * window.getHorrorSfxVolume(kind || 'default');
+        };
 
         // 灵异论坛开场音效（音效3 / 3_trim.m4a，已裁掉前导静音）
         window.FORUM_INTRO_SOUND = '3_trim.m4a';
@@ -24672,7 +24827,7 @@ button{font-family:inherit}
                 for (var i = 0; i < 2; i++) {
                     var audio = new Audio(src);
                     audio.preload = 'auto';
-                    audio.volume = 1;
+                    audio.volume = window.getHorrorSfxVolume('start');
                     try { audio.load(); } catch (e) {}
                     window.__FORUM_INTRO_POOL.push(audio);
                 }
@@ -24694,7 +24849,7 @@ button{font-family:inherit}
                     var source = ctx.createBufferSource();
                     source.buffer = buffer;
                     var gain = ctx.createGain();
-                    gain.gain.value = 1;
+                    gain.gain.value = window.getHorrorSfxVolume('start');
                     source.connect(gain);
                     gain.connect(ctx.destination);
                     source.start(0);
@@ -24707,7 +24862,7 @@ button{font-family:inherit}
                     var base = location.href.replace(/[^/]+$/, '');
                     audio = new Audio(base + encodeURIComponent(window.FORUM_INTRO_SOUND));
                 }
-                audio.volume = 1;
+                audio.volume = window.getHorrorSfxVolume('start');
                 try { audio.currentTime = 0; } catch (e) {}
                 var p = audio.play();
                 if (p && p.catch) return p.catch(function () {});
@@ -24748,7 +24903,7 @@ button{font-family:inherit}
                 lp.frequency.value = 6800;
                 var g = ctx.createGain();
                 g.gain.setValueAtTime(0.0001, now);
-                g.gain.exponentialRampToValueAtTime(0.09, now + 0.01);
+                g.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.09), now + 0.01);
                 g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
                 src.connect(hp);
                 hp.connect(lp);
@@ -24793,8 +24948,8 @@ button{font-family:inherit}
                 var noise = ctx.createBufferSource(); noise.buffer = buf;
                 var nG = ctx.createGain();
                 nG.gain.setValueAtTime(0.0001, now);
-                nG.gain.exponentialRampToValueAtTime(0.45, now + 0.06);
-                nG.gain.setValueAtTime(0.38, now + 0.5);
+                nG.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.45), now + 0.06);
+                nG.gain.setValueAtTime(window.scaleHorrorGain(0.38), now + 0.5);
                 nG.gain.exponentialRampToValueAtTime(0.0001, now + dur);
                 var bp = ctx.createBiquadFilter();
                 bp.type = 'bandpass'; bp.frequency.value = 420; bp.Q.value = 0.6;
@@ -24806,7 +24961,7 @@ button{font-family:inherit}
                 drone.frequency.linearRampToValueAtTime(28, now + dur);
                 var dG = ctx.createGain();
                 dG.gain.setValueAtTime(0.0001, now);
-                dG.gain.exponentialRampToValueAtTime(0.18, now + 0.15);
+                dG.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.18), now + 0.15);
                 dG.gain.exponentialRampToValueAtTime(0.0001, now + dur);
                 drone.connect(dG); dG.connect(ctx.destination);
                 drone.start(now); drone.stop(now + dur);
@@ -24858,7 +25013,7 @@ button{font-family:inherit}
                 if (window.__HORROR_SUCCESS_AUDIO && window.__HORROR_SUCCESS_AUDIO.src === src) return;
                 window.__HORROR_SUCCESS_AUDIO = new Audio(src);
                 window.__HORROR_SUCCESS_AUDIO.preload = 'auto';
-                window.__HORROR_SUCCESS_AUDIO.volume = 1;
+                window.__HORROR_SUCCESS_AUDIO.volume = window.getHorrorSfxVolume();
                 try { window.__HORROR_SUCCESS_AUDIO.load(); } catch (e) {}
             } catch (e) {}
         };
@@ -24884,7 +25039,7 @@ button{font-family:inherit}
                     var source = ctx.createBufferSource();
                     source.buffer = buffer;
                     var gain = ctx.createGain();
-                    gain.gain.value = 1;
+                    gain.gain.value = window.getHorrorSfxVolume();
                     source.connect(gain);
                     gain.connect(ctx.destination);
                     source.onended = function () { if (window.__HORROR_SUCCESS_SOURCE === source) window.__HORROR_SUCCESS_SOURCE = null; };
@@ -24899,7 +25054,7 @@ button{font-family:inherit}
                     audio = new Audio(base + encodeURIComponent(window.HORROR_SUCCESS_SOUND));
                     window.__HORROR_SUCCESS_AUDIO = audio;
                 }
-                audio.volume = 1;
+                audio.volume = window.getHorrorSfxVolume();
                 try { audio.currentTime = 0; } catch (e) {}
                 var p = audio.play();
                 if (p && p.catch) return p.catch(function () {});
@@ -24922,7 +25077,7 @@ button{font-family:inherit}
                     o.type = 'square';
                     o.frequency.setValueAtTime(seg.f, now + seg.t);
                     g.gain.setValueAtTime(0.0001, now + seg.t);
-                    g.gain.exponentialRampToValueAtTime(0.18, now + seg.t + 0.012);
+                    g.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.18), now + seg.t + 0.012);
                     g.gain.exponentialRampToValueAtTime(0.0001, now + seg.t + 0.12);
                     o.connect(g);
                     g.connect(ctx.destination);
@@ -24965,7 +25120,7 @@ button{font-family:inherit}
                 var now = ctx.currentTime;
                 var master = ctx.createGain();
                 master.gain.setValueAtTime(0.0001, now);
-                master.gain.exponentialRampToValueAtTime(0.22, now + 0.28);
+                master.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.22), now + 0.28);
                 master.connect(ctx.destination);
                 // 低频紧张 drone（两路轻微失谐产生律动）
                 var lp = ctx.createBiquadFilter();
@@ -25020,7 +25175,7 @@ button{font-family:inherit}
                 nG.gain.setValueAtTime(0.0001, now);
                 var steps = [0.0, 0.05, 0.1, 0.16, 0.22, 0.28, 0.34, 0.4];
                 steps.forEach(function (st, idx) {
-                    nG.gain.setValueAtTime(idx % 2 === 0 ? 0.34 : 0.07, now + st);
+                    nG.gain.setValueAtTime(idx % 2 === 0 ? window.scaleHorrorGain(0.34) : window.scaleHorrorGain(0.07), now + st);
                 });
                 nG.gain.setValueAtTime(0.0001, now + 0.45);
                 var bp = ctx.createBiquadFilter();
@@ -25034,7 +25189,7 @@ button{font-family:inherit}
                     o.frequency.exponentialRampToValueAtTime(Math.max(60, seg.f * 0.4), now + seg.t + 0.12);
                     var g = ctx.createGain();
                     g.gain.setValueAtTime(0.0001, now + seg.t);
-                    g.gain.exponentialRampToValueAtTime(0.2, now + seg.t + 0.008);
+                    g.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.2), now + seg.t + 0.008);
                     g.gain.exponentialRampToValueAtTime(0.0001, now + seg.t + 0.13);
                     o.connect(g); g.connect(ctx.destination);
                     o.start(now + seg.t); o.stop(now + seg.t + 0.16);
@@ -25045,7 +25200,7 @@ button{font-family:inherit}
                 z.frequency.exponentialRampToValueAtTime(80, now + 0.45);
                 var zg = ctx.createGain();
                 zg.gain.setValueAtTime(0.0001, now + 0.3);
-                zg.gain.exponentialRampToValueAtTime(0.18, now + 0.31);
+                zg.gain.exponentialRampToValueAtTime(window.scaleHorrorGain(0.18), now + 0.31);
                 zg.gain.exponentialRampToValueAtTime(0.0001, now + 0.46);
                 z.connect(zg); zg.connect(ctx.destination);
                 z.start(now + 0.3); z.stop(now + 0.48);
@@ -25092,7 +25247,7 @@ button{font-family:inherit}
                     for (var i = 0; i < 2; i++) {
                         var a = new Audio(src);
                         a.preload = 'auto';
-                        a.volume = 1;
+                        a.volume = window.getHorrorSfxVolume();
                         try { a.load(); } catch (e) {}
                         window.__GRADUATION_SCARE_POOL.push(a);
                     }
@@ -25110,7 +25265,7 @@ button{font-family:inherit}
                     var source = ctx.createBufferSource();
                     source.buffer = buffer;
                     var gain = ctx.createGain();
-                    gain.gain.value = 1;
+                    gain.gain.value = window.getHorrorSfxVolume();
                     source.connect(gain);
                     gain.connect(ctx.destination);
                     source.start(0);
@@ -25119,7 +25274,7 @@ button{font-family:inherit}
                 window.primeGraduationScareAudio();
                 var pool = window.__GRADUATION_SCARE_POOL || [];
                 var audio = pool.length ? pool[0] : new Audio(location.href.replace(/[^/]+$/, '') + encodeURIComponent(window.GRADUATION_SCARE_FILE));
-                audio.volume = 1;
+                audio.volume = window.getHorrorSfxVolume();
                 try { audio.currentTime = 0; } catch (e) {}
                 var p = audio.play();
                 if (p && p.catch) return p.catch(function () {});
@@ -25145,7 +25300,7 @@ button{font-family:inherit}
         window.__WHISPERCURVE_ENTER_SCHEDULED = false;
 
         window.GLOBAL_BGM_FILE = 'Come Play with Me.mp3';
-        window.GLOBAL_BGM_VOLUME = 0.52;
+        window.GLOBAL_BGM_VOLUME = 0.58;
         window.__BGM_ENABLED = window.__BGM_ENABLED !== false;
         window.LOGIN_SCREEN_BG = '6.png';
         window.OS_LOGIN_PASSWORD = '1402';
@@ -25230,6 +25385,188 @@ button{font-family:inherit}
 
         // --- 全局回收站数据（主页面和文件管理器共享） ---
         window.recyclebinItems = window.recyclebinItems || [];
+
+        // --- 自动存档（localStorage，每 30 秒 + 关闭页面时） ---
+        window.GAME_AUTOSAVE_KEY = 'seasonGraduationAutosave';
+        window.GAME_AUTOSAVE_INTERVAL_MS = 30000;
+        window.__GAME_AUTOSAVE_TIMER = null;
+        window.GAME_SAVE_BOOL_KEYS = [
+            '__CHAT_UNLOCKED', '__ZOMAIL_UNLOCKED', '__BROTHER_CHAT_VIEWED',
+            '__STARSECRETS_DIARY_UNLOCKED', '__STARSECRETS_VISITED',
+            '__GHOST_FORUM_INSTALLED', '__QUWAI_PROFILE_VIEWED', '__QUWAI_DM_VIEWED',
+            '__QUWAI_FAKEDEATH_MONO_SHOWN', '__SOYMILK_VAULT_UNLOCKED',
+            '__LAYER1_CLUE_DONE', '__FINAL_PHASE_ACTIVE', '__TUTORIAL_DESKTOP_DONE',
+            '__TUTORIAL_NEWS_MONO_SHOWN', '__TUTORIAL_NEWS_READ_STARTED', '__CHAT_MONOLOGUE_SHOWN',
+            '__CHAT_ZHAO_UNREAD_CLEARED', '__SPARK_INTRO_STARTED', '__SPARK_FIRST_WIN',
+            '__WHISPERCURVE_MAX_GUIDE_DONE', '__GRADUATION_SCARE_SHOWN', '__LOGIN_MONO_SHOWN',
+            '__WORD_CLOSE_PROTECTED', '__WORD_SAVE_GUIDE_ACKED', '__OS_BOOT_DONE',
+            '__OS_LOGIN_FLOW_ACTIVE', '__PHOTOS_RESTORED', '__BGM_ENABLED', '__STARBROWSER_SYNCED2'
+        ];
+        window.GAME_SAVE_STRING_KEYS = ['__TUTORIAL_STEP', '__ZOMAIL_LAST_ACCOUNT', '__STARBROWSER_ACCOUNT'];
+        window.GAME_SAVE_NUMBER_KEYS = ['__BRIGHTNESS'];
+
+        window.syncExplorerVfsFromOpenWindows = function () {
+            try {
+                if (typeof state === 'undefined' || !state.openWindows) return;
+                Object.keys(state.openWindows).forEach(function (id) {
+                    var win = state.openWindows[id];
+                    var iframe = win && win.element && win.element.querySelector('iframe');
+                    if (iframe && iframe.contentWindow && typeof iframe.contentWindow.__pushVfsSnapshot === 'function') {
+                        iframe.contentWindow.__pushVfsSnapshot();
+                    }
+                });
+            } catch (e) {}
+        };
+
+        window.getCurrentWallpaperClass = function () {
+            var desktopEl = document.getElementById('desktop');
+            if (!desktopEl) return 'wallpaper-photo-coral';
+            var list = desktopEl.className.split(/\s+/);
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].indexOf('wallpaper-') === 0) return list[i];
+            }
+            return 'wallpaper-photo-coral';
+        };
+
+        window.getWordDocSnapshot = function () {
+            try {
+                if (typeof state !== 'undefined' && state.openWindows && state.openWindows.word) {
+                    var iframe = state.openWindows.word.element.querySelector('iframe');
+                    var doc = iframe && iframe.contentDocument;
+                    var paper = doc && doc.getElementById('paper');
+                    if (paper) return paper.innerHTML;
+                }
+            } catch (e) {}
+            return window.__WORD_DOC_SNAPSHOT || null;
+        };
+
+        window.collectGameAutosave = function () {
+            if (!window.__GAME_STARTED) return null;
+            window.syncExplorerVfsFromOpenWindows();
+            var flags = {};
+            (window.GAME_SAVE_BOOL_KEYS || []).forEach(function (k) {
+                if (window[k] !== undefined) flags[k] = !!window[k];
+            });
+            (window.GAME_SAVE_STRING_KEYS || []).forEach(function (k) {
+                if (window[k] != null) flags[k] = window[k];
+            });
+            (window.GAME_SAVE_NUMBER_KEYS || []).forEach(function (k) {
+                if (window[k] != null) flags[k] = window[k];
+            });
+            var objects = {
+                __CHAT_PERSISTED_STATE: window.__CHAT_PERSISTED_STATE || null,
+                __ZHAO_BRANCH_STATE: window.__ZHAO_BRANCH_STATE || null,
+                __STARBROWSER_DYNAMIC_HISTORY: window.__STARBROWSER_DYNAMIC_HISTORY || null,
+                __STARBROWSER_RECOVERED: window.__STARBROWSER_RECOVERED || null,
+                __MAIL_PENDING_EMAILS: window.__MAIL_PENDING_EMAILS || [],
+                recyclebinItems: window.recyclebinItems || [],
+                dDriveVfs: window.dDriveVfs || {},
+                desktopImages: window.desktopImages || [],
+                __EXPLORER_VFS_JSON: window.__EXPLORER_VFS_JSON || null
+            };
+            return {
+                version: 1,
+                savedAt: Date.now(),
+                inProgress: !!(window.__OS_BOOT_DONE || window.__OS_LOGIN_FLOW_ACTIVE),
+                phase: window.__FINAL_PHASE_ACTIVE ? 'final' : (window.__OS_BOOT_DONE ? 'desktop' : 'login'),
+                flags: flags,
+                objects: objects,
+                wallpaper: window.getCurrentWallpaperClass(),
+                wordDoc: window.getWordDocSnapshot()
+            };
+        };
+
+        window.applyGameAutosave = function (data) {
+            if (!data) return;
+            var flags = data.flags || {};
+            Object.keys(flags).forEach(function (k) { window[k] = flags[k]; });
+            var objects = data.objects || {};
+            if (objects.__CHAT_PERSISTED_STATE) window.__CHAT_PERSISTED_STATE = objects.__CHAT_PERSISTED_STATE;
+            if (objects.__ZHAO_BRANCH_STATE) window.__ZHAO_BRANCH_STATE = objects.__ZHAO_BRANCH_STATE;
+            if (objects.__STARBROWSER_DYNAMIC_HISTORY) window.__STARBROWSER_DYNAMIC_HISTORY = objects.__STARBROWSER_DYNAMIC_HISTORY;
+            if (objects.__STARBROWSER_RECOVERED) window.__STARBROWSER_RECOVERED = objects.__STARBROWSER_RECOVERED;
+            if (objects.__MAIL_PENDING_EMAILS) window.__MAIL_PENDING_EMAILS = objects.__MAIL_PENDING_EMAILS;
+            if (objects.recyclebinItems) window.recyclebinItems = objects.recyclebinItems;
+            if (objects.dDriveVfs) window.dDriveVfs = objects.dDriveVfs;
+            if (objects.desktopImages) window.desktopImages = objects.desktopImages;
+            if (objects.__EXPLORER_VFS_JSON) window.__EXPLORER_VFS_JSON = objects.__EXPLORER_VFS_JSON;
+            window.__SAVED_WALLPAPER = data.wallpaper || null;
+            window.__WORD_DOC_SNAPSHOT = data.wordDoc || null;
+            if (window.__GHOST_FORUM_INSTALLED) {
+                if (window.__D_DYNAMIC_INSTALLS && window.__D_DYNAMIC_INSTALLS['灵异论坛']) {
+                    window.__D_DYNAMIC_INSTALLS['灵异论坛'].installed = true;
+                }
+                if (window.dDriveVfs) window.dDriveVfs['灵异论坛'] = true;
+                if (typeof ensureGhostForumCatalogEntry === 'function') ensureGhostForumCatalogEntry();
+                if (Array.isArray(window.apps) && typeof cloneGhostForumApp === 'function' &&
+                    !window.apps.some(function (a) { return a && a.id === 'ghostforum'; })) {
+                    window.apps.push(cloneGhostForumApp());
+                }
+            }
+        };
+
+        window.saveGameAutosave = function () {
+            try {
+                var payload = window.collectGameAutosave();
+                if (!payload || !payload.inProgress) return;
+                localStorage.setItem(window.GAME_AUTOSAVE_KEY, JSON.stringify(payload));
+            } catch (e) {}
+        };
+
+        window.loadGameAutosaveRaw = function () {
+            try {
+                var raw = localStorage.getItem(window.GAME_AUTOSAVE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch (e) {
+                return null;
+            }
+        };
+
+        window.clearGameAutosave = function () {
+            try { localStorage.removeItem(window.GAME_AUTOSAVE_KEY); } catch (e) {}
+        };
+
+        window.startGameAutosaveTimer = function () {
+            if (window.__GAME_AUTOSAVE_TIMER) return;
+            window.__GAME_AUTOSAVE_TIMER = setInterval(function () {
+                window.saveGameAutosave();
+            }, window.GAME_AUTOSAVE_INTERVAL_MS || 30000);
+        };
+
+        window.stopGameAutosaveTimer = function () {
+            if (window.__GAME_AUTOSAVE_TIMER) {
+                clearInterval(window.__GAME_AUTOSAVE_TIMER);
+                window.__GAME_AUTOSAVE_TIMER = null;
+            }
+        };
+
+        window.addEventListener('beforeunload', function () {
+            window.saveGameAutosave();
+        });
+
+        window.applySavedWallpaperFromRestore = function () {
+            if (!window.__SAVED_WALLPAPER) return;
+            var desktopEl = document.getElementById('desktop');
+            if (!desktopEl) return;
+            Array.prototype.slice.call(desktopEl.classList).forEach(function (c) {
+                if (c.indexOf('wallpaper-') === 0) desktopEl.classList.remove(c);
+            });
+            desktopEl.classList.add(window.__SAVED_WALLPAPER);
+            var wpName = window.__SAVED_WALLPAPER.replace(/^wallpaper-/, '');
+            if (typeof updateDesktopWallpaperFx === 'function') updateDesktopWallpaperFx(wpName);
+        };
+
+        window.restoreGameDesktopFromSave = function () {
+            window.applySavedWallpaperFromRestore();
+            if (typeof desktopRefresh === 'function') desktopRefresh();
+            if (window.__FINAL_PHASE_ACTIVE && typeof window.enterFinalPhase === 'function') {
+                setTimeout(function () { window.enterFinalPhase(); }, 300);
+            } else if (!window.__TUTORIAL_DESKTOP_DONE && typeof startDesktopTutorial === 'function') {
+                setTimeout(function () { startDesktopTutorial(); }, 600);
+            }
+            if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer();
+        };
 
         // 灵异论坛：默认未安装，可由应用商店/浏览器安装并写入 D 盘
         window.GHOST_FORUM_APP = {
@@ -27281,7 +27618,7 @@ button{font-family:inherit}
             if (isTrue) {
                 blocks.push({
                     cls: 'is-true',
-                    text: '您已触及更深层的真相（达成真结局！）——但关于真凶与一年前在大研一中发生的一切，尚未完全揭开。（也许是给续作挖的坑？如果玩的人多的话？）\n\n本章节真相已解锁，可随时前往主页案件档案查看！',
+                    text: '您已触及更深层的真相（达成真结局！）——但关于真凶与一年前在云禾一中发生的一切，尚未完全揭开。（也许是给续作挖的坑？如果玩的人多的话？）\n\n本章节真相已解锁，可随时前往主页案件档案查看！',
                     delay: 0
                 });
             } else {
@@ -27373,7 +27710,7 @@ button{font-family:inherit}
         };
 
         window.getTrueEndingBodyText = function () {
-            return '一年前大研中学的惨案；林栎托付给弟弟的线索；「圈外勿扰」账号......一系列线索在脑海里逐渐清晰起来。我一定会找到你的......一年前和现如今杀死安的凶手！如果我没记错的话，一年前的惨案 —— 等等，怎么回事';
+            return '一年前云禾中学的惨案；林栎托付给弟弟的线索；「圈外勿扰」账号......一系列线索在脑海里逐渐清晰起来。我一定会找到你的......一年前和现如今杀死安的凶手！如果我没记错的话，一年前的惨案 —— 等等，怎么回事';
         };
 
         window.getTrueEndingResult = function () {
@@ -27506,8 +27843,8 @@ button{font-family:inherit}
             if (checkBeastHiddenEnding()) {
                 showFinalEndingCard({
                     id: 'beast',
-                    title: '畜生——你都干了些什么！',
-                    body: '你把除了 C 盘以外的一切统统删光了，连回收站也没放过。\n你满意了吗？',
+                    title: '你到底想干啥？',
+                    body: '',
                     isBeast: true
                 });
                 return;
@@ -27937,7 +28274,7 @@ button{font-family:inherit}
                 if (!iframe || !iframe.contentDocument) return null;
                 return iframe.contentDocument.getElementById('spark-btn') || iframe.contentDocument.querySelector('button[title="\u9A87\u5165"], button[title="\u6062\u590D\u6570\u636E"], .spark-btn, .spark-btn-chip');
             }
-            showMonologue(['看样子我的四年大学生活总算有点实用价值了......', '这种东西对我来说真的和小游戏一样简单。'], function () {
+            showMonologue(['看样子我的四年大学生活总算有点实用价值了......', '这种东西对我来说真的和玩游戏一样简单。'], function () {
                 var btn = findSparkBtn();
                 if (!btn) return;
                 showGuideOverlay({
@@ -28303,6 +28640,7 @@ button{font-family:inherit}
                         if (window.endMonologueInputLock) window.endMonologueInputLock(document);
                     }
                     window.startOsBootSequence(function () {
+                        if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer();
                         if (!window.__TUTORIAL_DESKTOP_DONE && !window.__DEV_SKIP_GUIDE) {
                             setTimeout(function () {
                                 if (typeof startDesktopTutorial === 'function') startDesktopTutorial();
