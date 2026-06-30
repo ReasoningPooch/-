@@ -1205,6 +1205,33 @@
             position: absolute; inset: 0; z-index: 999; opacity: 0; pointer-events: none;
             transition: opacity 2s ease-in, background-color 1.5s ease;
         }
+        #game-title-screen .gs-author-credit {
+            position: absolute; right: 22px; bottom: 18px; z-index: 30;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+            font-family: 'Noto Serif SC', 'SimSun', serif;
+            cursor: default; user-select: none;
+            opacity: 0.72; transition: opacity 0.3s ease;
+        }
+        #game-title-screen .gs-author-credit:hover { opacity: 1; }
+        #game-title-screen .gs-author-name {
+            font-size: 0.78rem; letter-spacing: 0.06em;
+            color: rgba(255,255,255,0.62);
+            text-shadow: 0 0 6px rgba(0,0,0,0.6);
+        }
+        #game-title-screen .gs-author-links {
+            display: flex; gap: 14px; align-items: center;
+        }
+        #game-title-screen .gs-author-link {
+            font-size: 0.8rem; letter-spacing: 0.05em;
+            color: rgba(255,255,255,0.72); text-decoration: none;
+            border-bottom: 1px solid rgba(138,3,3,0.0);
+            padding-bottom: 1px; transition: color 0.25s, border-color 0.25s, text-shadow 0.25s;
+            cursor: pointer;
+        }
+        #game-title-screen .gs-author-link:hover {
+            color: #fff; border-bottom-color: rgba(138,3,3,0.85);
+            text-shadow: 0 0 10px rgba(138,3,3,0.55);
+        }
         #title-help-overlay {
             position: fixed; inset: 0; z-index: 100060; display: none;
             align-items: center; justify-content: center; padding: 24px;
@@ -1507,6 +1534,14 @@
             </svg>
         </div>
         <div class="gs-start-overlay" id="gs-start-overlay"></div>
+        <div class="gs-author-credit" id="gs-author-credit">
+            <span class="gs-author-name">作者全网同名：@ReasoningPooch</span>
+            <span class="gs-author-links">
+                <a class="gs-author-link" href="https://b23.tv/rBBX3uh" target="_blank" rel="noopener noreferrer">哔哩哔哩</a>
+                <a class="gs-author-link" href="https://xhslink.com/m/1KoR1T7L64m" target="_blank" rel="noopener noreferrer">小红书</a>
+                <a class="gs-author-link" href="https://v.douyin.com/x8bCBjJMIW4/" target="_blank" rel="noopener noreferrer">抖音</a>
+            </span>
+        </div>
     </div>
 
     <div id="game-entry-overlay">
@@ -23467,7 +23502,7 @@ document.addEventListener('click', e => {
 
             <div class="question-card" data-question="1">
                 <div class="question-number">问题 二</div>
-                <div class="question-text">我最喜欢的游戏通关后会出现哪句话？</div>
+                <div class="question-text">我最爱的游戏通关后会出现哪句话？</div>
                 <input type="text" class="answer-input" placeholder="请输入你的答案..." id="answer-1">
                 <button class="submit-btn" onclick="checkAnswer(1)">确认</button>
                 <div class="error-msg" id="error-1">答案不正确，请再想想...</div>
