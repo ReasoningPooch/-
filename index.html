@@ -2082,6 +2082,7 @@
             window.__LOGIN_MONO_SHOWN = window.__LOGIN_MONO_SHOWN || false;
             window.__OS_LOGIN_FLOW_ACTIVE = window.__OS_LOGIN_FLOW_ACTIVE || false;
             window.__OS_BOOT_DONE = window.__OS_BOOT_DONE || false;
+            window.__OS_BOOT_PREFLIGHT_DONE = window.__OS_BOOT_PREFLIGHT_DONE || false;
             document.body.classList.remove('os-desktop-ready');
             hideTitleHelp();
             hideTitleArchive();
@@ -2125,8 +2126,6 @@
                 function goLogin() {
                     if (typeof window.enterOsLoginFlow === 'function') {
                         window.enterOsLoginFlow();
-                        stopTitleScreen();
-                        if (screen.parentNode) screen.remove();
                     } else {
                         setTimeout(goLogin, 50);
                     }
@@ -2134,28 +2133,62 @@
                 goLogin();
             }
 
-            if (!startOverlay) {
+            function runBootThenLogin() {
+                if (typeof window.startOsBootSequence === 'function') {
+                    window.startOsBootSequence(null, {
+                        preLogin: true,
+                        onRevealLogin: handoffToLogin
+                    });
+                } else {
+                    setTimeout(function () {
+                        runBootThenLogin();
+                    }, 50);
+                }
+            }
+
+            function dismissTitleThenBoot() {
                 stopTitleScreen();
-                screen.remove();
-                handoffToLogin();
+                if (screen.parentNode) screen.remove();
+                runBootThenLogin();
+            }
+
+            var GS_RED_FADE_MS = 2000;
+            var GS_RED_HOLD_MS = 1600;
+            var GS_BLACK_SNAP_MS = 280;
+            var GS_BLACK_HOLD_MS = 180;
+
+            function runRedBlackThenBoot() {
+                var trans = document.createElement('div');
+                trans.setAttribute('aria-hidden', 'true');
+                trans.style.cssText = 'position:fixed;inset:0;z-index:100056;background:#8a0303;opacity:0;pointer-events:auto;transition:opacity 2s ease-in, background-color 0.28s ease;';
+                document.body.appendChild(trans);
+                requestAnimationFrame(function () {
+                    trans.style.opacity = '1';
+                });
+                setTimeout(function () {
+                    trans.style.backgroundColor = '#000000';
+                    setTimeout(function () {
+                        dismissTitleThenBoot();
+                        if (trans.parentNode) trans.remove();
+                    }, GS_BLACK_SNAP_MS + GS_BLACK_HOLD_MS);
+                }, GS_RED_FADE_MS + GS_RED_HOLD_MS);
+            }
+
+            if (!startOverlay) {
+                runRedBlackThenBoot();
                 return;
             }
 
             startOverlay.style.backgroundColor = '#8a0303';
             startOverlay.style.pointerEvents = 'auto';
-            setTimeout(function () {
+            startOverlay.style.transition = 'opacity 2s ease-in, background-color 0.28s ease';
+            requestAnimationFrame(function () {
                 startOverlay.style.opacity = '1';
                 setTimeout(function () {
-                    startOverlay.style.backgroundColor = 'black';
-                    var msg = document.createElement('div');
-                    msg.style.cssText = 'position:absolute;top:50%;width:100%;text-align:center;color:#fff;font-size:2rem;letter-spacing:5px;font-family:"Noto Serif SC",serif;transform:translateY(-50%);';
-                    msg.textContent = '调查……正式开始……';
-                    startOverlay.appendChild(msg);
-                    setTimeout(function () {
-                        handoffToLogin();
-                    }, 1800);
-                }, 2000);
-            }, 100);
+                    startOverlay.style.backgroundColor = '#000000';
+                    setTimeout(dismissTitleThenBoot, GS_BLACK_SNAP_MS + GS_BLACK_HOLD_MS);
+                }, GS_RED_FADE_MS + GS_RED_HOLD_MS);
+            });
         };
 
         var btnStart = document.getElementById('gs-btn-start');
@@ -2246,7 +2279,7 @@
     })();
     </script>
 
-    <!-- 1. 开机画面（登录成功后显示） -->
+    <!-- 1. 开机画面（标题红屏转场后、登录前显示） -->
     <div id="boot-screen" class="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center transition-opacity duration-700 boot-waiting">
         <div class="win-loader">
             <div></div><div></div><div></div><div></div><div></div>
@@ -28540,16 +28573,25 @@ button{font-family:inherit}
                 }
             }, 3200);
 
-            window.startOsBootSequence = function (callback) {
-                if (window.__OS_BOOT_DONE) {
+            window.startOsBootSequence = function (callback, opts) {
+                opts = opts || {};
+                if (window.__OS_BOOT_DONE && !opts.preLogin) {
                     document.body.classList.add('os-desktop-ready');
+                    if (callback) callback();
+                    return;
+                }
+                if (opts.preLogin && window.__OS_BOOT_PREFLIGHT_DONE) {
                     if (callback) callback();
                     return;
                 }
                 var bootScreen = document.getElementById('boot-screen');
                 if (!bootScreen) {
-                    window.__OS_BOOT_DONE = true;
-                    document.body.classList.add('os-desktop-ready');
+                    if (opts.preLogin) {
+                        window.__OS_BOOT_PREFLIGHT_DONE = true;
+                    } else {
+                        window.__OS_BOOT_DONE = true;
+                        document.body.classList.add('os-desktop-ready');
+                    }
                     if (callback) callback();
                     return;
                 }
@@ -28561,13 +28603,20 @@ button{font-family:inherit}
                 bootScreen.style.display = 'flex';
                 bootScreen.style.opacity = '1';
                 setTimeout(function () {
+                    if (opts.preLogin && typeof opts.onRevealLogin === 'function') {
+                        opts.onRevealLogin();
+                    }
                     bootScreen.style.opacity = '0';
                     setTimeout(function () {
                         bootScreen.classList.remove('boot-active');
                         bootScreen.classList.add('boot-waiting');
                         bootScreen.style.opacity = '';
-                        window.__OS_BOOT_DONE = true;
-                        document.body.classList.add('os-desktop-ready');
+                        if (opts.preLogin) {
+                            window.__OS_BOOT_PREFLIGHT_DONE = true;
+                        } else {
+                            window.__OS_BOOT_DONE = true;
+                            document.body.classList.add('os-desktop-ready');
+                        }
                         if (callback) callback();
                     }, 700);
                 }, 2500);
@@ -28627,6 +28676,15 @@ button{font-family:inherit}
 
                 setTimeout(window.showLoginPasswordMonologue, 600);
 
+                function finishEnterDesktop() {
+                    if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer();
+                    if (!window.__TUTORIAL_DESKTOP_DONE && !window.__DEV_SKIP_GUIDE) {
+                        setTimeout(function () {
+                            if (typeof startDesktopTutorial === 'function') startDesktopTutorial();
+                        }, 600);
+                    }
+                }
+
                 function afterLoginSuccess() {
                     loginEl.classList.remove('active');
                     if (window.__loginClockTimer) {
@@ -28639,14 +28697,13 @@ button{font-family:inherit}
                         mono.remove();
                         if (window.endMonologueInputLock) window.endMonologueInputLock(document);
                     }
-                    window.startOsBootSequence(function () {
-                        if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer();
-                        if (!window.__TUTORIAL_DESKTOP_DONE && !window.__DEV_SKIP_GUIDE) {
-                            setTimeout(function () {
-                                if (typeof startDesktopTutorial === 'function') startDesktopTutorial();
-                            }, 600);
-                        }
-                    });
+                    if (window.__OS_BOOT_PREFLIGHT_DONE) {
+                        window.__OS_BOOT_DONE = true;
+                        document.body.classList.add('os-desktop-ready');
+                        finishEnterDesktop();
+                        return;
+                    }
+                    window.startOsBootSequence(finishEnterDesktop);
                 }
 
                 function tryLogin() {
