@@ -32249,18 +32249,6 @@ button{font-family:inherit}
             overlay.classList.add('active');
             overlay.setAttribute('aria-hidden', 'false');
 
-            try {
-                var bgm = window.__globalBgmAudio;
-                if (bgm) {
-                    var vol = bgm.volume;
-                    var fade = setInterval(function () {
-                        vol = Math.max(0, vol - 0.04);
-                        bgm.volume = vol;
-                        if (vol <= 0) { clearInterval(fade); try { bgm.pause(); } catch (e) {} }
-                    }, 120);
-                }
-            } catch (e) {}
-
             if (typeof window.renderFinalEndingCard === 'function') {
                 window.renderFinalEndingCard({
                     id: 'beast',
@@ -33151,18 +33139,6 @@ button{font-family:inherit}
             overlay.innerHTML = '';
             overlay.classList.add('active');
             overlay.setAttribute('aria-hidden', 'false');
-
-            try {
-                var bgm = window.__globalBgmAudio;
-                if (bgm) {
-                    var vol = bgm.volume;
-                    var fade = setInterval(function () {
-                        vol = Math.max(0, vol - 0.04);
-                        bgm.volume = vol;
-                        if (vol <= 0) { clearInterval(fade); try { bgm.pause(); } catch (e) {} }
-                    }, 120);
-                }
-            } catch (e) {}
 
             if (checkBeastHiddenEnding()) {
                 window.__BEAST_ENDING_TRIGGERED = true;
