@@ -954,12 +954,21 @@
             background: transparent; border: 1px solid rgba(138,3,3,0.55);
             color: #ddd; padding: 12px 32px; cursor: pointer;
             font-family: inherit; font-size: 14px; letter-spacing: 0.35rem;
-            margin-bottom: 48px;
+            margin-bottom: 12px;
         }
         .credits-home-btn.show { opacity: 1; transform: translateY(0); }
         .credits-home-btn:hover {
             color: #fff; border-color: #8a0303;
             text-shadow: 0 0 10px rgba(138,3,3,0.45);
+        }
+        .credits-home-btn.continue {
+            border-color: rgba(59,130,246,0.45);
+            color: #a0c4ff;
+            margin-bottom: 48px;
+        }
+        .credits-home-btn.continue:hover {
+            color: #fff; border-color: #3b82f6;
+            text-shadow: 0 0 10px rgba(59,130,246,0.4);
         }
 
         /* ================= 真结局过场 ================= */
@@ -2438,6 +2447,7 @@
             hideTitleArchive();
             hideTitleSettings();
             window.dismissLoadSavePrompt();
+            if (window.stopTitleStorm) window.stopTitleStorm();
 
             if (window.__RESTORE_FROM_AUTOSAVE && window.__OS_BOOT_DONE) {
                 stopTitleScreen();
@@ -32311,6 +32321,27 @@ button{font-family:inherit}
             reloadTitle();
         };
 
+        window.restoreGameDesktopFromCredits = function () {
+            window.__GAME_RUN_COMPLETED = false;
+            window.__FINAL_SAVE_COMMITTED = false;
+            window.__FINAL_PHASE_ACTIVE = false;
+            var overlay = document.getElementById('game-credits-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                overlay.setAttribute('aria-hidden', 'true');
+                var inner = document.getElementById('game-credits-inner');
+                if (inner) inner.innerHTML = '';
+            }
+            var finalOverlay = document.getElementById('final-phase-overlay');
+            if (finalOverlay) {
+                finalOverlay.classList.remove('active');
+                finalOverlay.setAttribute('aria-hidden', 'true');
+                finalOverlay.innerHTML = '';
+            }
+            try { if (typeof window.saveGameAutosave === 'function') window.saveGameAutosave(); } catch (e) {}
+            try { if (typeof window.startGameAutosaveTimer === 'function') window.startGameAutosaveTimer(); } catch (e) {}
+        };
+
         window.__TRUE_ENDING_ERROR_MSGS = [
             { title: 'Error', body: 'The operation could not be completed.\nError code: 0x80070005\nAccess is denied.' },
             { title: 'Error', body: 'Insufficient system resources to load desktop icons.' },
@@ -32891,7 +32922,6 @@ button{font-family:inherit}
             window.__GAME_RUN_COMPLETED = true;
             try {
                 if (typeof window.stopGameAutosaveTimer === 'function') window.stopGameAutosaveTimer();
-                if (typeof window.clearGameAutosave === 'function') window.clearGameAutosave();
             } catch (e) {}
             var overlay = document.getElementById('game-credits-overlay');
             var inner = document.getElementById('game-credits-inner');
@@ -32925,6 +32955,8 @@ button{font-family:inherit}
             });
 
             var btnDelay = 11800;
+            var btnRow = document.createElement('div');
+            btnRow.style.cssText = 'display:flex;flex-direction:column;align-items:center;';
             var btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'credits-home-btn';
@@ -32932,9 +32964,21 @@ button{font-family:inherit}
             btn.addEventListener('click', function () {
                 window.returnToGameTitleScreen();
             });
-            inner.appendChild(btn);
+            btnRow.appendChild(btn);
+            if (!opts.isTrueEnding) {
+                var continueBtn = document.createElement('button');
+                continueBtn.type = 'button';
+                continueBtn.className = 'credits-home-btn continue';
+                continueBtn.textContent = '继续探索';
+                continueBtn.addEventListener('click', function () {
+                    window.restoreGameDesktopFromCredits();
+                });
+                btnRow.appendChild(continueBtn);
+            }
+            inner.appendChild(btnRow);
             setTimeout(function () {
                 btn.classList.add('show');
+                if (continueBtn) continueBtn.classList.add('show');
                 try { btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
             }, btnDelay);
         };
