@@ -29617,7 +29617,10 @@ button{font-family:inherit}
                 if (bar) bar.style.width = ((doneCount / total) * 100) + '%';
             }
 
+            var precacheDoneOnce = false;
             function finish() {
+                if (precacheDoneOnce) return;
+                precacheDoneOnce = true;
                 setBar();
                 setTimeout(function () {
                     var el = document.getElementById('precache-overlay');
@@ -29628,35 +29631,52 @@ button{font-family:inherit}
                             try { sessionStorage.removeItem('seasonGraduationEntry'); } catch (e) {}
                             if (typeof initGameEntryPrompt === 'function') initGameEntryPrompt();
                         }, 700);
+                    } else {
+                        try { sessionStorage.removeItem('seasonGraduationEntry'); } catch (e) {}
+                        if (typeof initGameEntryPrompt === 'function') initGameEntryPrompt();
                     }
                 }, 300);
             }
+
+            var maxWaitSec = 45;
+            setTimeout(function () { finish(); }, maxWaitSec * 1000);
 
             function isAudio(name) {
                 return /\.(mp3|wav|m4a)$/i.test(name);
             }
 
+            var fileLoaded; fileLoaded = {};
             function loadOne(index) {
                 if (index >= total) { finish(); return; }
                 var file = PRELOAD_FILES[index];
                 var url = B + encodeURIComponent(file).replace(/%2F/g, '/');
 
-                function next() { doneCount++; setBar(); setTimeout(function () { loadOne(index + 1); }, 30); }
+                var already = false;
+                function next() {
+                    if (already) return;
+                    already = true;
+                    if (fileLoaded[file]) return;
+                    fileLoaded[file] = true;
+                    doneCount++;
+                    setBar();
+                    setTimeout(function () { loadOne(index + 1); }, 20);
+                }
 
                 if (isAudio(file)) {
                     var a = new Audio();
                     a.preload = 'auto';
                     a.src = url;
-                    a.addEventListener('canplaythrough', function () { next(); }, { once: true });
-                    a.addEventListener('error', function () { next(); }, { once: true });
+                    a.addEventListener('canplaythrough', next, { once: true });
+                    a.addEventListener('loadeddata', next, { once: true });
+                    a.addEventListener('error', next, { once: true });
                     a.load();
-                    setTimeout(function () { next(); }, 8000);
+                    setTimeout(next, 8000);
                 } else {
                     var img = new Image();
                     img.src = url;
-                    img.onload = function () { next(); };
-                    img.onerror = function () { next(); };
-                    setTimeout(function () { next(); }, 5000);
+                    img.onload = next;
+                    img.onerror = next;
+                    setTimeout(next, 5000);
                 }
             }
             setTimeout(function () { loadOne(0); }, 80);
