@@ -2865,7 +2865,7 @@
             </button>
             <div class="flex items-center gap-3 p-1 start-menu-decor-item">
                 <svg viewBox="0 0 32 32" class="w-7 h-7 rounded-full bg-white/20" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="rgba(255,255,255,0.15)"/><circle cx="16" cy="13" r="5" fill="rgba(255,255,255,0.85)"/><path d="M6 28c0-5.5 4.5-10 10-10s10 4.5 10 10" fill="rgba(255,255,255,0.85)"/></svg>
-                <span class="text-sm text-white font-medium">沈砚舟</span>
+                <span class="text-sm text-white font-medium">shenan</span>
             </div>
         </div>
     </div>
@@ -27968,6 +27968,8 @@ var COOLDOWN_SECONDS=180;
 var CIRCLE_CIRCUMFERENCE=289;
 function getRoot(){try{return window.parent||window}catch(e){return window}}
 function getState(){var r=getRoot();if(!r.__OCEAN_DIARY_STATE)r.__OCEAN_DIARY_STATE={caught:[],total:0};return r.__OCEAN_DIARY_STATE}
+function getRemaining(){var s=getState();if(!s.__cd)return-1;var r=Math.floor((s.__cd-Date.now())/1000);return r>0?r:0}
+function saveCd(endsAt){var s=getState();if(endsAt!=null)s.__cd=endsAt;else delete s.__cd}
 function getAvailableIndices(){var s=getState(),list=[];for(var i=0;i<THOUGHTS.length;i++){if(s.caught.indexOf(i)!==-1)continue;if(THOUGHTS[i].minCaught&&s.total<THOUGHTS[i].minCaught)continue;list.push(i)}return list}
 function allCaught(){return getAvailableIndices().length===0}
 function pickThoughtIndex(){var avail=getAvailableIndices();if(!avail.length)return-1;var pick=avail[Math.floor(Math.random()*avail.length)];var s=getState();s.caught.push(pick);s.total+=1;return pick}
@@ -27978,13 +27980,13 @@ function setBtnReady(){btn.disabled=false;btn.classList.remove('hidden-state');b
 function setBtnDone(){btn.disabled=true;btnText.textContent='已经全部捞出';btn.classList.remove('hidden-state')}
 function createRipple(){var ripple=document.createElement('div');ripple.style.cssText='position:absolute;width:6rem;height:6rem;border:2px solid #fff;border-radius:50%;pointer-events:none';ripple.className='animate-ripple';rippleLayer.appendChild(ripple);setTimeout(function(){if(rippleLayer.contains(ripple))rippleLayer.removeChild(ripple)},2100)}
 function updateTimerUI(seconds){timerText.textContent=seconds+'s';var offset=CIRCLE_CIRCUMFERENCE-(CIRCLE_CIRCUMFERENCE*(seconds/COOLDOWN_SECONDS));timerCircle.setAttribute('stroke-dashoffset',offset)}
-function startCooldown(){var currentSeconds=COOLDOWN_SECONDS;updateTimerUI(currentSeconds);cooldownInterval=setInterval(function(){currentSeconds-=1;updateTimerUI(currentSeconds);if(currentSeconds<=0){clearInterval(cooldownInterval);finishCooldown()}},1000)}
-function finishCooldown(){timerContainer.classList.add('hidden-state');if(allCaught()){setBtnDone();return}setBtnReady()}
+function startCooldown(){var now=Date.now();saveCd(now+COOLDOWN_SECONDS*1000);var currentSeconds=COOLDOWN_SECONDS;updateTimerUI(currentSeconds);cooldownInterval=setInterval(function(){currentSeconds-=1;updateTimerUI(currentSeconds);if(currentSeconds<=0){clearInterval(cooldownInterval);finishCooldown()}},1000)}
+function finishCooldown(){saveCd(null);timerContainer.classList.add('hidden-state');if(allCaught()){setBtnDone();return}setBtnReady()}
 function startFishing(){if(allCaught()){idleText.classList.add('hidden-state');thoughtContainer.classList.remove('hidden-state');void thoughtContainer.offsetWidth;thoughtContainer.classList.add('animate-reveal');showThought(-1);setBtnDone();return}
 setBtnFishing();idleText.classList.add('hidden-state');thoughtContainer.classList.add('hidden-state');thoughtContainer.classList.remove('animate-reveal');orb.classList.remove('hidden-state');orb.classList.add('animate-float');
 setTimeout(function(){var idx=pickThoughtIndex();orb.classList.add('hidden-state');orb.classList.remove('animate-float');createRipple();showThought(idx);thoughtContainer.classList.remove('hidden-state');void thoughtContainer.offsetWidth;thoughtContainer.classList.add('animate-reveal');if(allCaught()){btn.classList.add('hidden-state');setBtnDone();return}
 btn.classList.add('hidden-state');timerContainer.classList.remove('hidden-state');startCooldown()},3400)}
-if(allCaught()){idleText.classList.add('hidden-state');thoughtContainer.classList.remove('hidden-state');showThought(-1);setBtnDone()}else{setBtnReady()}
+var rem=getRemaining();if(rem>0){btn.disabled=true;btn.classList.add('hidden-state');timerContainer.classList.remove('hidden-state');var rSeconds=rem;updateTimerUI(rSeconds);cooldownInterval=setInterval(function(){rSeconds-=1;updateTimerUI(rSeconds);if(rSeconds<=0){clearInterval(cooldownInterval);finishCooldown()}},1000)}else if(rem===0){finishCooldown()}else if(allCaught()){idleText.classList.add('hidden-state');thoughtContainer.classList.remove('hidden-state');showThought(-1);setBtnDone()}else{setBtnReady()}
 btn.addEventListener('click',startFishing);
 })();
 <!--__SCRIPT_END__-->
