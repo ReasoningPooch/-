@@ -1799,6 +1799,11 @@
                 <button type="button" class="title-setting-toggle" id="title-jumpscare-toggle" aria-label="屏蔽跳杀彩蛋开关"></button>
             </div>
             <p class="title-settings-tip-sub" style="color:#ff8a8a;font-size:11px;margin-top:-2px;margin-bottom:6px;">（不想被突脸的请务必开启此按钮！！！）</p>
+            <div class="title-setting-row">
+                <span class="title-setting-label">跳过新手指引</span>
+                <button type="button" class="title-setting-toggle" id="title-skip-tutorial-toggle" aria-label="跳过新手指引开关"></button>
+            </div>
+            <p class="title-settings-tip-sub" style="color:#e8b84a;font-size:11px;margin-top:-2px;margin-bottom:6px;">第一次游玩建议不要开启，有剧情和解密线索</p>
             <p class="title-settings-tip">温馨提示：游戏内含突脸、恐怖音效等可能令人不适的内容，关闭背景音乐或恐怖音效可适当减少恐怖感。</p>
             <p class="title-settings-tip-sub">（为了完整沉浸的体验，建议保持开启）</p>
             <button type="button" class="title-modal-close" id="title-settings-close">关闭</button>
@@ -1866,6 +1871,7 @@
         var ENTRY_PREFS_KEY = 'seasonGraduationEntry';
         var DIFFICULTY_PREFS_KEY = 'seasonGraduationDifficulty';
         var HORROR_SFX_PREFS_KEY = 'seasonGraduationHorrorSfx';
+        var SKIP_TUTORIAL_PREFS_KEY = 'seasonGraduationSkipTutorial';
 
         function getDifficultyLabel(diff) {
             return diff === 'reality' ? '现实' : '故事';
@@ -1920,6 +1926,15 @@
         window.isJumpscareMuted = function () {
             return !!window.__JUMPS_CARE_MUTED;
         };
+
+        function loadSkipTutorial() {
+            try { return localStorage.getItem(SKIP_TUTORIAL_PREFS_KEY) === '1'; } catch (e) { return false; }
+        }
+        function saveSkipTutorial(skip) {
+            window.__SKIP_TUTORIAL = !!skip;
+            try { localStorage.setItem(SKIP_TUTORIAL_PREFS_KEY, skip ? '1' : '0'); } catch (e) {}
+        }
+        window.__SKIP_TUTORIAL = loadSkipTutorial();
 
         function refreshDifficultySettingsUI() {
             var wrap = document.getElementById('title-difficulty-switch');
@@ -2662,6 +2677,15 @@
             jumpscareToggle.addEventListener('click', function () {
                 saveJumpscareMuted(!window.__JUMPS_CARE_MUTED);
                 refreshHorrorSettingsUI();
+            });
+        }
+
+        var skipTutorialToggle = document.getElementById('title-skip-tutorial-toggle');
+        if (skipTutorialToggle) {
+            skipTutorialToggle.classList.toggle('on', !!window.__SKIP_TUTORIAL);
+            skipTutorialToggle.addEventListener('click', function () {
+                saveSkipTutorial(!window.__SKIP_TUTORIAL);
+                skipTutorialToggle.classList.toggle('on', !!window.__SKIP_TUTORIAL);
             });
         }
 
@@ -33543,7 +33567,7 @@ button{font-family:inherit}
         };
 
         function startDesktopTutorial() {
-            if (window.__TUTORIAL_DESKTOP_DONE || window.__DEV_SKIP_GUIDE) return;
+            if (window.__TUTORIAL_DESKTOP_DONE || window.__DEV_SKIP_GUIDE || window.__SKIP_TUTORIAL) return;
             window.__TUTORIAL_STEP = 'desktop_mono';
             showMonologue(['这桌面还挺干净，找起东西应该会容易一点。', '好记性不如烂笔头，就地取材，找一个方便我记录已经收集起来的线索的地方吧'], function () {
                 window.__TUTORIAL_STEP = 'guide_word_icon';
