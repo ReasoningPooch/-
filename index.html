@@ -826,6 +826,9 @@
         .final-ending-wrap.is-beast .final-ending-title {
             color: #ff4444; font-size: 26px; letter-spacing: 0.08em;
         }
+        .final-ending-wrap.is-beast .final-ending-body {
+            color: #ff6666; font-size: 24px; letter-spacing: 0.12em;
+        }
         .final-ending-continue-hint {
             margin-top: 36px; font-size: 13px; letter-spacing: 0.14em;
             color: rgba(255,255,255,0.38); opacity: 0;
@@ -32317,8 +32320,8 @@ button{font-family:inherit}
             if (typeof window.renderFinalEndingCard === 'function') {
                 window.renderFinalEndingCard({
                     id: 'beast',
-                    title: '你到底想干啥？',
-                    body: '',
+                    title: '',
+                    body: '你到底想干啥？',
                     isBeast: true
                 }, overlay);
             }
@@ -33172,7 +33175,9 @@ button{font-family:inherit}
                 done = true;
                 document.removeEventListener('pointerdown', onPointer, true);
                 document.removeEventListener('keydown', onKey, true);
-                if (result.isTrue && typeof window.showTrueEndingCinematic === 'function') {
+                if (result.isBeast && typeof window.returnToGameTitleScreen === 'function') {
+                    window.returnToGameTitleScreen();
+                } else if (result.isTrue && typeof window.showTrueEndingCinematic === 'function') {
                     window.showTrueEndingCinematic(function () {
                         window.showGameCreditsScreen({ isTrueEnding: true });
                     });
@@ -33204,19 +33209,6 @@ button{font-family:inherit}
             overlay.innerHTML = '';
             overlay.classList.add('active');
             overlay.setAttribute('aria-hidden', 'false');
-
-            if (checkBeastHiddenEnding()) {
-                window.__BEAST_ENDING_TRIGGERED = true;
-                if (typeof window.renderFinalEndingCard === 'function') {
-                    window.renderFinalEndingCard({
-                        id: 'beast',
-                        title: '你到底想干啥？',
-                        body: '',
-                        isBeast: true
-                    }, overlay);
-                }
-                return;
-            }
 
             var answers = { badReason: null };
             var FINAL_CORRECT_NAMES = ['刘文博', '王森', '张宏远'];
