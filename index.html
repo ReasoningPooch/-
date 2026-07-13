@@ -26068,6 +26068,12 @@ footer{background:#3a2a25;color:rgba(255,255,255,.55);padding:40px 24px;margin-t
 .chat-send{width:36px;height:36px;border:none;border-radius:50%;background:#d07c60;color:#fff;cursor:pointer;font-size:12px}
 .chat-send:disabled{opacity:.45;cursor:not-allowed}
 @keyframes monoFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@keyframes monoTextIn{from{opacity:0}to{opacity:1}}
+body.hotel-dialogue-locked header nav,
+body.hotel-dialogue-locked #top,
+body.hotel-dialogue-locked #rooms,
+body.hotel-dialogue-locked .widget>.grid,
+body.hotel-dialogue-locked #contact-details,
+body.hotel-dialogue-locked #trigger-chat-btn{pointer-events:none!important;opacity:.4}
 </style>
 </head>
 <body>
@@ -26133,6 +26139,7 @@ var _savedParentUnload = null;
 
 function lockAll() {
   plotState.locked = true;
+  document.body.classList.add('hotel-dialogue-locked');
   closeChatBtn.disabled = true;
   closeChatBtn.classList.add('locked');
   try {
@@ -26152,6 +26159,7 @@ function lockAll() {
 
 function unlockAll() {
   plotState.locked = false;
+  document.body.classList.remove('hotel-dialogue-locked');
   closeChatBtn.disabled = false;
   closeChatBtn.classList.remove('locked');
   try {
@@ -26455,7 +26463,6 @@ function bindNavScroll() {
   }
   document.querySelectorAll('header nav .nav-link').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
-      if (plotState.locked) { e.preventDefault(); e.stopPropagation(); return; }
       e.preventDefault();
       e.stopPropagation();
       var nav = btn.getAttribute('data-nav') || 'top';
