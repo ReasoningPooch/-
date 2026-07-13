@@ -2032,6 +2032,8 @@
             var saved = getSavedEntryPrefs();
             if (!saved || !saved.confirmed) return false;
             window.__ENTRY_CONFIRMED = true;
+            if (typeof startBgmFromUserGesture === 'function') startBgmFromUserGesture();
+            if (window.initTitleStorm) window.initTitleStorm();
             var entry = document.getElementById('game-entry-overlay');
             if (entry) entry.classList.add('dismissed');
             screen.classList.remove('entry-locked');
@@ -3959,10 +3961,13 @@ function showRecoveryGame(onComplete, opts) {
       label: '跳过',
       onBypass: function () {
         teardownMemorySkip();
-        _cleanupGame();
-        if (ov.parentNode) ov.remove();
-        _exitBreachParent();
-        if (onComplete) onComplete();
+        runHackExitWithMelt(function () {
+          _cleanupGame();
+          if (ov.parentNode) ov.remove();
+          _exitBreachParent();
+        }, function () {
+          if (onComplete) onComplete();
+        }, { withRainIntro: true });
       }
     });
   }
@@ -29627,7 +29632,7 @@ button{font-family:inherit}
                 var url = B + encodeURIComponent(file).replace(/%2F/g, '/');
                 var controller = new AbortController();
                 var timeout = setTimeout(function () { controller.abort(); }, 20000);
-                fetch(url, { signal: controller.signal, cache: 'reload' })
+                fetch(url, { signal: controller.signal, cache: 'force-cache' })
                 .then(function (res) {
                     clearTimeout(timeout);
                     return res.blob();
