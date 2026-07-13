@@ -1181,7 +1181,7 @@
         /* ================= 预加载遮罩 ================= */
         #precache-overlay {
             position: fixed; inset: 0; z-index: 999999;
-            background: #0a0a0a;
+            background: #050505;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-family: 'PingFang SC','Microsoft YaHei','Noto Serif SC',sans-serif;
             user-select: none; cursor: default;
@@ -1192,34 +1192,26 @@
         }
         .precache-inner { text-align: center; max-width: 520px; padding: 0 24px; }
         .precache-title {
-            font-size: 22px; color: #ccc; letter-spacing: 0.15em;
-            margin-bottom: 28px; font-weight: 400;
+            font-size: 20px; color: rgba(255,255,255,0.55); letter-spacing: 0.3em;
+            margin-bottom: 32px; font-weight: 300;
         }
         .precache-bar-shell {
-            width: 100%; max-width: 400px; height: 6px; border-radius: 3px;
-            background: #1a1a1a; margin: 0 auto 14px; overflow: hidden;
+            width: 100%; max-width: 360px; height: 3px; border-radius: 2px;
+            background: #1a1a1a; margin: 0 auto 20px; overflow: hidden;
         }
         .precache-bar-fill {
-            height: 100%; width: 0%; border-radius: 3px;
-            background: linear-gradient(90deg, #8a0303, #c0392b, #8a0303);
+            height: 100%; width: 0%; border-radius: 2px;
+            background: linear-gradient(90deg, #5a0000, #8a0303, #5a0000);
             background-size: 200% 100%;
-            animation: precache-bar-shimmer 1.8s linear infinite;
-            transition: width 0.25s ease;
+            animation: precache-bar-shimmer 2s linear infinite;
+            transition: width 0.3s ease;
         }
         @keyframes precache-bar-shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-        .precache-pct {
-            font-size: 14px; color: #777; letter-spacing: 0.1em;
-            margin-bottom: 6px;
-        }
-        .precache-status {
-            font-size: 12px; color: #555; letter-spacing: 0.06em;
-            margin-bottom: 32px; min-height: 18px;
-        }
         .precache-hint {
-            font-size: 11px; color: #444; letter-spacing: 0.04em;
+            font-size: 11px; color: #333; letter-spacing: 0.08em;
             line-height: 1.6;
         }
 
@@ -1731,10 +1723,8 @@
     <!-- 预加载资源遮罩 -->
     <div id="precache-overlay">
         <div class="precache-inner">
-            <div class="precache-title">正在准备游戏资源...</div>
+            <div class="precache-title">资源加载中</div>
             <div class="precache-bar-shell"><div class="precache-bar-fill" id="precache-bar-fill"></div></div>
-            <div class="precache-pct" id="precache-pct">0%</div>
-            <div class="precache-status" id="precache-status"></div>
             <div class="precache-hint">首次打开需要缓存部分资源，加载可能较慢<br>后续打开无需等待</div>
         </div>
     </div>
@@ -3969,13 +3959,10 @@ function showRecoveryGame(onComplete, opts) {
       label: '跳过',
       onBypass: function () {
         teardownMemorySkip();
-        runHackExitWithMelt(function () {
-          _cleanupGame();
-          if (ov.parentNode) ov.remove();
-          _exitBreachParent();
-        }, function () {
-          if (onComplete) onComplete();
-        }, { withRainIntro: true });
+        _cleanupGame();
+        if (ov.parentNode) ov.remove();
+        _exitBreachParent();
+        if (onComplete) onComplete();
       }
     });
   }
@@ -4226,12 +4213,11 @@ function showRecoveryGame(onComplete, opts) {
     }
   });
   ov.querySelector('#mg-x').addEventListener('click', () => {
-    runHackExitWithMelt(function () {
-      _cleanupGame();
-      teardownMemorySkip();
-      _exitBreachParent();
-      if (ov.parentNode) ov.remove();
-    });
+    _cleanupGame();
+    teardownMemorySkip();
+    _exitBreachParent();
+    if (ov.parentNode) ov.remove();
+    if (onComplete) onComplete();
   });
   if (!opts.preload) {
     gameStarted = true;
@@ -12946,14 +12932,11 @@ requestAnimationFrame(function() {
                 label: '跳过',
                 onBypass: function () {
                     teardownPuzzleSkip();
-                    runHackExitWithMelt(function () {
-                        puzCloseOverlaysImmediate();
-                        restoreCorruptedImage();
-                        try { if (window.parent && window.parent.exitBreachMode) window.parent.exitBreachMode(); } catch (e) {}
-                    }, function () {
-                        try { if (window.parent && window.parent.notifySparkGameSuccess) window.parent.notifySparkGameSuccess(); } catch (e) {}
-                        renderExplorer();
-                    }, { withRainIntro: true });
+                    puzCloseOverlaysImmediate();
+                    restoreCorruptedImage();
+                    try { if (window.parent && window.parent.exitBreachMode) window.parent.exitBreachMode(); } catch (e) {}
+                    try { if (window.parent && window.parent.notifySparkGameSuccess) window.parent.notifySparkGameSuccess(); } catch (e) {}
+                    renderExplorer();
                 }
             });
         }
@@ -13037,15 +13020,12 @@ requestAnimationFrame(function() {
         }
 
         function puzExit() {
-            runHackExitWithMelt(function () {
-                teardownPuzzleSkip();
-                puzCloseOverlaysImmediate();
-                try {
-                    if (window.parent && window.parent.exitBreachMode) window.parent.exitBreachMode();
-                } catch (e) {}
-            }, function () {
-                renderExplorer();
-            });
+            teardownPuzzleSkip();
+            puzCloseOverlaysImmediate();
+            try {
+                if (window.parent && window.parent.exitBreachMode) window.parent.exitBreachMode();
+            } catch (e) {}
+            renderExplorer();
         }
 
         // ========== 拼图游戏 ==========
@@ -29612,78 +29592,59 @@ button{font-family:inherit}
         (function () {
             var B = location.href.replace(/[^/]+$/, '');
             var FILES = [
-                { name: '背景音乐', file: window.GLOBAL_BGM_FILE },
-                { name: '雷暴音效', file: window.TITLE_STORM_FILE },
-                { name: '标题画面', file: '封面1.jpg' },
-                { name: '登录界面', file: window.LOGIN_SCREEN_BG },
-                { name: '桌面壁纸', file: '壁纸0.jpg' },
-                { name: '突脸音效1', file: '1_sync.wav' },
-                { name: '突脸音效2', file: '2.wav' },
-                { name: '论坛音效', file: '3_trim.m4a' },
-                { name: '发现音效', file: '4_trim.m4a' },
-                { name: '拍摄音效', file: '拍摄.wav' }
+                window.GLOBAL_BGM_FILE,
+                window.TITLE_STORM_FILE,
+                '封面1.jpg',
+                window.LOGIN_SCREEN_BG,
+                '1_sync.wav',
+                '2.wav',
+                '3_trim.m4a',
+                '4_trim.m4a',
+                '拍摄.wav'
             ];
             var total = FILES.length;
             var doneCount = 0;
             var bar = document.getElementById('precache-bar-fill');
-            var pctEl = document.getElementById('precache-pct');
-            var statEl = document.getElementById('precache-status');
-            var overlay = document.getElementById('precache-overlay');
 
-            function setPct(n, name) {
-                if (bar) bar.style.width = n + '%';
-                if (pctEl) pctEl.textContent = Math.round(n) + '%';
-                if (statEl && name) statEl.textContent = name + '...';
+            function setBar() {
+                if (bar) bar.style.width = ((doneCount / total) * 100) + '%';
             }
 
             function finish() {
-                setPct(100, '');
-                if (statEl) statEl.textContent = '准备就绪，即将开始';
+                setBar();
                 setTimeout(function () {
                     var el = document.getElementById('precache-overlay');
                     if (el) {
                         el.classList.add('done');
                         setTimeout(function () { if (el.parentNode) el.remove(); }, 700);
                     }
-                }, 400);
+                }, 300);
             }
 
             function loadOne(index) {
-                if (index >= total) {
-                    finish();
-                    return;
-                }
-                var item = FILES[index];
-                setPct((doneCount / total) * 100, item.name);
-                var url = B + encodeURIComponent(item.file).replace(/%2F/g, '/');
-                var t0 = Date.now();
-                try {
-                    var controller = new AbortController();
-                    var timeout = setTimeout(function () { controller.abort(); }, 15000);
-                    fetch(url, { signal: controller.signal, cache: 'force-cache' })
-                    .then(function (res) {
-                        clearTimeout(timeout);
-                        var took = Date.now() - t0;
-                        if (took < 200) {
-                            // 可能命中旧缓存，但仍认为成功
-                        }
-                        doneCount++;
-                        setPct((doneCount / total) * 100, item.name);
-                        setTimeout(function () { loadOne(index + 1); }, 60);
-                    })
-                    .catch(function () {
-                        clearTimeout(timeout);
-                        doneCount++;
-                        setPct((doneCount / total) * 100, item.name);
-                        setTimeout(function () { loadOne(index + 1); }, 60);
-                    });
-                } catch (e) {
+                if (index >= total) { finish(); return; }
+                var file = FILES[index];
+                var url = B + encodeURIComponent(file).replace(/%2F/g, '/');
+                var controller = new AbortController();
+                var timeout = setTimeout(function () { controller.abort(); }, 20000);
+                fetch(url, { signal: controller.signal, cache: 'reload' })
+                .then(function (res) {
+                    clearTimeout(timeout);
+                    return res.blob();
+                })
+                .then(function () {
                     doneCount++;
-                    setPct((doneCount / total) * 100, item.name);
-                    setTimeout(function () { loadOne(index + 1); }, 60);
-                }
+                    setBar();
+                    setTimeout(function () { loadOne(index + 1); }, 40);
+                })
+                .catch(function () {
+                    clearTimeout(timeout);
+                    doneCount++;
+                    setBar();
+                    setTimeout(function () { loadOne(index + 1); }, 40);
+                });
             }
-            setTimeout(function () { loadOne(0); }, 150);
+            setTimeout(function () { loadOne(0); }, 80);
         })();
 
         window.applyBgmEnabledState = function (enabled) {
