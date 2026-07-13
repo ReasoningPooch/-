@@ -27964,7 +27964,7 @@ var timerContainer=document.getElementById('timer-container');
 var timerText=document.getElementById('timer-text');
 var timerCircle=document.getElementById('timer-circle');
 var cooldownInterval=null;
-var COOLDOWN_SECONDS=180;
+var COOLDOWN_SECONDS=120;
 var CIRCLE_CIRCUMFERENCE=289;
 function getRoot(){try{return window.parent||window}catch(e){return window}}
 function getState(){var r=getRoot();if(!r.__OCEAN_DIARY_STATE)r.__OCEAN_DIARY_STATE={caught:[],total:0};return r.__OCEAN_DIARY_STATE}
@@ -30240,6 +30240,7 @@ button{font-family:inherit}
 
         window.isTutorialAutosaveAllowed = function () {
             if (window.__DEV_SKIP_GUIDE) return true;
+            if (window.__SKIP_TUTORIAL) return true;
             if (window.__TUTORIAL_STEP === 'done') return true;
             if (window.__WORD_SAVE_GUIDE_ACKED) return true;
             return false;
@@ -33932,6 +33933,9 @@ button{font-family:inherit}
             setTimeout(function () {
                 if (window.__GAME_STARTED && !window.__TUTORIAL_DESKTOP_DONE && window.__OS_BOOT_DONE) {
                     startDesktopTutorial();
+                    if (window.__SKIP_TUTORIAL && typeof window.tryStartFirstAutosave === 'function') {
+                        window.tryStartFirstAutosave();
+                    }
                 } else if (!window.__GAME_STARTED) {
                     window.__PENDING_DESKTOP_TUTORIAL = true;
                 }
