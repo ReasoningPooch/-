@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="prefetch" href="./lucide.min.js" as="script">
     <link rel="dns-prefetch" href="//cdn.bootcdn.net">
+    <link rel="preload" as="audio" href="Come Play with Me.mp3" crossorigin="anonymous">
+    <link rel="preload" as="audio" href="雷暴.mp3" crossorigin="anonymous">
     <style>
         /* ================= 基础与重置 ================= */
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #000; }
@@ -2062,6 +2064,7 @@
 
         function startBgmFromUserGesture() {
             if (window.__BGM_ENABLED === false) return;
+            if (window.__globalBgmStarted) return;
             function go() {
                 if (typeof window.initGlobalBgm === 'function') window.initGlobalBgm();
                 var audio = window.__globalBgmAudio;
@@ -29591,7 +29594,8 @@ button{font-family:inherit}
                     audio.preload = 'auto';
                     window.__titleStormAudio = audio;
                 }
-                if (!silent && window.__BGM_ENABLED !== false) {
+                if (!silent && window.__BGM_ENABLED !== false && !window.__titleStormStarted) {
+                    window.__titleStormStarted = true;
                     window.__titleStormAudio.play().catch(function () {});
                 }
             } catch (e) {}
@@ -35364,15 +35368,6 @@ button{font-family:inherit}
                 clearGuideOverlay();
                 window.__TUTORIAL_STEP = 'word_mono';
             }
-            if (app.id === 'word' && window.__TUTORIAL_STEP === 'word_mono') {
-                var win = state.openWindows['word'];
-                if (win) {
-                    if (win.minimized) toggleMinimize('word');
-                    else bringToFront('word');
-                    return;
-                }
-                return;
-            }
             // 统一检查D盘程序是否存在（无论从哪里调用openApp都会检查）
             if (window.isDAppDeleted && window.isDAppDeleted(app.name)) {
                 showMissingFileDialog(app.name);
@@ -35380,6 +35375,10 @@ button{font-family:inherit}
             }
             if (state.openWindows[app.id]) {
                 const win = state.openWindows[app.id];
+                if (app.id === 'word' && window.__TUTORIAL_STEP === 'word_mono') {
+                    const iframe = win.element.querySelector('#app-iframe-word');
+                    if (iframe) onWordOpenedForTutorial(iframe);
+                }
                 ensureAppWindowSize(app.id);
                 win.minimized ? toggleMinimize(app.id) : bringToFront(app.id);
                 return;
@@ -35867,7 +35866,11 @@ button{font-family:inherit}
             }
         }
 
+        var __toggleMaximizeLast = 0;
         function toggleMaximize(appId) {
+            var now = Date.now();
+            if (now - __toggleMaximizeLast < 350) return;
+            __toggleMaximizeLast = now;
             if (isGuideActive()) return;
             if (isMailMonologueLocked(appId)) return;
             const winData = state.openWindows[appId];
