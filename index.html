@@ -5,16 +5,12 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="dns-prefetch" href="//cdn.bootcdn.net">
-    <link rel="preload" href="./tailwind-play.js" as="script">
-    <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/react/18.3.1/umd/react.production.min.js" as="script">
-    <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" as="script">
-    <link rel="preload" href="./lucide.min.js" as="script">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>毕业季失踪事件 | Graduation Missing</title>
     <script src="./tailwind-play.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 已移除 Google Fonts 外链：国内 DNS 污染会阻塞渲染 30-60s，改用系统字体栈降级 -->
+    <link rel="prefetch" href="./lucide.min.js" as="script">
+    <link rel="dns-prefetch" href="//cdn.bootcdn.net">
     <style>
         /* ================= 基础与重置 ================= */
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #000; }
@@ -35540,16 +35536,14 @@ button{font-family:inherit}
             const winWidth = Math.min(window.innerWidth * 0.8, window.innerWidth - 40);
             const winHeight = Math.min(window.innerHeight * 0.7, window.innerHeight - 80);
             var startX, startY;
-            if (app.id === 'chat' || app.id === 'mail') {
-                var rect = getCenteredWindowRect(Math.round(winWidth), Math.round(winHeight));
-                startX = rect.left;
-                startY = rect.top;
-            } else {
-                var _rect = getCenteredWindowRect(Math.round(winWidth), Math.round(winHeight));
-                const offset = Object.keys(state.openWindows).length * 24;
-                startX = Math.min(_rect.left + offset, Math.max(10, window.innerWidth - winWidth - 20));
-                startY = Math.min(_rect.top + offset, Math.max(10, window.innerHeight - winHeight - 60));
+            var rect = getCenteredWindowRect(Math.round(winWidth), Math.round(winHeight));
+            function isNormalAppWin(k) {
+                return k.indexOf('-login') === -1 && k.indexOf('img-viewer-') === -1 && k.indexOf('memo-') === -1 && k.indexOf('game-') === -1;
             }
+            var existingCount = Object.keys(state.openWindows).filter(isNormalAppWin).length;
+            var offset = existingCount * 24;
+            startX = Math.max(10, Math.min(rect.left + offset, window.innerWidth - winWidth - 20));
+            startY = Math.max(10, Math.min(rect.top + offset, window.innerHeight - winHeight - 60));
             
             winEl.style.width = winWidth + 'px'; winEl.style.height = winHeight + 'px';
             winEl.style.left = Math.max(10, startX) + 'px'; winEl.style.top = Math.max(10, startY) + 'px';
