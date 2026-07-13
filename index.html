@@ -4949,6 +4949,20 @@ const HotelPage = () => {
 
 // 7.6. 经典曲线隧道跳脸小游戏
 const WhisperCurvePage = () => {
+  var jcMuted = false;
+  try { if (window.parent && window.parent.isJumpscareMuted && window.parent.isJumpscareMuted()) jcMuted = true; } catch (e) {}
+  if (jcMuted) {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "bg-slate-950 min-h-full flex flex-col items-center justify-center text-center p-8 webpage-content",
+      style: { fontFamily: "'PingFang SC','Microsoft YaHei',sans-serif" }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "text-6xl mb-4"
+    }, "\u26D4"), /*#__PURE__*/React.createElement("div", {
+      className: "text-slate-400 text-lg mb-2"
+    }, "\u6B64\u7F51\u7AD9\u5DF2\u88AB\u5C4F\u853D"), /*#__PURE__*/React.createElement("div", {
+      className: "text-slate-600 text-sm"
+    }, "\u60A8\u5DF2\u5728\u7CFB\u7EDF\u8BBE\u7F6E\u4E2D\u5F00\u542F\u4E86\u5C4F\u853D\u6050\u6016\u8DF3\u6740\u5F69\u86CB"));
+  }
   const iframeRef = React.useRef(null);
   React.useEffect(() => {
     if (iframeRef.current) {
