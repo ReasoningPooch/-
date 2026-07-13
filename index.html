@@ -32305,6 +32305,7 @@ button{font-family:inherit}
                 requestAnimationFrame(function () { veil.style.opacity = '1'; });
             });
             setTimeout(function () {
+                veil.style.cssText = 'position:fixed;inset:0;z-index:100009;background:#000;opacity:1;pointer-events:none;';
                 if (onDone) onDone();
             }, 1100);
         };
@@ -34220,6 +34221,7 @@ button{font-family:inherit}
         }
 
         let selectedDesktopApp = null;
+        let selectedDesktopImage = null;
         let draggedDesktopEl = null;
 
         // 桌面图片图标（缩略图，独立于 apps，不进入开始菜单/应用商店）
@@ -34228,6 +34230,7 @@ button{font-family:inherit}
             deselectDesktopItem();
             el.style.background = 'rgba(255,255,255,0.15)';
             el.style.border = '1px solid rgba(255,255,255,0.2)';
+            selectedDesktopImage = el;
         }
 
         function createDesktopImageItem(imgItem) {
@@ -34248,6 +34251,15 @@ button{font-family:inherit}
                 if (isGuideActive()) { e.preventDefault(); e.stopPropagation(); return; }
                 e.stopPropagation();
                 selectDesktopImageItem(el);
+            });
+            el.addEventListener('contextmenu', (e) => {
+                if (document.getElementById('monologue-box') || document.getElementById('chat-monologue-box') || isGuideActive()) return;
+                e.preventDefault();
+                e.stopPropagation();
+                closeDesktopContextMenu();
+                closeDesktopIconContextMenu();
+                selectDesktopImageItem(el);
+                showDesktopIconContextMenu(e.clientX, e.clientY);
             });
             return el;
         }
@@ -34892,6 +34904,7 @@ button{font-family:inherit}
                 d.style.border = '1px solid transparent';
             });
             selectedDesktopApp = null;
+            selectedDesktopImage = null;
         }
 
         function closeDesktopContextMenu() {
@@ -35175,6 +35188,26 @@ button{font-family:inherit}
         }
 
         function desktopDeleteSelected() {
+            if (selectedDesktopImage) {
+                var imgFile = selectedDesktopImage.getAttribute('data-desktop-image');
+                if (imgFile) {
+                    for (var di = window.desktopImages.length - 1; di >= 0; di--) {
+                        if (window.desktopImages[di].file === imgFile) {
+                            window.desktopImages.splice(di, 1);
+                            break;
+                        }
+                    }
+                }
+                if (selectedDesktopImage.parentNode) selectedDesktopImage.remove();
+                selectedDesktopImage = null;
+                closeDesktopContextMenu();
+                closeDesktopIconContextMenu();
+                if (window.playFileDeleteRustle) window.playFileDeleteRustle();
+                if (typeof window.tryTriggerBeastHiddenEnding === 'function') {
+                    setTimeout(function () { window.tryTriggerBeastHiddenEnding(); }, 80);
+                }
+                return;
+            }
             if (!selectedDesktopApp) return;
             const { index } = selectedDesktopApp;
             const deletedApp = apps[index];
