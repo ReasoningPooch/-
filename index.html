@@ -26455,6 +26455,7 @@ function bindNavScroll() {
   }
   document.querySelectorAll('header nav .nav-link').forEach(function (btn) {
     btn.addEventListener('click', function (e) {
+      if (plotState.locked) { e.preventDefault(); e.stopPropagation(); return; }
       e.preventDefault();
       e.stopPropagation();
       var nav = btn.getAttribute('data-nav') || 'top';
