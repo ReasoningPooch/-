@@ -29596,18 +29596,20 @@ button{font-family:inherit}
 
         (function () {
             var B = location.href.replace(/[^/]+$/, '');
-            var FILES = [
+            var PRELOAD_FILES = [
+                '壁纸0.jpg', '壁纸1.jpg', '壁纸2.jpg', '壁纸3.jpg', '壁纸4.jpg',
+                '6.jpg', '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg',
+                '酒店1.jpg', '酒店2.jpg', '酒店3.jpg',
+                '豆浆1.jpg', '豆浆2.jpg',
                 window.GLOBAL_BGM_FILE,
                 window.TITLE_STORM_FILE,
-                '封面1.jpg',
-                window.LOGIN_SCREEN_BG,
                 '1_sync.wav',
                 '2.wav',
                 '3_trim.m4a',
                 '4_trim.m4a',
                 '拍摄.wav'
             ];
-            var total = FILES.length;
+            var total = PRELOAD_FILES.length;
             var doneCount = 0;
             var bar = document.getElementById('precache-bar-fill');
 
@@ -29630,30 +29632,36 @@ button{font-family:inherit}
                 }, 300);
             }
 
+            function isAudio(name) {
+                return /\.(mp3|wav|m4a)$/i.test(name);
+            }
+
             function loadOne(index) {
                 if (index >= total) { finish(); return; }
-                var file = FILES[index];
+                var file = PRELOAD_FILES[index];
                 var url = B + encodeURIComponent(file).replace(/%2F/g, '/');
-                var controller = new AbortController();
-                var timeout = setTimeout(function () { controller.abort(); }, 20000);
-                fetch(url, { signal: controller.signal, cache: 'force-cache' })
-                .then(function (res) {
-                    clearTimeout(timeout);
-                    return res.blob();
-                })
-                .then(function () {
-                    doneCount++;
-                    setBar();
-                    setTimeout(function () { loadOne(index + 1); }, 40);
-                })
-                .catch(function () {
-                    clearTimeout(timeout);
-                    doneCount++;
-                    setBar();
-                    setTimeout(function () { loadOne(index + 1); }, 40);
-                });
+
+                function next() { doneCount++; setBar(); setTimeout(function () { loadOne(index + 1); }, 30); }
+
+                if (isAudio(file)) {
+                    var a = new Audio();
+                    a.preload = 'auto';
+                    a.src = url;
+                    a.addEventListener('canplaythrough', function () { next(); }, { once: true });
+                    a.addEventListener('error', function () { next(); }, { once: true });
+                    a.load();
+                    setTimeout(function () { next(); }, 8000);
+                } else {
+                    var img = new Image();
+                    img.src = url;
+                    img.onload = function () { next(); };
+                    img.onerror = function () { next(); };
+                    setTimeout(function () { next(); }, 5000);
+                }
             }
             setTimeout(function () { loadOne(0); }, 80);
+
+            if (window.initTitleStorm) window.initTitleStorm();
         })();
 
         window.applyBgmEnabledState = function (enabled) {
@@ -29681,17 +29689,18 @@ button{font-family:inherit}
         }
 
         window.initTitleStorm = function () {
-            if (window.__titleStormAudio) return;
             try {
-                var audio = new Audio();
-                var base = location.href.replace(/[^/]+$/, '');
-                audio.src = base + encodeURIComponent(window.TITLE_STORM_FILE);
-                audio.loop = true;
-                audio.volume = window.TITLE_STORM_VOLUME;
-                audio.preload = 'auto';
-                window.__titleStormAudio = audio;
+                if (!window.__titleStormAudio) {
+                    var audio = new Audio();
+                    var base = location.href.replace(/[^/]+$/, '');
+                    audio.src = base + encodeURIComponent(window.TITLE_STORM_FILE);
+                    audio.loop = true;
+                    audio.volume = window.TITLE_STORM_VOLUME;
+                    audio.preload = 'auto';
+                    window.__titleStormAudio = audio;
+                }
                 if (window.__BGM_ENABLED !== false) {
-                    audio.play().catch(function () {});
+                    window.__titleStormAudio.play().catch(function () {});
                 }
             } catch (e) {}
         };
@@ -35857,15 +35866,14 @@ button{font-family:inherit}
                 }
                 closeWindowNow();
             });
-            btnMin.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isHotelLocked()) return; if (isChatDialogueLocked(app.id)) return; if (isMailMonologueLocked(app.id)) return; toggleMinimize(app.id); });
-            btnMax.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isHotelLocked()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
-            titleBar.addEventListener('dblclick', () => { if (isGuideActive()) return; if (isHotelLocked()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
+            btnMin.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isChatDialogueLocked(app.id)) return; if (isMailMonologueLocked(app.id)) return; toggleMinimize(app.id); });
+            btnMax.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
+            titleBar.addEventListener('dblclick', () => { if (isGuideActive()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
 
             // 拖拽
             let isDragging = false; let dragOffsetX, dragOffsetY;
             dragArea.addEventListener('mousedown', (e) => {
                 if (isGuideActive()) return;
-                if (isHotelLocked()) return;
                 if (isChatDialogueLocked(app.id)) return;
                 if (isMailMonologueLocked(app.id)) return;
                 if (state.openWindows[app.id].maximized) return;
@@ -35879,7 +35887,6 @@ button{font-family:inherit}
             resizers.forEach(resizer => {
                 resizer.addEventListener('mousedown', (e) => {
                     if (isGuideActive()) return;
-                    if (isHotelLocked()) return;
                     if (isChatDialogueLocked(app.id)) return;
                     if (isMailMonologueLocked(app.id)) return;
                     if (state.openWindows[app.id].maximized) return;
