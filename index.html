@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="prefetch" href="./lucide.min.js" as="script">
     <link rel="dns-prefetch" href="//cdn.bootcdn.net">
-    <link rel="preload" as="audio" href="Come Play with Me.mp3" crossorigin="anonymous">
-    <link rel="preload" as="audio" href="雷暴.mp3" crossorigin="anonymous">
     <style>
         /* ================= 基础与重置 ================= */
         body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #000; }
@@ -2064,7 +2062,6 @@
 
         function startBgmFromUserGesture() {
             if (window.__BGM_ENABLED === false) return;
-            if (window.__globalBgmStarted) return;
             function go() {
                 if (typeof window.initGlobalBgm === 'function') window.initGlobalBgm();
                 var audio = window.__globalBgmAudio;
@@ -27121,11 +27118,11 @@ window.__hotelReady = true;
         var ACCEPTED_ANSWERS = [
             ['比自由多一秒'],
             ['当代福尔摩斯诞生了！', '当代福尔摩斯诞生了'],
-            ['食堂的老妈仔鸭', '学校食堂的老妈仔鸭', '学校的老妈仔鸭'],
+            ['食堂的老妈仔鸭', '老妈仔鸭', '学校食堂的老妈仔鸭', '学校的老妈仔鸭'],
             ['看到彩虹', '看彩虹']
         ];
 
-        var REJECT_PARTIAL = { 2: ['老妈仔鸭'] };
+        var REJECT_PARTIAL = { };
 
         var currentLang = 'en';
         var step = 0;
@@ -29594,8 +29591,7 @@ button{font-family:inherit}
                     audio.preload = 'auto';
                     window.__titleStormAudio = audio;
                 }
-                if (!silent && window.__BGM_ENABLED !== false && !window.__titleStormStarted) {
-                    window.__titleStormStarted = true;
+                if (!silent && window.__BGM_ENABLED !== false) {
                     window.__titleStormAudio.play().catch(function () {});
                 }
             } catch (e) {}
@@ -35866,11 +35862,7 @@ button{font-family:inherit}
             }
         }
 
-        var __toggleMaximizeLast = 0;
         function toggleMaximize(appId) {
-            var now = Date.now();
-            if (now - __toggleMaximizeLast < 350) return;
-            __toggleMaximizeLast = now;
             if (isGuideActive()) return;
             if (isMailMonologueLocked(appId)) return;
             const winData = state.openWindows[appId];
