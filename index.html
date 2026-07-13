@@ -29548,6 +29548,8 @@ button{font-family:inherit}
         window.OS_LOGIN_PASSWORD = '1402';
         window.__OS_BOOT_DONE = false;
 
+        if (window.initTitleStorm) window.initTitleStorm(true);
+
         window.applyBgmEnabledState = function (enabled) {
             window.__BGM_ENABLED = enabled !== false;
             var audio = window.__globalBgmAudio;
@@ -29572,7 +29574,7 @@ button{font-family:inherit}
             } catch (e) {}
         }
 
-        window.initTitleStorm = function () {
+        window.initTitleStorm = function (silent) {
             try {
                 if (!window.__titleStormAudio) {
                     var audio = new Audio();
@@ -29583,7 +29585,7 @@ button{font-family:inherit}
                     audio.preload = 'auto';
                     window.__titleStormAudio = audio;
                 }
-                if (window.__BGM_ENABLED !== false) {
+                if (!silent && window.__BGM_ENABLED !== false) {
                     window.__titleStormAudio.play().catch(function () {});
                 }
             } catch (e) {}
