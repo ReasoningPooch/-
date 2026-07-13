@@ -35866,14 +35866,15 @@ button{font-family:inherit}
                 }
                 closeWindowNow();
             });
-            btnMin.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isChatDialogueLocked(app.id)) return; if (isMailMonologueLocked(app.id)) return; toggleMinimize(app.id); });
-            btnMax.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
-            titleBar.addEventListener('dblclick', () => { if (isGuideActive()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
+            btnMin.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isHotelLocked()) return; if (isChatDialogueLocked(app.id)) return; if (isMailMonologueLocked(app.id)) return; toggleMinimize(app.id); });
+            btnMax.addEventListener('click', (e) => { e.stopPropagation(); if (isGuideActive()) return; if (isHotelLocked()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
+            titleBar.addEventListener('dblclick', () => { if (isGuideActive()) return; if (isHotelLocked()) return; if (isMailMonologueLocked(app.id)) return; toggleMaximize(app.id); });
 
             // 拖拽
             let isDragging = false; let dragOffsetX, dragOffsetY;
             dragArea.addEventListener('mousedown', (e) => {
                 if (isGuideActive()) return;
+                if (isHotelLocked()) return;
                 if (isChatDialogueLocked(app.id)) return;
                 if (isMailMonologueLocked(app.id)) return;
                 if (state.openWindows[app.id].maximized) return;
@@ -35887,6 +35888,7 @@ button{font-family:inherit}
             resizers.forEach(resizer => {
                 resizer.addEventListener('mousedown', (e) => {
                     if (isGuideActive()) return;
+                    if (isHotelLocked()) return;
                     if (isChatDialogueLocked(app.id)) return;
                     if (isMailMonologueLocked(app.id)) return;
                     if (state.openWindows[app.id].maximized) return;
