@@ -1178,43 +1178,6 @@
             white-space: pre-wrap; min-height: 1.6em;
         }
 
-        /* ================= 预加载遮罩 ================= */
-        #precache-overlay {
-            position: fixed; inset: 0; z-index: 999999;
-            background: #050505;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-family: 'PingFang SC','Microsoft YaHei','Noto Serif SC',sans-serif;
-            user-select: none; cursor: default;
-        }
-        #precache-overlay.done {
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.6s ease;
-        }
-        .precache-inner { text-align: center; max-width: 520px; padding: 0 24px; }
-        .precache-title {
-            font-size: 20px; color: rgba(255,255,255,0.55); letter-spacing: 0.3em;
-            margin-bottom: 32px; font-weight: 300;
-        }
-        .precache-bar-shell {
-            width: 100%; max-width: 360px; height: 3px; border-radius: 2px;
-            background: #1a1a1a; margin: 0 auto 20px; overflow: hidden;
-        }
-        .precache-bar-fill {
-            height: 100%; width: 0%; border-radius: 2px;
-            background: linear-gradient(90deg, #5a0000, #8a0303, #5a0000);
-            background-size: 200% 100%;
-            animation: precache-bar-shimmer 2s linear infinite;
-            transition: width 0.3s ease;
-        }
-        @keyframes precache-bar-shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        .precache-hint {
-            font-size: 11px; color: #333; letter-spacing: 0.08em;
-            line-height: 1.6;
-        }
-
         /* ================= 游戏主菜单 ================= */
         #game-title-screen {
             --gs-blood-red: #8a0303;
@@ -1720,15 +1683,6 @@
 </head>
 <body>
 
-    <!-- 预加载资源遮罩 -->
-    <div id="precache-overlay">
-        <div class="precache-inner">
-            <div class="precache-title">资源加载中</div>
-            <div class="precache-bar-shell"><div class="precache-bar-fill" id="precache-bar-fill"></div></div>
-            <div class="precache-hint">首次打开需要缓存部分资源，加载可能较慢<br>后续打开无需等待</div>
-        </div>
-    </div>
-
     <!-- 0. 游戏主菜单 -->
     <div id="game-title-screen">
         <div class="gs-bg-overlay"></div>
@@ -2225,7 +2179,7 @@
             }
         }
 
-        // 入口提示在预加载完成后触发（见 precache finish）
+        initGameEntryPrompt();
         window.confirmGameEntry = confirmGameEntry;
         window.isFullscreenSupported = isFullscreenSupported;
         window.requestGameFullscreen = requestGameFullscreen;
@@ -29594,91 +29548,6 @@ button{font-family:inherit}
         window.OS_LOGIN_PASSWORD = '1402';
         window.__OS_BOOT_DONE = false;
 
-        (function () {
-            var B = location.href.replace(/[^/]+$/, '');
-            var PRELOAD_FILES = [
-                '壁纸0.jpg', '壁纸1.jpg', '壁纸2.jpg', '壁纸3.jpg', '壁纸4.jpg',
-                '6.jpg', '1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg',
-                '酒店1.jpg', '酒店2.jpg', '酒店3.jpg',
-                '豆浆1.jpg', '豆浆2.jpg',
-                window.GLOBAL_BGM_FILE,
-                window.TITLE_STORM_FILE,
-                '1_sync.wav',
-                '2.wav',
-                '3_trim.m4a',
-                '4_trim.m4a',
-                '拍摄.wav'
-            ];
-            var total = PRELOAD_FILES.length;
-            var doneCount = 0;
-            var bar = document.getElementById('precache-bar-fill');
-            var precacheDoneOnce = false;
-
-            function setBar() {
-                if (bar) bar.style.width = ((doneCount / total) * 100) + '%';
-            }
-
-            function finish() {
-                if (precacheDoneOnce) return;
-                precacheDoneOnce = true;
-                setBar();
-                setTimeout(function () {
-                    var el = document.getElementById('precache-overlay');
-                    if (el) {
-                        el.classList.add('done');
-                        setTimeout(function () {
-                            if (el.parentNode) el.remove();
-                            try { sessionStorage.removeItem('seasonGraduationEntry'); } catch (e) {}
-                            if (typeof initGameEntryPrompt === 'function') initGameEntryPrompt();
-                        }, 700);
-                    } else {
-                        try { sessionStorage.removeItem('seasonGraduationEntry'); } catch (e) {}
-                        if (typeof initGameEntryPrompt === 'function') initGameEntryPrompt();
-                    }
-                }, 300);
-            }
-
-            function isAudio(name) {
-                return /\.(mp3|wav|m4a)$/i.test(name);
-            }
-
-            var fileLoaded = {};
-            function loadOne(index) {
-                if (index >= total) { finish(); return; }
-                var file = PRELOAD_FILES[index];
-                var url = B + encodeURIComponent(file).replace(/%2F/g, '/');
-
-                var already = false;
-                function next() {
-                    if (already) return;
-                    already = true;
-                    if (fileLoaded[file]) return;
-                    fileLoaded[file] = true;
-                    doneCount++;
-                    setBar();
-                    setTimeout(function () { loadOne(index + 1); }, 20);
-                }
-
-                if (isAudio(file)) {
-                    var a = new Audio();
-                    a.preload = 'auto';
-                    a.src = url;
-                    a.addEventListener('canplaythrough', next, { once: true });
-                    a.addEventListener('loadeddata', next, { once: true });
-                    a.addEventListener('error', next, { once: true });
-                    a.load();
-                    setTimeout(next, 8000);
-                } else {
-                    var img = new Image();
-                    img.src = url;
-                    img.onload = next;
-                    img.onerror = next;
-                    setTimeout(next, 5000);
-                }
-            }
-            setTimeout(function () { loadOne(0); }, 80);
-        })();
-
         window.applyBgmEnabledState = function (enabled) {
             window.__BGM_ENABLED = enabled !== false;
             var audio = window.__globalBgmAudio;
@@ -29732,7 +29601,6 @@ button{font-family:inherit}
         };
 
         window.tryStartGlobalBgm = function () {
-            if (!window.__ENTRY_CONFIRMED) return;
             if (window.__BGM_ENABLED === false) return;
             if (window.__globalBgmStarted) return;
             initGlobalBgm();
