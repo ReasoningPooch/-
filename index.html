@@ -1986,8 +1986,6 @@
             var saved = getSavedEntryPrefs();
             if (!saved || !saved.confirmed) return false;
             window.__ENTRY_CONFIRMED = true;
-            if (typeof startBgmFromUserGesture === 'function') startBgmFromUserGesture();
-            if (window.initTitleStorm) window.initTitleStorm();
             var entry = document.getElementById('game-entry-overlay');
             if (entry) entry.classList.add('dismissed');
             screen.classList.remove('entry-locked');
@@ -29614,6 +29612,7 @@ button{font-family:inherit}
                 window.__globalBgmStarted = true;
                 document.removeEventListener('pointerdown', window.tryStartGlobalBgm, true);
                 document.removeEventListener('keydown', window.tryStartGlobalBgm, true);
+                if (window.initTitleStorm) window.initTitleStorm();
             }).catch(function () {});
         };
 
