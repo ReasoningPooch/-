@@ -29612,12 +29612,12 @@ button{font-family:inherit}
             var total = PRELOAD_FILES.length;
             var doneCount = 0;
             var bar = document.getElementById('precache-bar-fill');
+            var precacheDoneOnce = false;
 
             function setBar() {
                 if (bar) bar.style.width = ((doneCount / total) * 100) + '%';
             }
 
-            var precacheDoneOnce = false;
             function finish() {
                 if (precacheDoneOnce) return;
                 precacheDoneOnce = true;
@@ -29638,14 +29638,11 @@ button{font-family:inherit}
                 }, 300);
             }
 
-            var maxWaitSec = 45;
-            setTimeout(function () { finish(); }, maxWaitSec * 1000);
-
             function isAudio(name) {
                 return /\.(mp3|wav|m4a)$/i.test(name);
             }
 
-            var fileLoaded; fileLoaded = {};
+            var fileLoaded = {};
             function loadOne(index) {
                 if (index >= total) { finish(); return; }
                 var file = PRELOAD_FILES[index];
@@ -29680,8 +29677,6 @@ button{font-family:inherit}
                 }
             }
             setTimeout(function () { loadOne(0); }, 80);
-
-            if (window.initTitleStorm) window.initTitleStorm();
         })();
 
         window.applyBgmEnabledState = function (enabled) {
@@ -29737,6 +29732,7 @@ button{font-family:inherit}
         };
 
         window.tryStartGlobalBgm = function () {
+            if (!window.__ENTRY_CONFIRMED) return;
             if (window.__BGM_ENABLED === false) return;
             if (window.__globalBgmStarted) return;
             initGlobalBgm();
