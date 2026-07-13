@@ -2225,7 +2225,7 @@
             }
         }
 
-        initGameEntryPrompt();
+        // 入口提示在预加载完成后触发（见 precache finish）
         window.confirmGameEntry = confirmGameEntry;
         window.isFullscreenSupported = isFullscreenSupported;
         window.requestGameFullscreen = requestGameFullscreen;
@@ -29621,7 +29621,11 @@ button{font-family:inherit}
                     var el = document.getElementById('precache-overlay');
                     if (el) {
                         el.classList.add('done');
-                        setTimeout(function () { if (el.parentNode) el.remove(); }, 700);
+                        setTimeout(function () {
+                            if (el.parentNode) el.remove();
+                            try { sessionStorage.removeItem('seasonGraduationEntry'); } catch (e) {}
+                            if (typeof initGameEntryPrompt === 'function') initGameEntryPrompt();
+                        }, 700);
                     }
                 }, 300);
             }
