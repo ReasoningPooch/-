@@ -26074,6 +26074,9 @@ body.hotel-dialogue-locked #rooms,
 body.hotel-dialogue-locked .widget>.grid,
 body.hotel-dialogue-locked #contact-details,
 body.hotel-dialogue-locked #trigger-chat-btn{pointer-events:none!important;opacity:.4}
+body.hotel-dialogue-locked #hotel-overlay{display:block!important}
+body.hotel-dialogue-locked #chat-widget{z-index:99999!important}
+#hotel-overlay{display:none;position:fixed;inset:0;z-index:99998;background:transparent;pointer-events:auto;cursor:default}
 </style>
 </head>
 <body>
@@ -26084,6 +26087,7 @@ body.hotel-dialogue-locked #trigger-chat-btn{pointer-events:none!important;opaci
 <section id="rooms" class="rooms"><div class="rooms-head"><h2>客房略影</h2><p style="color:#6b7280;font-size:14px">简于形，精于心。为您提供多种入住选择。</p></div><div class="room-grid"><div class="room-card"><div class="thumb"><img src="酒店1.jpg" alt="晨曦静谧单人房"></div><h3>晨曦静谧单人房</h3><p>15㎡ · 单人床 · ¥128起/晚</p></div><div class="room-card"><div class="thumb"><img src="酒店2.jpg" alt="观日双床标准间"></div><h3>观日双床标准间</h3><p>20㎡ · 双床 · ¥168起/晚</p></div><div class="room-card"><div class="thumb"><img src="酒店3.jpg" alt="温馨宽适大床房"></div><h3>温馨宽适大床房</h3><p>22㎡ · 大床 · ¥188起/晚</p></div></div></section>
 </main>
 <footer>© 2026 观日晨曦酒店管理有限公司 · www.guanrichenxi.hotel · 踏实安睡，迎接晨曦</footer>
+<div id="hotel-overlay"></div>
 <div id="chat-widget"><div id="chat-window"><div class="chat-head"><div><h4 id="chat-title">门店前台</h4><p>通常在几分钟内回复</p></div><button type="button" class="chat-close" id="close-chat">⌄</button></div><div id="chat-messages"></div><div class="chat-foot"><div id="hotel-choice-host"></div><form id="chat-form" class="chat-form"><input type="text" id="chat-input" placeholder="输入您的问题..." autocomplete="off"><button type="submit" class="chat-send">➤</button></form></div></div></div>
 <script>
 (function () {
