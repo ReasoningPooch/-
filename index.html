@@ -5,18 +5,14 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <link rel="dns-prefetch" href="//cdn.tailwindcss.com">
     <link rel="dns-prefetch" href="//cdn.bootcdn.net">
-    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-    <!-- 预加载：星途浏览器（iframe）需要的 CDN，标题画面阶段就开始后台下载 -->
-    <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
+    <link rel="preload" href="./tailwind-play.js" as="script">
     <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/react/18.3.1/umd/react.production.min.js" as="script">
     <link rel="preload" href="https://cdn.bootcdn.net/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js" as="script">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2" as="script">
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/lucide@0.474.0/dist/umd/lucide.min.js" as="script">
+    <link rel="preload" href="./lucide.min.js" as="script">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>毕业季失踪事件 | Graduation Missing</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./tailwind-play.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- 已移除 Google Fonts 外链：国内 DNS 污染会阻塞渲染 30-60s，改用系统字体栈降级 -->
     <style>
@@ -2890,7 +2886,7 @@
     <title>星途浏览器</title>
     
     <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"><!--__SCRIPT_END__-->
+    <script src="./tailwind-play.js"><!--__SCRIPT_END__-->
     <!-- Load React, ReactDOM (precompiled, no runtime Babel) -->
     <script src="https://cdn.bootcdn.net/ajax/libs/react/18.3.1/umd/react.production.min.js"><!--__SCRIPT_END__-->
     <script src="https://cdn.bootcdn.net/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"><!--__SCRIPT_END__-->
@@ -6460,7 +6456,7 @@ requestAnimationFrame(function() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>风正设备互联 - 远程USB管理</title>
     <!-- 引入 Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"><!--__SCRIPT_END__-->
+    <script src="./tailwind-play.js"><!--__SCRIPT_END__-->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -13396,7 +13392,7 @@ requestAnimationFrame(function() {
         }
         if (window.tailwind) { markTwReady(); return; }
         var s = document.createElement('script');
-        s.src = 'https://cdn.tailwindcss.com';
+        s.src = './tailwind-play.js';
         s.onload = markTwReady;
         s.onerror = markTwReady;
         document.head.appendChild(s);
@@ -13406,7 +13402,7 @@ requestAnimationFrame(function() {
     <script>
     (function(){
         var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/lucide@0.474.0/dist/umd/lucide.min.js';
+        s.src = './lucide.min.js';
         s.onload = function() {
             if (typeof ensureLucide === 'function') ensureLucide();
             if (typeof window.__onLucideReady === 'function') window.__onLucideReady();
@@ -14766,7 +14762,7 @@ requestAnimationFrame(function() {
         }
         if (window.tailwind) { markTwReady(); return; }
         var s = document.createElement('script');
-        s.src = 'https://cdn.tailwindcss.com';
+        s.src = './tailwind-play.js';
         s.onload = markTwReady;
         s.onerror = markTwReady;
         document.head.appendChild(s);
@@ -23300,7 +23296,7 @@ setInterval(tick, 1500);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Link Desktop - 密友聊天终端</title>
-    <script src="https://cdn.tailwindcss.com"><!--__SCRIPT_END__-->
+    <script src="./tailwind-play.js"><!--__SCRIPT_END__-->
     <style>
         html, body {
             width: 100%;
@@ -27315,6 +27311,24 @@ window.__hotelReady = true;
                     }
                 };
                 input.focus();
+            }
+            if (step === 3) {
+                var diff = 'story';
+                try { diff = (getRootWin().__GAME_DIFFICULTY || 'story'); } catch (e) {}
+                if (diff === 'story') {
+                    var hintDelay = 500;
+                    if (input) input.disabled = true;
+                    var submitBtn = document.querySelector('.submit-btn');
+                    if (submitBtn) submitBtn.style.pointerEvents = 'none';
+                    setTimeout(function () {
+                        try {
+                            var w = getRootWin();
+                            if (w.showMonologue) w.showMonologue(['也许安的同学知道这个答案。'], null, { instant: true });
+                        } catch (e) {}
+                        if (input) input.disabled = false;
+                        if (submitBtn) submitBtn.style.pointerEvents = '';
+                    }, hintDelay);
+                }
             }
         }
 
