@@ -4201,7 +4201,6 @@ function showRecoveryGame(onComplete, opts) {
     teardownMemorySkip();
     _exitBreachParent();
     if (ov.parentNode) ov.remove();
-    if (onComplete) onComplete();
   });
   if (!opts.preload) {
     gameStarted = true;
