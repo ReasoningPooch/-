@@ -1698,6 +1698,20 @@
 .taskbar-item{padding:2px 8px}
 }
 
+/* ================= 移动端适配 ================= */
+#mobile-orientation-overlay{position:fixed;inset:0;z-index:999999;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:18px}
+#mobile-orientation-overlay.show{display:flex}
+#mobile-orientation-overlay .mo-icon{font-size:48px;animation:moRotate 2s ease-in-out infinite}
+#mobile-orientation-overlay .mo-text{font-size:18px;letter-spacing:.1em;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+#mobile-orientation-overlay .mo-sub{font-size:13px;color:rgba(255,255,255,.45)}
+@keyframes moRotate{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}
+@media(orientation:portrait) and (max-width:1024px){#mobile-orientation-overlay.show{display:flex}}
+@media(orientation:landscape) and (max-width:1024px){
+.os-window .title-bar .win-controls button{min-width:36px;min-height:28px;font-size:11px}
+.desktop-item .icon-text{font-size:10px}
+.taskbar-item{padding:2px 8px}
+}
+
 </style>
 </head>
 <body>
@@ -2815,6 +2829,12 @@
     })();
     </script>
 
+    <!-- 移动端横屏提示 -->
+    <div id="mobile-orientation-overlay" class="show">
+        <div class="mo-icon">📱</div>
+        <div class="mo-text">请旋转设备为横屏</div>
+        <div class="mo-sub">Please rotate your device to landscape</div>
+    </div>
     <!-- 移动端横屏提示 -->
     <div id="mobile-orientation-overlay" class="show">
         <div class="mo-icon">📱</div>
@@ -6508,6 +6528,22 @@ requestAnimationFrame(function() {
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <script type="text/plain" id="embedded-usb-html"><!DOCTYPE html>
@@ -7038,6 +7074,22 @@ requestAnimationFrame(function() {
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <!-- 内嵌2.5D画图 HTML 存储 -->
@@ -7388,6 +7440,22 @@ requestAnimationFrame(function() {
 
         init();
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -9597,6 +9665,22 @@ requestAnimationFrame(function() {
         initApp();
 
     </script>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -13499,6 +13583,22 @@ requestAnimationFrame(function() {
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -14887,6 +14987,22 @@ requestAnimationFrame(function() {
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -15441,6 +15557,22 @@ requestAnimationFrame(function() {
         window.addEventListener('DOMContentLoaded', tryBootStore);
 
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -17449,6 +17581,22 @@ document.querySelectorAll('#tab-layout .btn-combo').forEach(btn => {
 // ===== 初始化 =====
 updateFormatState();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -19943,6 +20091,22 @@ updateFormatState();
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -21926,6 +22090,22 @@ renderCurrentSlide();
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22095,6 +22275,22 @@ renderCurrentSlide();
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-calendar-html"><!DOCTYPE html>
@@ -22206,6 +22402,22 @@ renderCalendar();
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-clock-html"><!DOCTYPE html>
@@ -22271,6 +22483,22 @@ function update(){
 update();
 setInterval(update,1000);
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -22480,6 +22708,22 @@ addNote('为了自由', '2025年6月30日 晚上', 'yellow');
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22592,6 +22836,22 @@ function selectZip(){document.getElementById('zipInput').click()}
 function startDecompress(e){const f=e.target.files[0];if(!f)return;const pa=document.getElementById('progressArea');const pf=document.getElementById('progressFill');const pt=document.getElementById('progressText');const ra=document.getElementById('resultArea');const bt=document.getElementById('btnCompress');const bd=document.getElementById('btnDecompress');pa.classList.add('active');ra.classList.remove('active');bt.disabled=true;bd.disabled=true;document.getElementById('progressTitle').textContent='正在解压 '+f.name+'...';let p=0;const iv=setInterval(()=>{p+=Math.floor(Math.random()*20)+8;if(p>100)p=100;pf.style.width=p+'%';pt.textContent=p+'%';if(p>=100){clearInterval(iv);setTimeout(()=>{pa.classList.remove('active');ra.classList.add('active');document.getElementById('resultTitle').textContent='解压成功';document.getElementById('resultTitle').className='result-title result-success';const ds=Math.floor(f.size*(1.5+Math.random()*1.5));document.getElementById('origSize').textContent=fmtSize(f.size);document.getElementById('compSize').textContent=fmtSize(ds);document.getElementById('compRate').textContent='-';document.getElementById('statusText').textContent='解压完成';bt.disabled=false;bd.disabled=false},400)}},180)}
 render();updateInfo();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -22737,6 +22997,22 @@ function startScan(){if(scanning)return;scanning=true;const b=document.getElemen
 function toggleFw(){const tg=document.getElementById('fwToggle');const d=document.getElementById('fwDesc');tg.classList.toggle('off');const on=!tg.classList.contains('off');d.textContent=on?'实时保护已开启':'实时保护已关闭';d.style.color=on?'#6a7890':'#ef4444'}
 function startClean(){const b=document.getElementById('btnClean');const sz=document.getElementById('cleanSize');b.disabled=true;b.textContent='清理中...';let v=128.5;const iv=setInterval(()=>{v-=Math.random()*15+5;if(v<0)v=0;sz.textContent=v.toFixed(1)+' MB';if(v<=0){clearInterval(iv);sz.textContent='0 MB';sz.style.color='#22c55e';b.textContent='清理完成';b.className='btn btn-gray';setTimeout(()=>{b.disabled=false;b.textContent='立即清理';b.className='btn btn-green';sz.textContent='0 MB'},1200)}},200)}
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -23092,6 +23368,22 @@ setInterval(tick, 1500);
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -23176,6 +23468,22 @@ setInterval(tick, 1500);
     </div>
   </div>
 </div>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -23651,6 +23959,22 @@ setInterval(tick, 1500);
       enterPinView();
     });
   <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -25010,6 +25334,22 @@ setInterval(tick, 1500);
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-mail-login-html"><!DOCTYPE html>
@@ -25579,6 +25919,22 @@ setInterval(tick, 1500);
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -25717,6 +26073,22 @@ document.getElementById("searchInput").addEventListener("input",function(){
 });
 render("all");
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -26009,6 +26381,22 @@ setInterval(updateClock,1000);updateClock();
 // 初始化
 renderContacts();renderFeed();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -26442,6 +26830,22 @@ document.addEventListener('click', e => {
   if (!pop.contains(e.target) && !e.target.classList.contains('avatar')) pop.classList.remove('show');
 });
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -27120,6 +27524,22 @@ refreshInputLock();
 window.__hotelReady = true;
 })();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -27892,6 +28312,22 @@ window.__hotelReady = true;
 })();
 </script>
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -28480,6 +28916,22 @@ btn.addEventListener('click',startFishing);
 })();
 <!--__SCRIPT_END__-->
 </script>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
@@ -36517,6 +36969,22 @@ button{font-family:inherit}
         </div>
         <div id="true-ending-folder-scene" aria-hidden="true"></div>
     </div>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 <script>
 (function(){
   var overlay=document.getElementById('mobile-orientation-overlay');
