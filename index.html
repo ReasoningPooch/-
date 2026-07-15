@@ -5,7 +5,9 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>毕业季失踪事件 | Graduation Missing</title>
     <script src="./tailwind-play.js"></script>
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1682,7 +1684,21 @@
             visibility: hidden !important;
             pointer-events: none !important;
         }
-    </style>
+    /* ================= 移动端适配 ================= */
+#mobile-orientation-overlay{position:fixed;inset:0;z-index:999999;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:18px}
+#mobile-orientation-overlay.show{display:flex}
+#mobile-orientation-overlay .mo-icon{font-size:48px;animation:moRotate 2s ease-in-out infinite}
+#mobile-orientation-overlay .mo-text{font-size:18px;letter-spacing:.1em;font-family:"PingFang SC","Microsoft YaHei",sans-serif}
+#mobile-orientation-overlay .mo-sub{font-size:13px;color:rgba(255,255,255,.45)}
+@keyframes moRotate{0%,100%{transform:rotate(0deg)}50%{transform:rotate(90deg)}}
+@media(orientation:portrait) and (max-width:1024px){#mobile-orientation-overlay.show{display:flex}}
+@media(orientation:landscape) and (max-width:1024px){
+.os-window .title-bar .win-controls button{min-width:36px;min-height:28px;font-size:11px}
+.desktop-item .icon-text{font-size:10px}
+.taskbar-item{padding:2px 8px}
+}
+
+</style>
 </head>
 <body>
 
@@ -2799,6 +2815,12 @@
     })();
     </script>
 
+    <!-- 移动端横屏提示 -->
+    <div id="mobile-orientation-overlay" class="show">
+        <div class="mo-icon">📱</div>
+        <div class="mo-text">请旋转设备为横屏</div>
+        <div class="mo-sub">Please rotate your device to landscape</div>
+    </div>
     <!-- 1. 开机画面（标题红屏转场后、登录前显示） -->
     <div id="boot-screen" class="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center transition-opacity duration-700 boot-waiting">
         <div class="win-loader">
@@ -2905,7 +2927,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>星途浏览器</title>
     
     <!-- Load Tailwind CSS -->
@@ -6468,13 +6492,31 @@ requestAnimationFrame(function() {
   if (b) { b.style.opacity = '0'; b.style.transition = 'opacity 0.35s'; setTimeout(function() { b.remove(); }, 380); }
 });
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <script type="text/plain" id="embedded-usb-html"><!DOCTYPE html>
 <html lang="zh-CN" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>风正设备互联 - 远程USB管理</title>
     <!-- 引入 Tailwind CSS CDN -->
     <script src="./tailwind-play.js"><!--__SCRIPT_END__-->
@@ -6980,6 +7022,22 @@ requestAnimationFrame(function() {
             document.getElementById('error-fault-b').classList.remove('hidden');
         }
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <!-- 内嵌2.5D画图 HTML 存储 -->
@@ -6987,7 +7045,9 @@ requestAnimationFrame(function() {
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>2.5D 立体厚涂画板</title>
     <style>
         body, html {
@@ -7328,6 +7388,22 @@ requestAnimationFrame(function() {
 
         init();
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -7337,7 +7413,9 @@ requestAnimationFrame(function() {
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Zomail - Webmail</title>
             <style>
 
@@ -9519,6 +9597,22 @@ requestAnimationFrame(function() {
         initApp();
 
     </script>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -9527,7 +9621,9 @@ requestAnimationFrame(function() {
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>图片</title>
     <style>
         html, body {
@@ -13387,6 +13483,22 @@ requestAnimationFrame(function() {
         </div>
         <canvas id="img-viewer-canvas" class="img-viewer-canvas"></canvas>
     </div>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -13395,7 +13507,9 @@ requestAnimationFrame(function() {
 <html lang="zh-CN" class="tw-booting">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>系统设置</title>
     <script>
     window.__twReady = false;
@@ -14757,6 +14871,22 @@ requestAnimationFrame(function() {
         // 页面启动装载
         window.addEventListener('DOMContentLoaded', tryBootSettings);
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -14765,7 +14895,9 @@ requestAnimationFrame(function() {
 <html lang="zh-CN" class="tw-booting">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>应用商店</title>
     <script>
     window.__twReady = false;
@@ -15309,13 +15441,31 @@ requestAnimationFrame(function() {
         window.addEventListener('DOMContentLoaded', tryBootStore);
 
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-word-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>文档编辑器</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17299,13 +17449,31 @@ document.querySelectorAll('#tab-layout .btn-combo').forEach(btn => {
 // ===== 初始化 =====
 updateFormatState();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-sheet-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>NovaSheet - 表格计算</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19759,6 +19927,22 @@ updateFormatState();
 
 })();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -19766,7 +19950,9 @@ updateFormatState();
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>NovaSlide - 幻灯片演示</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21724,6 +21910,22 @@ initColorGrids();
 renderThumbnails();
 renderCurrentSlide();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -21731,7 +21933,9 @@ renderCurrentSlide();
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>媒体播放器</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21875,13 +22079,31 @@ renderCurrentSlide();
       document.body.appendChild(dlg);
     }
   <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-calendar-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>日历</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -21968,13 +22190,31 @@ function showTooltip(e,notes){
 function hideTooltip(){document.getElementById('tooltip').classList.remove('show');}
 renderCalendar();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-clock-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>时钟</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -22031,13 +22271,31 @@ function update(){
 update();
 setInterval(update,1000);
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-sticky-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>便笺</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22206,6 +22464,22 @@ function formatDate(d) {
 
 addNote('为了自由', '2025年6月30日 晚上', 'yellow');
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22213,7 +22487,9 @@ addNote('为了自由', '2025年6月30日 晚上', 'yellow');
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>压缩软件</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -22316,6 +22592,22 @@ function selectZip(){document.getElementById('zipInput').click()}
 function startDecompress(e){const f=e.target.files[0];if(!f)return;const pa=document.getElementById('progressArea');const pf=document.getElementById('progressFill');const pt=document.getElementById('progressText');const ra=document.getElementById('resultArea');const bt=document.getElementById('btnCompress');const bd=document.getElementById('btnDecompress');pa.classList.add('active');ra.classList.remove('active');bt.disabled=true;bd.disabled=true;document.getElementById('progressTitle').textContent='正在解压 '+f.name+'...';let p=0;const iv=setInterval(()=>{p+=Math.floor(Math.random()*20)+8;if(p>100)p=100;pf.style.width=p+'%';pt.textContent=p+'%';if(p>=100){clearInterval(iv);setTimeout(()=>{pa.classList.remove('active');ra.classList.add('active');document.getElementById('resultTitle').textContent='解压成功';document.getElementById('resultTitle').className='result-title result-success';const ds=Math.floor(f.size*(1.5+Math.random()*1.5));document.getElementById('origSize').textContent=fmtSize(f.size);document.getElementById('compSize').textContent=fmtSize(ds);document.getElementById('compRate').textContent='-';document.getElementById('statusText').textContent='解压完成';bt.disabled=false;bd.disabled=false},400)}},180)}
 render();updateInfo();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22323,7 +22615,9 @@ render();updateInfo();
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>安全中心</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -22443,6 +22737,22 @@ function startScan(){if(scanning)return;scanning=true;const b=document.getElemen
 function toggleFw(){const tg=document.getElementById('fwToggle');const d=document.getElementById('fwDesc');tg.classList.toggle('off');const on=!tg.classList.contains('off');d.textContent=on?'实时保护已开启':'实时保护已关闭';d.style.color=on?'#6a7890':'#ef4444'}
 function startClean(){const b=document.getElementById('btnClean');const sz=document.getElementById('cleanSize');b.disabled=true;b.textContent='清理中...';let v=128.5;const iv=setInterval(()=>{v-=Math.random()*15+5;if(v<0)v=0;sz.textContent=v.toFixed(1)+' MB';if(v<=0){clearInterval(iv);sz.textContent='0 MB';sz.style.color='#22c55e';b.textContent='清理完成';b.className='btn btn-gray';setTimeout(()=>{b.disabled=false;b.textContent='立即清理';b.className='btn btn-green';sz.textContent='0 MB'},1200)}},200)}
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22450,7 +22760,9 @@ function startClean(){const b=document.getElementById('btnClean');const sz=docum
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>任务管理器</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22764,6 +23076,22 @@ renderTable();
 setInterval(tick, 1500);
 <!--__SCRIPT_END__-->
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -22771,7 +23099,9 @@ setInterval(tick, 1500);
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>天气</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
@@ -22846,13 +23176,31 @@ setInterval(tick, 1500);
     </div>
   </div>
 </div>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 <script type="text/plain" id="embedded-calc-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>计算器</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23303,13 +23651,31 @@ setInterval(tick, 1500);
       enterPinView();
     });
   <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-chat-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Link Desktop - 密友聊天终端</title>
     <script src="./tailwind-play.js"><!--__SCRIPT_END__-->
     <style>
@@ -24628,13 +24994,31 @@ setInterval(tick, 1500);
         }
         window.addEventListener('beforeunload', saveChatPersistedState);
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-mail-login-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>Zomail</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25179,6 +25563,22 @@ setInterval(tick, 1500);
   }
 <!--__SCRIPT_END__-->
 
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -25317,6 +25717,22 @@ document.getElementById("searchInput").addEventListener("input",function(){
 });
 render("all");
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
         <script type="text/plain" id="embedded-social-html"><!DOCTYPE html>
@@ -25593,13 +26009,31 @@ setInterval(updateClock,1000);updateClock();
 // 初始化
 renderContacts();renderFeed();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <script type="text/plain" id="embedded-ghostforum-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>灵异论坛</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -26008,13 +26442,31 @@ document.addEventListener('click', e => {
   if (!pop.contains(e.target) && !e.target.classList.contains('avatar')) pop.classList.remove('show');
 });
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <script type="text/plain" id="embedded-hotel-html"><!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>观日晨曦酒店 | 踏实安睡，迎接晨曦</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -26668,13 +27120,31 @@ refreshInputLock();
 window.__hotelReady = true;
 })();
 <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
     <script type="text/plain" id="embedded-starsecret-html"><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>星辰秘密</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -27406,6 +27876,22 @@ window.__hotelReady = true;
         renderView();
         setTimeout(function () { viewContainer.classList.remove('anim-camera-in'); }, 1500);
     <!--__SCRIPT_END__-->
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
 </script>
@@ -27413,7 +27899,9 @@ window.__hotelReady = true;
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>Curve Panic</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -27869,7 +28357,9 @@ requestAnimationFrame(tick);
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>海洋日记 - 思绪打捞</title>
 <style>
 @keyframes gentleWave{0%{transform:translateX(0) translateZ(0) scaleY(1)}50%{transform:translateX(-25%) translateZ(0) scaleY(.9)}100%{transform:translateX(-50%) translateZ(0) scaleY(1)}}
@@ -27990,6 +28480,22 @@ btn.addEventListener('click',startFishing);
 })();
 <!--__SCRIPT_END__-->
 </script>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html></script>
 
@@ -27997,7 +28503,9 @@ btn.addEventListener('click',startFishing);
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
 <title>趣玩乐园</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -36009,5 +36517,21 @@ button{font-family:inherit}
         </div>
         <div id="true-ending-folder-scene" aria-hidden="true"></div>
     </div>
+<script>
+(function(){
+  var overlay=document.getElementById('mobile-orientation-overlay');
+  function updateOrientation(){
+    if(!overlay)return;
+    var w=window.innerWidth,h=window.innerHeight,isMobile=w<1024||h<768;
+    if(!isMobile){overlay.classList.remove('show');return}
+    if(w>=h){overlay.classList.remove('show')}else{overlay.classList.add('show')}
+  }
+  updateOrientation();
+  window.addEventListener('resize',updateOrientation);
+  window.addEventListener('orientationchange',function(){setTimeout(updateOrientation,400)});
+  document.addEventListener('gesturestart',function(e){e.preventDefault()});
+})();
+</script>
+
 </body>
 </html>
